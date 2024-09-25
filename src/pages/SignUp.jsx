@@ -63,7 +63,7 @@ const SignUp = () => {
                 />
                 <Error errorName={errors.email} />
 
-                <LabelArea label="Password" />
+                {/* <LabelArea label="Password" />
                 <InputArea
                   required={true}
                   register={register}
@@ -73,7 +73,7 @@ const SignUp = () => {
                   autocomplete="current-password"
                   placeholder="***************"
                 />
-                <Error errorName={errors.password} />
+                <Error errorName={errors.password} /> */}
 
                 <LabelArea label="Staff Role" />
                 <div className="col-span-8 sm:col-span-4">
