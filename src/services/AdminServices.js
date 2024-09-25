@@ -22,17 +22,17 @@ const AdminServices = {
   },
 
   addStaff: async (body) => {
-    return requests.post("/admin/add", body);
+    return requests.post("/admin/create-user", body);
   },
   getAllStaff: async (body) => {
-    return requests.get("/admin", body);
+    return requests.get("/admin/users", body);
   },
   getStaffById: async (id, body) => {
-    return requests.post(`/admin/${id}`, body);
+    return requests.post(`/admin/users/${id}`, body);
   },
 
   updateStaff: async (id, body) => {
-    return requests.put(`/admin/${id}`, body);
+    return requests.put(`/admin/users/${id}`, body);
   },
 
   updateStaffStatus: async (id, body) => {
@@ -40,7 +40,7 @@ const AdminServices = {
   },
 
   deleteStaff: async (id) => {
-    return requests.delete(`/admin/${id}`);
+    return requests.delete(`/admin/users/delete/${id}`);
   },
 };
 
