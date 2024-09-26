@@ -22,10 +22,10 @@ const AdminServices = {
   },
 
   addStaff: async (body) => {
-    return requests.post("/admin", body);
+    return requests.post("/admin/create-user", body);
   },
   getAllStaff: async (body) => {
-    return requests.get("/admin", body);
+    return requests.get("/admin/users", body);
   },
   getStaffById: async (id, body) => {
     return requests.post(`/admin${id}`, body);

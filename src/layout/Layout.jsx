@@ -28,7 +28,7 @@ const Layout = () => {
                 {routes.map((route, i) => (
                   <Route key={i} exact path={route.path} component={route.component} />
                 ))}
-                <Redirect exact from="/" to="/dashboard" />
+                <Redirect exact from="/" to="/login" />
                 <Route component={Page404} />
               </Switch>
             </Suspense>

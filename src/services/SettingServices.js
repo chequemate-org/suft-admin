@@ -7,7 +7,7 @@ const SettingServices = {
   },
 
   getGlobalSetting: async () => {
-    return requests.get("/setting/global/all");
+    // return requests.get("/setting/global/all");
   },
 
   updateGlobalSetting: async (body) => {

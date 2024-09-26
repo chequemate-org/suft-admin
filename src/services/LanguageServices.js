@@ -6,7 +6,7 @@ const LanguageServices = {
   },
 
   getShowingLanguage: async () => {
-    return requests.get('/language/show');
+    // return requests.get('/language/show');
   },
 
   getLanguageById: async (id) => {
