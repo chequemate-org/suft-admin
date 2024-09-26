@@ -137,12 +137,12 @@ const Header = () => {
   // console.log("notificaiotn", data);
   return (
     <>
-      <header className="z-30 py-4 bg-white shadow-sm dark:bg-gray-800">
-        <div className="container flex items-center justify-between h-full px-6 mx-auto text-emerald-500 dark:text-emerald-500">
+      <header className="dark:bg-gray-800 z-30 py-4 bg-white shadow-sm">
+        <div className="text-emerald-500 dark:text-emerald-500 container flex items-center justify-between h-full px-6 mx-auto">
           <button
             type="button"
             onClick={() => setNavBar(!navBar)}
-            className="hidden lg:block outline-0 focus:outline-none"
+            className="lg:block outline-0 focus:outline-none hidden"
           >
             <svg
               className="w-4 h-4"
@@ -162,7 +162,7 @@ const Header = () => {
 
           {/* <!-- Mobile hamburger --> */}
           <button
-            className="p-1 mr-5 -ml-1 rounded-md lg:hidden focus:outline-none"
+            className="lg:hidden focus:outline-none p-1 mr-5 -ml-1 rounded-md"
             onClick={toggleSidebar}
             aria-label="Menu"
           >
@@ -170,7 +170,7 @@ const Header = () => {
           </button>
           <span></span>
 
-          <ul className="flex justify-end items-center flex-shrink-0 space-x-6">
+          <ul className="flex items-center justify-end flex-shrink-0 space-x-6">
             <li className="changeLanguage">
               <div className="dropdown">
                 <button className="dropbtn focus:outline-none">
@@ -180,11 +180,11 @@ const Header = () => {
                     <img src={en} className="mx-2" alt="lang" width={16} />
                   )}
                   {currentLanguageCode === "de" ? (
-                    <span className="text-gray-700 dark:text-gray-400">
+                    <span className="dark:text-gray-400 text-gray-700">
                       GERMAN
                     </span>
                   ) : (
-                    <span className="text-gray-700 dark:text-gray-400">
+                    <span className="dark:text-gray-400 text-gray-700">
                       ENGLISH
                     </span>
                   )}
@@ -211,7 +211,7 @@ const Header = () => {
 
             <li className="flex">
               <button
-                className="rounded-md focus:outline-none"
+                className="focus:outline-none rounded-md"
                 onClick={toggleMode}
                 aria-label="Toggle color mode"
               >
@@ -226,21 +226,21 @@ const Header = () => {
             {/* <!-- Notifications menu --> */}
             <li className="relative inline-block text-left" ref={nRef}>
               <button
-                className="relative align-middle rounded-md focus:outline-none"
+                className="focus:outline-none relative align-middle rounded-md"
                 onClick={handleNotificationOpen}
               >
                 <FiBell
-                  className="w-5 h-5 text-emerald-500"
+                  className="text-emerald-500 w-5 h-5"
                   aria-hidden="true"
                 />
 
-                <span className="absolute z-10 top-0 right-0 inline-flex items-center justify-center p-1 h-5 w-5 text-xs font-medium leading-none text-red-100 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+                <span className="absolute top-0 right-0 z-10 inline-flex items-center justify-center w-5 h-5 p-1 text-xs font-medium leading-none text-red-100 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
                   {totalUnreadDoc}
                 </span>
               </button>
 
               {notificationOpen && (
-                <div className="origin-top-right absolute md:right-0 -right-3 top-2 rounded-md shadow-lg bg-white dark:bg-gray-800  focus:outline-none">
+                <div className="md:right-0 -right-3 top-2 dark:bg-gray-800 focus:outline-none absolute origin-top-right bg-white rounded-md shadow-lg">
                   <div
                     className={`${
                       data?.length === 0
@@ -256,7 +256,7 @@ const Header = () => {
                       {data?.length === 0 ? (
                         <NotFoundTwo title="No new notification" />
                       ) : (
-                        <ul className="block text-sm border-t border-gray-100 dark:border-gray-700 rounded-md">
+                        <ul className="dark:border-gray-700 block text-sm border-t border-gray-100 rounded-md">
                           {data?.map((value, index) => {
                             return (
                               <li
@@ -282,7 +282,7 @@ const Header = () => {
                                   }
                                 >
                                   <Avatar
-                                    className="mr-2 md:block bg-gray-50 border border-gray-200"
+                                    className="md:block bg-gray-50 mr-2 border border-gray-200"
                                     src={value.image}
                                     alt="image"
                                   />
@@ -306,30 +306,30 @@ const Header = () => {
                                   </div>
 
                                   {value.status === "unread" && (
-                                    <span className="px-2 focus:outline-none">
+                                    <span className="focus:outline-none px-2">
                                       <img
                                         src={ellipse}
                                         width={12}
                                         height={12}
                                         alt="ellipse"
-                                        className="w-3 h-3 text-emerald-600"
+                                        className="text-emerald-600 w-3 h-3"
                                       />
                                     </span>
                                   )}
                                 </Link>
 
-                                <div className="group inline-block relative">
+                                <div className="group relative inline-block">
                                   <button
                                     type="button"
                                     onClick={() =>
                                       handleNotificationDelete(value._id)
                                     }
-                                    className="px-2 group-hover:text-blue-500 text-red-500 focus:outline-none"
+                                    className="group-hover:text-blue-500 focus:outline-none px-2 text-red-500"
                                   >
                                     <FiTrash2 />
                                   </button>
 
-                                  <div className="absolute hidden group-hover:inline-block bg-gray-50 dark:text-red-400 mr-6 mb-1 right-0 z-50 px-3 py-2 text-sm font-medium text-red-600 rounded-lg shadow-sm tooltip dark:bg-gray-700">
+                                  <div className="group-hover:inline-block bg-gray-50 dark:text-red-400 tooltip dark:bg-gray-700 absolute right-0 z-50 hidden px-3 py-2 mb-1 mr-6 text-sm font-medium text-red-600 rounded-lg shadow-sm">
                                     Delete
                                   </div>
                                 </div>
@@ -340,11 +340,11 @@ const Header = () => {
                       )}
 
                       {totalDoc > 5 && (
-                        <div className="text-center py-2">
+                        <div className="py-2 text-center">
                           <Link
                             onClick={() => setNotificationOpen(false)}
                             to={"/notifications"}
-                            className="focus:outline-none hover:underline transition ease-out duration-200"
+                            className="focus:outline-none hover:underline transition duration-200 ease-out"
                           >
                             Show all notifications
                           </Link>
@@ -359,7 +359,7 @@ const Header = () => {
             {/* <!-- Profile menu --> */}
             <li className="relative inline-block text-left" ref={pRef}>
               <button
-                className="rounded-full dark:bg-gray-500 bg-emerald-500 text-white h-8 w-8 font-medium mx-auto focus:outline-none"
+                className="dark:bg-gray-500 bg-emerald-500 focus:outline-none w-8 h-8 mx-auto font-medium text-white rounded-full"
                 onClick={handleProfileOpen}
               >
                 {adminInfo.image ? (
@@ -369,13 +369,14 @@ const Header = () => {
                     aria-hidden="true"
                   />
                 ) : (
-                  <span>{adminInfo.email[0].toUpperCase()}</span>
+                  // <span>{adminInfo.email[0].toUpperCase()}</span>
+                  <span>hi</span>
                 )}
               </button>
 
               {profileOpen && (
-                <ul className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 focus:outline-none">
-                  <li className="justify-between font-serif font-medium py-2 pl-4 transition-colors duration-150 hover:bg-gray-100 text-gray-500 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">
+                <ul className="dark:bg-gray-800 focus:outline-none absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg">
+                  <li className="hover:bg-gray-100 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150">
                     <Link to="/dashboard">
                       <span className="flex items-center text-sm">
                         <FiGrid className="w-4 h-4 mr-3" aria-hidden="true" />
@@ -384,7 +385,7 @@ const Header = () => {
                     </Link>
                   </li>
 
-                  <li className="justify-between font-serif font-medium py-2 pl-4 transition-colors duration-150 hover:bg-gray-100 text-gray-500 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">
+                  <li className="hover:bg-gray-100 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150">
                     <Link to="/edit-profile">
                       <span className="flex items-center text-sm">
                         <FiSettings
@@ -398,7 +399,7 @@ const Header = () => {
 
                   <li
                     onClick={handleLogOut}
-                    className="cursor-pointer justify-between font-serif font-medium py-2 pl-4 transition-colors duration-150 hover:bg-gray-100 text-gray-500 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                    className="hover:bg-gray-100 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150 cursor-pointer"
                   >
                     <span className="flex items-center text-sm">
                       <FiLogOut className="w-4 h-4 mr-3" aria-hidden="true" />
