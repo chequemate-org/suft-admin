@@ -1,7 +1,8 @@
 import { Avatar, TableBody, TableCell, TableRow } from "@windmill/react-ui";
 import React from "react";
 
-// Internal imports
+//internal import
+
 import Status from "@/components/table/Status";
 import useUtilsFunction from "@/hooks/useUtilsFunction";
 import MainDrawer from "@/components/drawer/MainDrawer";
@@ -11,7 +12,7 @@ import DeleteModal from "@/components/modal/DeleteModal";
 import EditDeleteButton from "@/components/table/EditDeleteButton";
 import ActiveInActiveButton from "@/components/table/ActiveInActiveButton";
 
-const StaffTable = ({ staffs = [], lang }) => {
+const StaffTable = ({ staffs, lang }) => {
   const {
     title,
     serviceId,
@@ -23,11 +24,6 @@ const StaffTable = ({ staffs = [], lang }) => {
 
   const { showDateFormat, showingTranslateValue } = useUtilsFunction();
 
-  // Ensure staffs is always an array
-  if (!Array.isArray(staffs)) {
-    return <p>No staff data available.</p>;
-  }
-
   return (
     <>
       <DeleteModal id={serviceId} title={title} />
@@ -37,13 +33,13 @@ const StaffTable = ({ staffs = [], lang }) => {
       </MainDrawer>
 
       <TableBody>
-        {staffs.map((staff) => (
-          <TableRow key={staff.uuid}>
+        {staffs?.map((staff) => (
+          <TableRow key={staff._id}>
             <TableCell>
               <div className="flex items-center">
                 <Avatar
                   className="hidden mr-3 md:block bg-gray-50"
-                  src={staff.image || "/default-avatar.png"} // Fallback to a default image if staff.image is null
+                  src={staff.image}
                   alt="staff"
                 />
                 <div>
@@ -55,7 +51,7 @@ const StaffTable = ({ staffs = [], lang }) => {
             </TableCell>
 
             <TableCell>
-              <span className="text-sm">{staff.email}</span>
+              <span className="text-sm">{staff.email}</span>{" "}
             </TableCell>
             <TableCell>
               <span className="text-sm ">{staff.phone}</span>
@@ -63,7 +59,8 @@ const StaffTable = ({ staffs = [], lang }) => {
 
             <TableCell>
               <span className="text-sm">
-                {showDateFormat(staff.createdAt)} {/* Use createdAt as the joining date */}
+                {/* {dayjs(staff.joiningData).format("DD/MM/YYYY")} */}
+                {showDateFormat(staff.joiningData)}
               </span>
             </TableCell>
             <TableCell>
@@ -75,7 +72,7 @@ const StaffTable = ({ staffs = [], lang }) => {
 
             <TableCell className="text-center">
               <ActiveInActiveButton
-                id={staff?.uuid}
+                id={staff?._id}
                 staff={staff}
                 option="staff"
                 status={staff.status}
@@ -84,7 +81,7 @@ const StaffTable = ({ staffs = [], lang }) => {
 
             <TableCell>
               <EditDeleteButton
-                id={staff.uuid}
+                id={staff._id}
                 staff={staff}
                 isSubmitting={isSubmitting}
                 handleUpdate={handleUpdate}

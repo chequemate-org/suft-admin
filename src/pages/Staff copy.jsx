@@ -11,12 +11,14 @@ import {
   TableFooter,
   TableHeader,
 } from "@windmill/react-ui";
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { FiPlus } from "react-icons/fi";
-import axios from "axios";
 
-// Internal imports
+//internal import
+
+import useAsync from "@/hooks/useAsync";
+import useFilter from "@/hooks/useFilter";
 import MainDrawer from "@/components/drawer/MainDrawer";
 import StaffDrawer from "@/components/drawer/StaffDrawer";
 import TableLoading from "@/components/preloader/TableLoading";
@@ -25,6 +27,7 @@ import NotFound from "@/components/table/NotFound";
 import PageTitle from "@/components/Typography/PageTitle";
 import { AdminContext } from "@/context/AdminContext";
 import { SidebarContext } from "@/context/SidebarContext";
+import AdminServices from "@/services/AdminServices";
 import AnimatedContent from "@/components/common/AnimatedContent";
 
 const Staff = () => {
@@ -32,53 +35,27 @@ const Staff = () => {
   const { adminInfo } = state;
   const { toggleDrawer, lang } = useContext(SidebarContext);
 
-  const [staffData, setStaffData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { data, loading, error } = useAsync(() =>
+    AdminServices.getAllStaff({ email: adminInfo.email })
+  );
 
-  const userRef = useRef(null);
-  const [role, setRole] = useState("");
+  const {
+    userRef,
+    setRole,
+    totalResults,
+    resultsPerPage,
+    dataTable,
+    serviceData,
+    handleChangePage,
+    handleSubmitUser,
+  } = useFilter(data);
+
   const { t } = useTranslation();
 
-  // Fetch staff data from API using axios
-  useEffect(() => {
-    const fetchStaff = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`,
-          {
-            headers: {
-              // Add authorization headers or other headers if required
-            },
-            params: {
-              email: adminInfo?.email,
-            },
-          }
-        );
-
-        // Ensure data is an array
-        const staffArray = response.data?.data?.data || []; // Check the nested structure
-        setStaffData(staffArray); // Set state to the correct staff array
-      } catch (err) {
-        setError("Failed to load staff data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStaff();
-  }, [adminInfo.email]);
-
-  // Handle search and filtering logic (if needed)
-  const handleSubmitUser = (event) => {
-    event.preventDefault();
-    // Implement filtering based on role, userRef, etc.
-  };
-
+  // handle reset filed
   const handleResetField = () => {
     setRole("");
-    if (userRef.current) userRef.current.value = "";
+    userRef.current.value = "";
   };
 
   return (
@@ -153,10 +130,11 @@ const Staff = () => {
       </AnimatedContent>
 
       {loading ? (
+        // <Loading loading={loading} />
         <TableLoading row={12} col={7} width={163} height={20} />
       ) : error ? (
         <span className="text-center mx-auto text-red-500">{error}</span>
-      ) : staffData?.length !== 0 ? (
+      ) : serviceData?.length !== 0 ? (
         <TableContainer className="mb-8 rounded-b-lg">
           <Table>
             <TableHeader>
@@ -179,17 +157,13 @@ const Staff = () => {
               </tr>
             </TableHeader>
 
-            {/* Passing staff data to StaffTable */}
-            <StaffTable staffs={staffData} lang={lang} />
+            <StaffTable staffs={dataTable} lang={lang} />
           </Table>
-
           <TableFooter>
             <Pagination
-              totalResults={staffData.length}
-              resultsPerPage={10} // Assuming you want 10 results per page
-              onChange={(page) => {
-                // handle pagination logic
-              }}
+              totalResults={totalResults}
+              resultsPerPage={resultsPerPage}
+              onChange={handleChangePage}
               label="Table navigation"
             />
           </TableFooter>
