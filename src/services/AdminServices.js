@@ -22,25 +22,25 @@ const AdminServices = {
   },
 
   addStaff: async (body) => {
-    return requests.post("/admin/add", body);
+    return requests.post("/admin", body);
   },
   getAllStaff: async (body) => {
     return requests.get("/admin", body);
   },
   getStaffById: async (id, body) => {
-    return requests.post(`/admin/${id}`, body);
+    return requests.post(`/admin${id}`, body);
   },
 
   updateStaff: async (id, body) => {
-    return requests.put(`/admin/${id}`, body);
+    return requests.put(`/admin${id}`, body);
   },
 
   updateStaffStatus: async (id, body) => {
-    return requests.put(`/admin/update-status/${id}`, body);
+    return requests.put(`/admin${id}`, body);
   },
 
   deleteStaff: async (id) => {
-    return requests.delete(`/admin/${id}`);
+    return requests.delete(`/admin${id}`);
   },
 };
 

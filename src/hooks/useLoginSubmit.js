@@ -40,7 +40,7 @@ const useLoginSubmit = () => {
               sameSite: "None",
               secure: true,
             });
-            history.replace("/");
+            history.push("/dashboard");
           }
         })
         .catch((err) => {
