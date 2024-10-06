@@ -1,7 +1,7 @@
 import Multiselect from "multiselect-react-dropdown";
 import Tree from "rc-tree";
 
-//internal import
+// internal import
 import useAsync from "@/hooks/useAsync";
 import { notifySuccess } from "@/utils/toast";
 import CategoryServices from "@/services/CategoryServices";
@@ -36,14 +36,21 @@ const ParentCategory = ({
     onLeaveActive: () => ({ height: 0 }),
   };
 
+  // Updated function to check if 'categories' is valid and an array
   const renderCategories = (categories) => {
+    if (!Array.isArray(categories)) {
+      return [];
+    }
+    
     let myCategories = [];
     for (let category of categories) {
       myCategories.push({
         title: showingTranslateValue(category.name),
         key: category._id,
         children:
-          category?.children?.length > 0 && renderCategories(category.children),
+          Array.isArray(category?.children) && category.children.length > 0
+            ? renderCategories(category.children)
+            : [],
       });
     }
 
@@ -57,13 +64,6 @@ const ParentCategory = ({
           (acc, obj) => acc ?? findObject(obj, target),
           undefined
         );
-    // if (obj._id === target) return obj;
-
-    // for (let c of obj.children) {
-    //   let x = findObject(target, c);
-    //   console.log('c', c);
-    //   if (x) return x;
-    // }
   };
 
   const handleSelect = (key) => {
@@ -111,7 +111,6 @@ const ParentCategory = ({
           onRemove={(v) => handleRemove(v)}
           onSearch={function noRefCheck() {}}
           onSelect={(v) => handleSelect(v)}
-          // options={selectedCategory}
           selectedValues={selectedCategory}
           placeholder={"Select Category"}
         ></Multiselect>
@@ -123,7 +122,6 @@ const ParentCategory = ({
           <Tree
             expandAction="click"
             treeData={renderCategories(data)}
-            // defaultCheckedKeys={id}
             onSelect={(v) => handleSelect(v[0])}
             motion={motion}
             animation="slide-up"

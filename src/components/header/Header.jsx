@@ -2,7 +2,6 @@ import { Avatar, Badge, WindmillContext } from "@windmill/react-ui";
 import Cookies from "js-cookie";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Scrollbars } from "react-custom-scrollbars-2";
-
 import {
   FiTrash2,
   FiGrid,
@@ -18,7 +17,6 @@ import cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
 
 //internal import
-
 import de from "@/assets/img/de.svg";
 import en from "@/assets/img/us.svg";
 import ellipse from "@/assets/img/icons/ellipse.svg";
@@ -49,12 +47,10 @@ const Header = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
-  // console.log("currentLanguageCode", currentLanguageCode);
-
   const handleLogOut = () => {
     dispatch({ type: "USER_LOGOUT" });
     Cookies.remove("adminInfo");
-    window.location.replace(` http://localhost:4100/login`);
+    window.location.replace(`http://localhost:4100/login`);
   };
 
   const handleNotificationOpen = async () => {
@@ -62,12 +58,12 @@ const Header = () => {
     setProfileOpen(false);
     await handleGetAllNotifications();
   };
+
   const handleProfileOpen = () => {
     setProfileOpen(!profileOpen);
     setNotificationOpen(false);
   };
 
-  // handle notification status change
   const handleNotificationStatusChange = async (id) => {
     try {
       await NotificationServices.updateStatusNotification(id, {
@@ -83,7 +79,6 @@ const Header = () => {
     }
   };
 
-  // handle notification delete
   const handleNotificationDelete = async (id) => {
     try {
       await NotificationServices.deleteNotification(id);
@@ -96,11 +91,9 @@ const Header = () => {
     }
   };
 
-  //handle get notifications
   const handleGetAllNotifications = async () => {
     try {
       const res = await NotificationServices.getAllNotification();
-      // console.log("notifcation api called", res);
       setData(res?.notifications);
       setTotalUnreadDoc(res?.totalUnreadDoc);
       setTotalDoc(res?.totalDoc);
@@ -123,18 +116,10 @@ const Header = () => {
     document.addEventListener("mousedown", handleClickOutside);
   }, [pRef, nRef]);
 
-  // notification api calling
   useEffect(() => {
     handleGetAllNotifications();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updated]);
-  // const onChange = (event) => {
-  //     i18next.changeLanguage(event.target.value);
 
-  // }
-
-  // console.log("notificaiotn", data);
   return (
     <>
       <header className="dark:bg-gray-800 z-30 py-4 bg-white shadow-sm">
@@ -160,7 +145,7 @@ const Header = () => {
             </svg>
           </button>
 
-          {/* <!-- Mobile hamburger --> */}
+          {/* Mobile hamburger */}
           <button
             className="lg:hidden focus:outline-none p-1 mr-5 -ml-1 rounded-md"
             onClick={toggleSidebar}
@@ -195,7 +180,7 @@ const Header = () => {
                     onClick={() => handleLanguageChange("en")}
                     className="focus:outline-none cursor-pointer"
                   >
-                    <img src={en} width={16} alt="lang" /> English{" "}
+                    <img src={en} width={16} alt="lang" /> English
                   </div>
                   <div
                     onClick={() => handleLanguageChange("de")}
@@ -207,8 +192,7 @@ const Header = () => {
               </div>
             </li>
 
-            {/* <!-- Theme toggler --> */}
-
+            {/* Theme toggler */}
             <li className="flex">
               <button
                 className="focus:outline-none rounded-md"
@@ -223,7 +207,7 @@ const Header = () => {
               </button>
             </li>
 
-            {/* <!-- Notifications menu --> */}
+            {/* Notifications menu */}
             <li className="relative inline-block text-left" ref={nRef}>
               <button
                 className="focus:outline-none relative align-middle rounded-md"
@@ -233,7 +217,6 @@ const Header = () => {
                   className="text-emerald-500 w-5 h-5"
                   aria-hidden="true"
                 />
-
                 <span className="absolute top-0 right-0 z-10 inline-flex items-center justify-center w-5 h-5 p-1 text-xs font-medium leading-none text-red-100 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
                   {totalUnreadDoc}
                 </span>
@@ -263,92 +246,52 @@ const Header = () => {
                                 key={index + 1}
                                 className={`flex justify-between items-center font-serif font-normal text-sm py-3 border-b border-gray-100 dark:border-gray-700 px-3 transition-colors duration-150 hover:bg-gray-100 ${
                                   value.status === "unread" && "bg-gray-50"
-                                } hover:text-gray-800 dark:text-gray-400 ${
-                                  value.status === "unread" &&
-                                  "dark:bg-gray-800"
-                                } dark:hover:bg-gray-900  dark:hover:text-gray-100 cursor-pointer`}
+                                }`}
                               >
                                 <Link
-                                  to={
-                                    value.productId
-                                      ? `/product/${value.productId}`
-                                      : value.orderId
-                                      ? `/order/${value.orderId}`
-                                      : "/our-staff"
-                                  }
-                                  className="flex items-center"
+                                  to={`/notification`}
                                   onClick={() =>
                                     handleNotificationStatusChange(value._id)
                                   }
+                                  className="focus:outline-none flex items-center"
                                 >
-                                  <Avatar
-                                    className="md:block bg-gray-50 mr-2 border border-gray-200"
-                                    src={value.image}
-                                    alt="image"
+                                  <img
+                                    className="object-cover w-8 h-8 mx-2 rounded-full"
+                                    src={ellipse}
+                                    alt="img"
                                   />
-
-                                  <div className="notification-content">
-                                    <h6 className="font-medium text-gray-500">
-                                      {/* {`${cusName} ${priceText}`} */}
-                                      {value?.message}
-                                    </h6>
-
-                                    <p className="flex items-center text-xs text-gray-400">
-                                      {value.productId ? (
-                                        <Badge type="danger">Stock Out</Badge>
-                                      ) : (
-                                        <Badge type="success">New Order</Badge>
-                                      )}
-                                      <span className="ml-2">
-                                        {showDateTimeFormat(value.createdAt)}
-                                      </span>
+                                  <div className="flex flex-col">
+                                    <p className="dark:text-gray-400 mb-1 text-gray-700">
+                                      {value?.title?.length > 30
+                                        ? `${value?.title?.slice(0, 30)}`
+                                        : value?.title}
                                     </p>
-                                  </div>
-
-                                  {value.status === "unread" && (
-                                    <span className="focus:outline-none px-2">
-                                      <img
-                                        src={ellipse}
-                                        width={12}
-                                        height={12}
-                                        alt="ellipse"
-                                        className="text-emerald-600 w-3 h-3"
-                                      />
+                                    <span className="dark:text-gray-400 font-serif text-xs font-light text-gray-500">
+                                      {showDateTimeFormat(value?.createdAt)}
                                     </span>
-                                  )}
+                                  </div>
                                 </Link>
 
-                                <div className="group relative inline-block">
+                                <div className="flex items-center justify-end">
+                                  <Badge type={value?.status}>
+                                    {value?.status}
+                                  </Badge>
                                   <button
-                                    type="button"
                                     onClick={() =>
                                       handleNotificationDelete(value._id)
                                     }
-                                    className="group-hover:text-blue-500 focus:outline-none px-2 text-red-500"
+                                    className="focus:outline-none px-2"
                                   >
-                                    <FiTrash2 />
+                                    <FiTrash2
+                                      className="dark:text-gray-400 text-gray-700"
+                                      aria-hidden="true"
+                                    />
                                   </button>
-
-                                  <div className="group-hover:inline-block bg-gray-50 dark:text-red-400 tooltip dark:bg-gray-700 absolute right-0 z-50 hidden px-3 py-2 mb-1 mr-6 text-sm font-medium text-red-600 rounded-lg shadow-sm">
-                                    Delete
-                                  </div>
                                 </div>
                               </li>
                             );
                           })}
                         </ul>
-                      )}
-
-                      {totalDoc > 5 && (
-                        <div className="py-2 text-center">
-                          <Link
-                            onClick={() => setNotificationOpen(false)}
-                            to={"/notifications"}
-                            className="focus:outline-none hover:underline transition duration-200 ease-out"
-                          >
-                            Show all notifications
-                          </Link>
-                        </div>
                       )}
                     </Scrollbars>
                   </div>
@@ -356,55 +299,65 @@ const Header = () => {
               )}
             </li>
 
-            {/* <!-- Profile menu --> */}
+            {/* Profile menu */}
             <li className="relative inline-block text-left" ref={pRef}>
               <button
-                className="dark:bg-gray-500 bg-emerald-500 focus:outline-none w-8 h-8 mx-auto font-medium text-white rounded-full"
+                className="focus:outline-none align-middle rounded-full"
                 onClick={handleProfileOpen}
               >
-                {adminInfo.image ? (
-                  <Avatar
-                    className="align-middle"
-                    src={`${adminInfo.image}`}
-                    aria-hidden="true"
-                  />
-                ) : (
-                  // <span>{adminInfo.email[0].toUpperCase()}</span>
-                  <span>hi</span>
-                )}
+                <Avatar
+                  className="align-middle"
+                  src={adminInfo?.avatar || ellipse}
+                  alt={adminInfo?.name}
+                  aria-hidden="true"
+                />
               </button>
 
               {profileOpen && (
-                <ul className="dark:bg-gray-800 focus:outline-none absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg">
-                  <li className="hover:bg-gray-100 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150">
-                    <Link to="/dashboard">
-                      <span className="flex items-center text-sm">
-                        <FiGrid className="w-4 h-4 mr-3" aria-hidden="true" />
-                        <span>{t("Dashboard")}</span>
+                <ul className="top-2 dark:bg-gray-800 dark:border-gray-700 absolute right-0 z-20 block w-56 p-2 space-y-2 text-sm bg-white border border-gray-100 rounded-md shadow-md">
+                  <li className="hover:bg-gray-100 hover:text-emerald-500 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150">
+                    <Link
+                      to="/dashboard"
+                      className="focus:outline-none flex items-center text-sm"
+                    >
+                      <FiGrid className="w-4 h-4 mr-3" aria-hidden="true" />
+                      <span>{t("Dashboard")}</span>
+                    </Link>
+                  </li>
+                  <li className="hover:bg-gray-100 hover:text-emerald-500 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150">
+                    <Link
+                      to="/setting"
+                      className="focus:outline-none flex items-center text-sm"
+                    >
+                      <FiSettings className="w-4 h-4 mr-3" aria-hidden="true" />
+                      <span>{t("Settings")}</span>
+                    </Link>
+                  </li>
+                  <li className="hover:bg-gray-100 hover:text-emerald-500 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150">
+                    <Link
+                      to="/profile"
+                      className="focus:outline-none flex items-center text-sm"
+                    >
+                      <FiSettings className="w-4 h-4 mr-3" aria-hidden="true" />
+                      <span>
+                        <span>{t("Edit Profile")}</span>
                       </span>
                     </Link>
                   </li>
 
                   <li className="hover:bg-gray-100 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150">
-                    <Link to="/edit-profile">
+                    <button
+                      onClick={handleLogOut}
+                      className="focus:outline-none w-full text-left"
+                    >
                       <span className="flex items-center text-sm">
-                        <FiSettings
+                        <FiLogOut
                           className="w-4 h-4 mr-3"
                           aria-hidden="true"
                         />
-                        <span>{t("EditProfile")}</span>
+                        <span>{t("Log out")}</span>
                       </span>
-                    </Link>
-                  </li>
-
-                  <li
-                    onClick={handleLogOut}
-                    className="hover:bg-gray-100 hover:text-emerald-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 justify-between py-2 pl-4 font-serif font-medium text-gray-500 transition-colors duration-150 cursor-pointer"
-                  >
-                    <span className="flex items-center text-sm">
-                      <FiLogOut className="w-4 h-4 mr-3" aria-hidden="true" />
-                      <span>{t("LogOut")}</span>
-                    </span>
+                    </button>
                   </li>
                 </ul>
               )}

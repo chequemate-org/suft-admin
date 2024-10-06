@@ -7,8 +7,7 @@ import React, { useContext } from "react";
 import { Scrollbars } from "react-custom-scrollbars-2";
 import { FiX } from "react-icons/fi";
 
-//internal import
-
+// Internal imports
 import Error from "@/components/form/others/Error";
 import { notifyError } from "@/utils/toast";
 import Title from "@/components/form/others/Title";
@@ -29,9 +28,7 @@ const BulkActionDrawer = ({
   attributes,
   isCheck,
 }) => {
-  const { toggleBulkDrawer, isBulkDrawerOpen, closeBulkDrawer } =
-    useContext(SidebarContext);
-
+  const { toggleBulkDrawer, isBulkDrawerOpen, closeBulkDrawer } = useContext(SidebarContext);
   const { showingTranslateValue } = useUtilsFunction();
 
   const {
@@ -71,11 +68,9 @@ const BulkActionDrawer = ({
       myCategories.push({
         title: showingTranslateValue(category?.name),
         key: category._id,
-        children:
-          category.children.length > 0 && renderCategories(category.children),
+        children: category.children.length > 0 && renderCategories(category.children),
       });
     }
-
     return myCategories;
   };
 
@@ -92,11 +87,11 @@ const BulkActionDrawer = ({
     const checkId = isCheck?.find((data) => data === key);
 
     if (isCheck?.length === data[0]?.children?.length) {
-      return notifyError("This can't be select as a parent category!");
+      return notifyError("This can't be selected as a parent category!");
     } else if (checkId !== undefined) {
-      return notifyError("This can't be select as a parent category!");
+      return notifyError("This can't be selected as a parent category!");
     } else if (key === childId) {
-      return notifyError("This can't be select as a parent category!");
+      return notifyError("This can't be selected as a parent category!");
     } else {
       if (key === undefined) return;
       setChecked(key);
@@ -119,13 +114,7 @@ const BulkActionDrawer = ({
 
   return (
     <>
-      <Drawer
-        open={isBulkDrawerOpen}
-        onClose={closeBulkDrawer}
-        parent={null}
-        level={null}
-        placement={"right"}
-      >
+      <Drawer open={isBulkDrawerOpen} onClose={closeBulkDrawer} parent={null} level={null} placement={"right"}>
         <button
           onClick={toggleBulkDrawer}
           className="absolute z-50 text-red-500 hover:bg-red-100 hover:text-gray-700 transition-colors duration-150 bg-white shadow-md mr-6 mt-6 right-0 left-auto w-10 h-10 rounded-full block text-center"
@@ -134,10 +123,7 @@ const BulkActionDrawer = ({
         </button>
         <div className="flex flex-col w-full h-full justify-between">
           <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-            <Title
-              title={`Update Selected ${title}`}
-              description={`Apply changes to the selected ${title} from the list`}
-            />
+            <Title title={`Update Selected ${title}`} description={`Apply changes to the selected ${title} from the list`} />
           </div>
           <Scrollbars className="w-full md:w-7/12 lg:w-8/12 xl:w-8/12 relative dark:bg-gray-700 dark:text-gray-200">
             <form onSubmit={handleSubmit(onSubmit)} className="block">
@@ -145,7 +131,7 @@ const BulkActionDrawer = ({
                 {title === "Products" && (
                   <>
                     <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Categorys" />
+                      <LabelArea label="Categories" />
                       <div className="col-span-8 sm:col-span-4">
                         <ParentCategory
                           lang={lang}
@@ -165,24 +151,18 @@ const BulkActionDrawer = ({
                           singleSelect={true}
                           ref={resetRefTwo}
                           hidePlaceholder={true}
-                          onKeyPressFn={function noRefCheck() {}}
-                          onRemove={function noRefCheck() {}}
-                          onSearch={function noRefCheck() {}}
                           onSelect={(v) => setDefaultCategory(v)}
                           selectedValues={defaultCategory}
                           options={selectedCategory}
                           placeholder={"Default Category"}
-                        ></Multiselect>
+                        />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
                       <LabelArea label="Published" />
                       <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          handleProcess={setPublished}
-                          processOption={published}
-                        />
+                        <SwitchToggle handleProcess={setPublished} processOption={published} />
                         <Error errorName={errors.status} />
                       </div>
                     </div>
@@ -191,7 +171,7 @@ const BulkActionDrawer = ({
                       <LabelArea label="Product Tags" />
                       <div className="col-span-8 sm:col-span-4">
                         <ReactTagInput
-                          placeholder="Product Tag (Write then press enter to add new tag )"
+                          placeholder="Product Tag (Write then press enter to add new tag)"
                           tags={tag}
                           onChange={(newTags) => setTag(newTags)}
                         />
@@ -206,7 +186,7 @@ const BulkActionDrawer = ({
                       <LabelArea label="Start Time" />
                       <div className="col-span-8 sm:col-span-4">
                         <Input
-                          {...register(`startTime`, {
+                          {...register("startTime", {
                             required: "Coupon Validation Start Time",
                           })}
                           label="Coupon Validation Start Time"
@@ -214,7 +194,6 @@ const BulkActionDrawer = ({
                           type="datetime-local"
                           placeholder="Start Time"
                         />
-
                         <Error errorName={errors.startTime} />
                       </div>
                     </div>
@@ -222,7 +201,7 @@ const BulkActionDrawer = ({
                       <LabelArea label="End Time" />
                       <div className="col-span-8 sm:col-span-4">
                         <Input
-                          {...register(`endTime`, {
+                          {...register("endTime", {
                             required: "Coupon Validation End Time",
                           })}
                           label="Coupon Validation End Time"
@@ -230,17 +209,13 @@ const BulkActionDrawer = ({
                           type="datetime-local"
                           placeholder="End Time"
                         />
-
                         <Error errorName={errors.endTime} />
                       </div>
                     </div>
                     <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
                       <LabelArea label="Published" />
                       <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          handleProcess={setPublished}
-                          processOption={published}
-                        />
+                        <SwitchToggle handleProcess={setPublished} processOption={published} />
                         <Error errorName={errors.published} />
                       </div>
                     </div>
@@ -250,240 +225,42 @@ const BulkActionDrawer = ({
                 {title === "Languages" && (
                   <>
                     <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Published" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          title={""}
-                          processOption={published}
-                          handleProcess={setPublished}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {title === "Currencies" && (
-                  <>
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Enabled" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          title={""}
-                          processOption={published}
-                          handleProcess={setPublished}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {title === "Categories" && (
-                  <>
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Description" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <TextAreaCom
-                          register={register}
-                          label="Description"
-                          name="description"
-                          type="text"
-                          placeholder="Category Description"
-                        />
-                        <Error errorName={errors.description} />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Parent Category" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <Input
-                          readOnly
-                          {...register(`parent`, {
-                            required: false,
-                          })}
-                          name="parent"
-                          value={
-                            selectCategoryName ? selectCategoryName : "Home"
-                          }
-                          placeholder="parent category"
-                          type="text"
-                        />
-
-                        <div className="draggable-demo capitalize">
-                          <style dangerouslySetInnerHTML={{ __html: STYLE }} />
-                          <Tree
-                            treeData={renderCategories(data)}
-                            selectedKeys={[checked]}
-                            onSelect={(v) => handleSelect(v[0])}
-                            motion={motion}
-                            animation="slide-up"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Published" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          title={""}
-                          processOption={published}
-                          handleProcess={setPublished}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {title === "Child Categories" && (
-                  <>
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Description" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <TextAreaCom
-                          register={register}
-                          label="Description"
-                          name="description"
-                          type="text"
-                          placeholder="Category Description"
-                        />
-                        <Error errorName={errors.description} />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Parent Category" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <Input
-                          readOnly
-                          {...register(`parent`, {
-                            required: false,
-                          })}
-                          name="parent"
-                          value={
-                            selectCategoryName ? selectCategoryName : "Home"
-                          }
-                          placeholder="parent category"
-                          type="text"
-                        />
-
-                        <div className="draggable-demo capitalize">
-                          <style dangerouslySetInnerHTML={{ __html: STYLE }} />
-                          <Tree
-                            treeData={renderCategories(data)}
-                            selectedKeys={[checked]}
-                            onSelect={(v) => handleSelect(v[0])}
-                            motion={motion}
-                            animation="slide-up"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Published" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          title={""}
-                          processOption={published}
-                          handleProcess={setPublished}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {title === "Attributes" && (
-                  <>
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Options" />
+                      <LabelArea label="Country" />
                       <div className="col-span-8 sm:col-span-4">
                         <Select
-                          name="option"
-                          {...register(`option`, {
-                            required: `Option is required!`,
+                          {...register("country", {
+                            required: "Country is required!",
                           })}
+                          defaultValue={""}
                         >
-                          <option value="" defaultValue hidden>
-                            Select type
+                          <option value="" disabled>
+                            Select your country
                           </option>
-                          <option value="Dropdown">Dropdown</option>
-                          <option value="Radio">Radio</option>
-                          {/* <option value="Checkbox">Checkbox</option> */}
+                          <option value="us">United States</option>
+                          <option value="uk">United Kingdom</option>
                         </Select>
-                        <Error errorName={errors.option} />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Published" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          title={""}
-                          processOption={published}
-                          handleProcess={setPublished}
-                        />
+                        <Error errorName={errors.country} />
                       </div>
                     </div>
                   </>
                 )}
 
-                {title === "Attribute Value(s)" && (
-                  <>
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Change Attribute Group" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <Select
-                          name="groupName"
-                          {...register(`groupName`, {
-                            required: false,
-                          })}
-                        >
-                          <option value="" defaultValue hidden>
-                            Select Attribute Group
-                          </option>
-
-                          {attributes?.map((value, index) => (
-                            <option key={index + 1} value={value._id}>
-                              {showingTranslateValue(value?.name)}
-                            </option>
-                          ))}
-                        </Select>
-
-                        <Error errorName={errors.groupName} />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                      <LabelArea label="Published" />
-                      <div className="col-span-8 sm:col-span-4">
-                        <SwitchToggle
-                          title={""}
-                          processOption={published}
-                          handleProcess={setPublished}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <LabelArea label="Published" />
+                  <div className="col-span-8 sm:col-span-4">
+                    <SwitchToggle
+                      title={""}
+                      processOption={published}
+                      handleProcess={setPublished}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="fixed bottom-0 w-full right-0 py-4 lg:py-8 px-6 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex bg-gray-50 border-t border-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                  <Button
-                    onClick={toggleBulkDrawer}
-                    className=" text-red-500 hover:bg-red-50 hover:border-red-100 hover:text-red-600 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-red-700"
-                    layout="outline"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                  <Button type="submit" className="h-12 w-full">
-                    {" "}
-                    Bulk Update {title}
-                  </Button>
-                </div>
+              <div className="p-6 bg-white dark:bg-gray-800 dark:text-gray-200 border-t border-gray-100 dark:border-gray-700">
+                <Button type="submit" className="w-full">
+                  Apply Changes
+                </Button>
               </div>
             </form>
           </Scrollbars>

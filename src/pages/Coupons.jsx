@@ -36,6 +36,7 @@ const Coupons = () => {
   const { t } = useTranslation();
   const { toggleDrawer, lang } = useContext(SidebarContext);
   const { data, loading, error } = useAsync(CouponServices.getAllCoupons);
+  const [searchQuery, setSearchQuery] = useState("");
   // console.log('data',data)
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
@@ -68,9 +69,29 @@ const Coupons = () => {
   };
 
   // handle reset field function
+  // const handleResetField = () => {
+  //   setSearchCoupon("");
+  //   couponRef.current.value = "";
+  // };
+  
   const handleResetField = () => {
+    setSearchTerm("");
     setSearchCoupon("");
     couponRef.current.value = "";
+    refetch(); // Refetch all coupons when resetting
+  };
+  const handleSearchCoupons = async (e) => {
+    e.preventDefault();
+    if (searchTerm.trim() === "") {
+      refetch(); // If search term is empty, fetch all coupons
+      return;
+    }
+    try {
+      const result = await CouponServices.searchCoupons(searchTerm);
+      setFilteredCoupons(result);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -153,7 +174,8 @@ const Coupons = () => {
         <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
           <CardBody>
             <form
-              onSubmit={handleSubmitCoupon}
+            onSubmit={handleSearchCoupons}
+              // onSubmit={handleSubmitCoupon}
               className="py-3 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex"
             >
               <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
@@ -212,8 +234,8 @@ const Coupons = () => {
                 <TableCell className="text-center">
                   {t("catPublishedTbl")}
                 </TableCell>
-                <TableCell>{t("CoupTblStartDate")}</TableCell>
-                <TableCell>{t("CoupTblEndDate")}</TableCell>
+                {/* <TableCell>{t("CoupTblStartDate")}</TableCell> */}
+                <TableCell>{t("Expiry Date")}</TableCell>
                 <TableCell>{t("CoupTblStatus")}</TableCell>
                 <TableCell className="text-right">
                   {t("CoupTblActions")}

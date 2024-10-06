@@ -1,226 +1,145 @@
 import { Input } from "@windmill/react-ui";
-
-import Tree from "rc-tree";
-import React from "react";
-import Scrollbars from "react-custom-scrollbars-2";
-import { useTranslation } from "react-i18next";
-
-//internal import
-import { notifyError } from "@/utils/toast";
-import Error from "@/components/form/others/Error";
-import Title from "@/components/form/others/Title";
-import InputArea from "@/components/form/input/InputArea";
-import LabelArea from "@/components/form/selectOption/LabelArea";
+import { useState } from "react";
 import SwitchToggle from "@/components/form/switch/SwitchToggle";
-import TextAreaCom from "@/components/form/input/TextAreaCom";
 import Uploader from "@/components/image-uploader/Uploader";
-import useCategorySubmit from "@/hooks/useCategorySubmit";
-import CategoryServices from "@/services/CategoryServices";
-import DrawerButton from "@/components/form/button/DrawerButton";
-import useUtilsFunction from "@/hooks/useUtilsFunction";
+import useCouponSubmit from "@/hooks/useCouponSubmit";
+import Title from "@/components/form/others/Title";
+import { t } from "i18next";
+import DrawerButton from "../form/button/DrawerButton";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css";
 
-const CategoryDrawer = ({ id, data }) => {
-  const { t } = useTranslation();
-
+const CategoryDrawer = ({ id }) => {
   const {
-    checked,
     register,
     onSubmit,
-    handleSubmit,
-    errors,
-    imageUrl,
-    setImageUrl,
     published,
     setPublished,
-    setChecked,
-    selectCategoryName,
-    setSelectCategoryName,
-    handleSelectLanguage,
     isSubmitting,
-  } = useCategorySubmit(id, data);
+    handleSelectLanguage,
+  } = useCouponSubmit(id);
 
-  const { showingTranslateValue } = useUtilsFunction();
+  // Initialize form states
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [isPublished, setIsPublished] = useState(true);
+  const [error, setError] = useState('');
+  
 
-  const STYLE = `
-  .rc-tree-child-tree {
-    display: hidden;
-  }
-  .node-motion {
-    transition: all .3s;
-    overflow-y: hidden;
-  }
-`;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const motion = {
-    motionName: "node-motion",
-    motionAppear: false,
-    onAppearStart: (node) => {
-      return { height: 0 };
-    },
-    onAppearActive: (node) => ({ height: node.scrollHeight }),
-    onLeaveStart: (node) => ({ height: node.offsetHeight }),
-    onLeaveActive: () => ({ height: 0 }),
-  };
+    const categoryData = {
+      name,
+      description,
+      iconUrl: imageUrl,
+      isPublished,
+    };
 
-  const renderCategories = (categories) => {
-    let myCategories = [];
-    for (let category of categories) {
-      myCategories.push({
-        title: showingTranslateValue(category.name),
-        key: category._id,
-        children:
-          category.children.length > 0 && renderCategories(category.children),
+    try {
+      const response = await axios.post("https://suft-90bec7a20f24.herokuapp.com/category/admin-add", categoryData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-    }
 
-    return myCategories;
-  };
-
-  const findObject = (obj, target) => {
-    return obj._id === target
-      ? obj
-      : obj?.children?.reduce(
-          (acc, obj) => acc ?? findObject(obj, target),
-          undefined
-        );
-  };
-
-  const handleSelect = async (key) => {
-    // console.log('key', key, 'id', id);
-    if (key === undefined) return;
-    if (id) {
-      const parentCategoryId = await CategoryServices.getCategoryById(key);
-
-      if (id === key) {
-        return notifyError("This can't be select as a parent category!");
-      } else if (id === parentCategoryId.parentId) {
-        return notifyError("This can't be select as a parent category!");
-      } else {
-        if (key === undefined) return;
-        setChecked(key);
-
-        const obj = data[0];
-        const result = findObject(obj, key);
-
-        setSelectCategoryName(showingTranslateValue(result?.name));
+      if (response.status === 201) {
+        toast.success("Category created successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        resetForm();
+        console.log("Category created successfully", response.data);
       }
-    } else {
-      if (key === undefined) return;
-      setChecked(key);
-
-      const obj = data[0];
-      const result = findObject(obj, key);
-
-      setSelectCategoryName(showingTranslateValue(result?.name));
+    } catch (err) {
+      console.error("Error creating category:", err);
+      setError("Failed to create the category. Please try again.");
     }
+  };
+  const resetForm = () => {
+    setName('');        
+    setDescription('');        
+    setImageUrl('');           
+    setIsPublished(true); 
   };
 
   return (
-    <>
-      <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-        {id ? (
-          <Title
-            register={register}
-            handleSelectLanguage={handleSelectLanguage}
-            title={t("UpdateCategory")}
-            description={t("UpdateCategoryDescription")}
-          />
-        ) : (
-          <Title
-            register={register}
-            handleSelectLanguage={handleSelectLanguage}
-            title={t("AddCategoryTitle")}
-            description={t("AddCategoryDescription")}
-          />
-        )}
-      </div>
+    <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+      {id ? (
+        <Title
+          register={register}
+          handleSelectLanguage={handleSelectLanguage}
+          title={t("UpdateCategory")}
+          description={t("UpdateCategoryDescription")}
+        />
+      ) : (
+        <Title
+          register={register}
+          handleSelectLanguage={handleSelectLanguage}
+          title={t("AddCategoryTitle")}
+          description={t("AddCategoryDescription")}
+        />
+      )}
 
-      <Scrollbars className="w-full md:w-7/12 lg:w-8/12 xl:w-8/12 relative dark:bg-gray-700 dark:text-gray-200">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="p-6 flex-grow scrollbar-hide w-full max-h-full pb-40">
-            <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-              <LabelArea label={t("Name")} />
-              <div className="col-span-8 sm:col-span-4">
-                <InputArea
-                  required={true}
-                  register={register}
-                  label="Category title"
-                  name="name"
-                  type="text"
-                  placeholder={t("ParentCategoryPlaceholder")}
-                />
-                <Error errorName={errors.name} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-              <LabelArea label={t("Description")} />
-              <div className="col-span-8 sm:col-span-4">
-                <TextAreaCom
-                  register={register}
-                  label="Description"
-                  name="description"
-                  type="text"
-                  placeholder="Category Description"
-                />
-                <Error errorName={errors.description} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-              <LabelArea label={t("ParentCategory")} />
-              <div className="col-span-8 sm:col-span-4 relative">
-                <Input
-                  readOnly
-                  {...register(`parent`, {
-                    required: false,
-                  })}
-                  name="parent"
-                  value={selectCategoryName ? selectCategoryName : "Home"}
-                  placeholder={t("ParentCategory")}
-                  type="text"
-                />
-
-                <div className="draggable-demo capitalize">
-                  <style dangerouslySetInnerHTML={{ __html: STYLE }} />
-                  <Tree
-                    expandAction="click"
-                    treeData={renderCategories(data)}
-                    selectedKeys={[checked]}
-                    onSelect={(v) => handleSelect(v[0])}
-                    motion={motion}
-                    animation="slide-up"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-              <LabelArea label={t("CategoryIcon")} />
-              <div className="col-span-8 sm:col-span-4">
-                <Uploader
-                  imageUrl={imageUrl}
-                  setImageUrl={setImageUrl}
-                  folder="category"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-              <LabelArea label={t("Published")} />
-              <div className="col-span-8 sm:col-span-4">
-                <SwitchToggle
-                  handleProcess={setPublished}
-                  processOption={published}
-                />
-              </div>
+      <form onSubmit={handleSubmit}>
+        <div className="p-6">
+          <div className="grid grid-cols-6 gap-3 mb-6">
+            <label className="col-span-2">Name</label>
+            <div className="col-span-4">
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Category title"
+                className="w-full"
+                required
+              />
             </div>
           </div>
 
+          <div className="grid grid-cols-6 gap-3 mb-6">
+            <label className="col-span-2">Description</label>
+            <div className="col-span-4">
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Category Description"
+                className="w-full p-2 border border-gray-300 rounded"
+                rows="4"
+              />
+            </div>
+          </div>
+
+
+          <div className="grid grid-cols-6 gap-3 mb-6">
+            <label className="col-span-2">Category Image</label>
+            <div className="col-span-4">
+              <Uploader
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+                folder="category"
+              />
+            </div>
+          </div>
+
+
+          <div className="grid grid-cols-6 gap-3 mb-20">
+            <label className="col-span-2">Published</label>
+            <div className="col-span-4">
+              <SwitchToggle
+                handleProcess={setIsPublished}
+                processOption={isPublished}
+              />
+            </div>
+          </div>
+
+          {error && <p className="text-red-500">{error}</p>}
+
           <DrawerButton id={id} title="Category" isSubmitting={isSubmitting} />
-        </form>
-      </Scrollbars>
-    </>
+        </div>
+      </form>
+    </div>
   );
 };
 

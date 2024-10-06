@@ -56,12 +56,12 @@ const useCouponSubmit = (id) => {
         }),
         couponCode: data.couponCode,
         endTime: data.endTime,
-        minimumAmount: data.minimumAmount,
-        logo: imageUrl,
+        // minimumAmount: data.minimumAmount,
+        // logo: imageUrl,
         lang: language,
         status: published ? "show" : "hide",
         discountType: {
-          type: discountType ? "percentage" : "fixed",
+          type: "percentage",
           value: data.discountPercentage,
         },
         productType: data.productType,
@@ -102,16 +102,16 @@ const useCouponSubmit = (id) => {
       setResData({});
       setValue("title");
       setValue("productType");
-      setValue("couponCode");
-      setValue("endTime");
-      setValue("discountPercentage");
-      setValue("minimumAmount");
+      setValue("code");
+      setValue("expiryDate");
+      setValue("discount");
+      // setValue("minimumAmount");
       setImageUrl("");
       clearErrors("title");
       clearErrors("productType");
-      clearErrors("couponCode");
-      clearErrors("endTime");
-      clearErrors("discountPercentage");
+      clearErrors("code");
+      clearErrors("expiryDate");
+      clearErrors("discount");
       clearErrors("minimumAmount");
       setLanguage(lang);
       setValue("language", language);
@@ -128,9 +128,9 @@ const useCouponSubmit = (id) => {
             setValue("productType", res.productType);
             setValue("couponCode", res.couponCode);
 
-            setValue("endTime", dayjs(res.endTime).format("YYYY-MM-DD HH:mm"));
+            setValue("expiryDate", dayjs(res.endTime).format("YYYY-MM-DD"));
             setValue("discountPercentage", res.discountType?.value);
-            setValue("minimumAmount", res.minimumAmount);
+            // setValue("minimumAmount", res.minimumAmount);
             setPublished(res.status === "show" ? true : false);
             setDiscountType(
               res.discountType?.type === "percentage" ? true : false
@@ -150,7 +150,7 @@ const useCouponSubmit = (id) => {
     onSubmit,
     errors,
     setImageUrl,
-    imageUrl,
+    // imageUrl,
     published,
     setPublished,
     currency,

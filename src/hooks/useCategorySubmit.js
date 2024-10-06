@@ -125,7 +125,6 @@ const useCategorySubmit = (id, data) => {
         try {
           const res = await CategoryServices.getCategoryById(id);
           // console.log("res category", res);
-
           if (res) {
             setResData(res);
             setValue("name", res.name[language ? language : "en"]);
