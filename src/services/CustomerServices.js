@@ -2,7 +2,7 @@ import requests from "./httpService";
 
 const CustomerServices = {
   getAllCustomers: async ({ searchText = "" }) => {
-    return requests.get(`/customer?searchText=${searchText}`);
+    return requests.get("/admin/users");
   },
 
   addAllCustomers: async (body) => {
@@ -18,7 +18,7 @@ const CustomerServices = {
   },
 
   getCustomerById: async (id) => {
-    return requests.get(`/customer/${id}`);
+    return requests.get(`/admin/users/${id}`);
   },
 
   updateCustomer: async (id, body) => {
@@ -26,7 +26,7 @@ const CustomerServices = {
   },
 
   deleteCustomer: async (id) => {
-    return requests.delete(`/customer/${id}`);
+    return requests.delete(`admin/users/delete/${id}`);
   },
 };
 
