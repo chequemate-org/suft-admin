@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, TableBody, TableCell, TableRow } from "@windmill/react-ui";
 import axios from "axios"; // Import axios for API calls
+import { toast } from "react-toastify"; // Import toast for notifications
 
 // Internal imports
 import CheckBox from "@/components/form/others/CheckBox";
@@ -28,36 +29,43 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
 
       if (Array.isArray(response.data.data)) {
         setCategories(response.data.data); 
-        setLoading(false) // Set coupons from response.data.data
+        setLoading(false); // Set categories from response.data.data
       } else {
         console.error('Categories data is not an array:', response.data);
-        setCategories([]);  // Reset coupons to an empty array if data is invalid
+        setCategories([]);  // Reset categories to an empty array if data is invalid
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
-      setCategories([]);  // Reset coupons to an empty array on error
+      setCategories([]);  // Reset categories to an empty array on error
+      setError("Failed to fetch categories. Please try again.");
     }
   };
-  // const fetchCategories = async () => {
-  //   try {
-  //     const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/category/admin-all");
-  //     console.log(response.data);
-
-  //     // Check if response data is an array
-  //     const categoriesData = Array.isArray(response.data) ? response.data : [];
-
-  //     setCategories(categoriesData); // Set categories state
-  //     setLoading(false); // Stop loading after fetching data
-  //   } catch (error) {
-  //     console.error("Error fetching categories:", error);
-  //     setError("Failed to load categories");
-  //     setLoading(false); // Stop loading even if there's an error
-  //   }
-  // };
 
   useEffect(() => {
     fetchCategories(); // Fetch categories on component mount
   }, []);
+
+  // Handle delete category based on uuid
+  const handleDelete = async (uuid) => {
+    if (!uuid) return;
+
+    try {
+      const response = await axios.delete(`https://suft-90bec7a20f24.herokuapp.com/category/admin-delete/${uuid}`);
+      
+      if (response.status === 200) {
+        toast.success("Category deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        // Fetch categories again to update the list after deletion
+        fetchCategories(); 
+      }
+    } catch (err) {
+      console.error("Error deleting category:", err);
+      toast.error("Failed to delete the category. Please try again.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
 
   const handleClick = (e) => {
     const { id, checked } = e.target;
@@ -83,14 +91,13 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
       )}
 
       <MainDrawer>
-        <CategoryDrawer id={serviceId} data={categories} lang={lang} />
+        <CategoryDrawer id={serviceId} lang={lang} />
       </MainDrawer>
 
       <TableBody>
         {Array.isArray(categories) && categories.length > 0 ? (
           categories.map((category) => (
             <TableRow key={category.uuid}>
-              {/* Checkbox for selecting categories */}
               <TableCell>
                 <CheckBox
                   type="checkbox"
@@ -102,7 +109,7 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
               </TableCell>
 
               {/* Category ID (shortened version) */}
-              <TableCell className="font-semibold uppercase text-xs">
+              <TableCell className="text-xs font-semibold uppercase">
                 {category.uuid.substring(0, 8)}
               </TableCell>
 
@@ -110,7 +117,7 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
               <TableCell>
                 {category.iconUrl ? (
                   <Avatar
-                    className="hidden mr-3 md:block bg-gray-50 p-1"
+                    className="md:block bg-gray-50 hidden p-1 mr-3"
                     src={category.iconUrl}
                     alt={category.name}
                   />
@@ -118,13 +125,13 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
                   <Avatar
                     src="https://images.pexels.com/photos/60597/dahlia-red-blossom-bloom-60597.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="product"
-                    className="p-1 mr-2 md:block bg-gray-50 shadow-none"
+                    className="md:block bg-gray-50 p-1 mr-2 shadow-none"
                   />
                 )}
               </TableCell>
 
               {/* Category Name */}
-              <TableCell className="font-medium text-sm">
+              <TableCell className="text-sm font-medium">
                 <span>{category.name}</span>
               </TableCell>
 
@@ -144,6 +151,7 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
                   id={category.uuid}
                   parent={category}
                   isCheck={isCheck}
+                  handleDelete={() => handleDelete(category.uuid)} // Pass the uuid for deletion
                   handleUpdate={handleUpdate}
                   handleModalOpen={handleModalOpen}
                   title={category.name}

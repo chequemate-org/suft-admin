@@ -30,19 +30,41 @@ const CategoryServices = {
     return requests.put(`/category/status/${id}`, body);
   },
 
-  deleteCategory: async (id, body) => {
-    return requests.delete(`/category/admin-delete/${id}`, body);
+  deleteCategory: async (uuid, body) => {
+    return requests.delete(`/category/admin-delete/${uuid}`, body);
   },
 
   updateManyCategory: async (body) => {
     return requests.patch("/category/update/many", body);
   },
-  submitCategory: (categoryData) => {
-    return axios.get(`https://suft-90bec7a20f24.herokuapp.com/category/admin-search?name=${couponRef}`, categoryData);
+  searchCategory: async (searchTerm) => {
+    try {
+        console.log(`Searching for category with term: ${searchTerm}`);
+        const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/category/admin-search?name=${searchTerm}`);
+        return response.data;
+      } catch (error) {
+        console.error('Search API call failed:', error);
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+            console.error('Response headers:', error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error('Request data:', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error('Error message:', error.message);
+        }
+        throw error;
+    }
   },
+  // submitCategory: (categoryData) => {
+  //   return axios.get(`https://suft-90bec7a20f24.herokuapp.com/category/admin-search?name=${searchTerm}`, categoryData);
+  // },
 
   deleteManyCategory: async (body) => {
-    return requests.patch("/category/delete/many", body);
+    // return requests.patch("/category/delete/many", body);
   },
 };
 
