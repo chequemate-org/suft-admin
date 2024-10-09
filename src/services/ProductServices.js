@@ -1,18 +1,33 @@
 import requests from "./httpService";
 
 const ProductServices = {
-  getAllProducts: async ({ page, limit, category, title, price }) => {
-    const searchCategory = category !== null ? category : "";
-    const searchTitle = title !== null ? title : "";
-    const searchPrice = price !== null ? price : "";
+  getAllProducts: async (params) => {
+    try {
+      // Debugging - log the request params
+      console.log("Fetching products with params:", params);
 
-    return requests.get(
-      `/products?page=${page}&limit=${limit}&category=${searchCategory}&title=${searchTitle}&price=${searchPrice}`
-    );
+      const response = await requests.get("/products", { params });
+
+      // Debugging - log the API response
+      console.log("Products API response:", response.data);
+
+      return response.data;
+    } catch (error) {
+      // Debugging - log the error if any
+      console.error("Error fetching products:", error);
+      throw error;
+    }
   },
-
   getProductById: async (id) => {
-    return requests.post(`/products/${id}`);
+    try {
+      console.log("Fetching product with ID:", id);
+      const response = await requests.get(`/product/single/${id}`);
+      console.log("Single Product API response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching single product by ID:", error);
+      throw error;
+    }
   },
   addProduct: async (body) => {
     return requests.post("/products/add", body);
@@ -31,7 +46,7 @@ const ProductServices = {
   },
 
   deleteProduct: async (id) => {
-    return requests.delete(`/products/${id}`);
+    return requests.delete(`/product/admin/delete/${id}`);
   },
   deleteManyProducts: async (body) => {
     return requests.patch("/products/delete/many", body);
