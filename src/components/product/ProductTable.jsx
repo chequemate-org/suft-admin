@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Badge,
@@ -9,7 +10,7 @@ import { t } from "i18next";
 import { FiZoomIn } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
-//internal import
+// internal imports
 import MainDrawer from "@/components/drawer/MainDrawer";
 import ProductDrawer from "@/components/drawer/ProductDrawer";
 import CheckBox from "@/components/form/others/CheckBox";
@@ -20,20 +21,41 @@ import Tooltip from "@/components/tooltip/Tooltip";
 import useToggleDrawer from "@/hooks/useToggleDrawer";
 import useUtilsFunction from "@/hooks/useUtilsFunction";
 
-//internal import
-
 const ProductTable = ({ products, isCheck, setIsCheck }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
-  const { currency, showingTranslateValue, getNumberTwo } = useUtilsFunction();
+  const { currency, getNumberTwo } = useUtilsFunction();
+
+  // State to store the fetched product data
+  const [fetchedProduct, setFetchedProduct] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async (uuid) => {
+      try {
+        const response = await fetch(`https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          setFetchedProduct(data.data); // Store the product data
+        } else {
+          console.error(data.message); // Handle error messages
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    };
+
+    // Example UUID, replace it with a real one when using it in your application
+    const exampleUUID = "da3cea08-63b1-44fa-b678-e0071ce958db";
+    fetchProduct(exampleUUID);
+  }, []);
 
   const handleClick = (e) => {
     const { id, checked } = e.target;
-    // console.log("id", id, checked);
-
-    setIsCheck([...isCheck, id]);
-    if (!checked) {
-      setIsCheck(isCheck.filter((item) => item !== id));
-    }
+    setIsCheck(prev => 
+      checked 
+        ? [...prev, id]
+        : prev.filter(item => item !== id)
+    );
   };
 
   return (
@@ -48,23 +70,23 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
       <TableBody>
         {products?.map((product, i) => (
-          <TableRow key={i + 1}>
+          <TableRow key={product.id || i}>
             <TableCell>
               <CheckBox
                 type="checkbox"
-                name={product?.title?.en}
-                id={product._id}
+                name={product?.name}
+                id={product.id}
                 handleClick={handleClick}
-                isChecked={isCheck?.includes(product._id)}
+                isChecked={isCheck?.includes(product.id)}
               />
             </TableCell>
 
             <TableCell>
               <div className="flex items-center">
-                {product?.image[0] ? (
+                {product?.imageUrl?.[0] ? (
                   <Avatar
                     className="hidden p-1 mr-2 md:block bg-gray-50 shadow-none"
-                    src={product?.image[0]}
+                    src={product.imageUrl[0]}
                     alt="product"
                   />
                 ) : (
@@ -76,10 +98,10 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 <div>
                   <h2
                     className={`text-sm font-medium ${
-                      product?.title.length > 30 ? "wrap-long-title" : ""
+                      product?.name?.length > 30 ? "wrap-long-title" : ""
                     }`}
                   >
-                    {showingTranslateValue(product?.title)?.substring(0, 28)}
+                    {product?.name?.substring(0, 28)}
                   </h2>
                 </div>
               </div>
@@ -87,33 +109,29 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
             <TableCell>
               <span className="text-sm">
-                {showingTranslateValue(product?.category?.name)}
+                {product?.categories?.join(', ') || 'N/A'}
               </span>
             </TableCell>
 
             <TableCell>
               <span className="text-sm font-semibold">
                 {currency}
-                {product?.isCombination
-                  ? getNumberTwo(product?.variants[0]?.originalPrice)
-                  : getNumberTwo(product?.prices?.originalPrice)}
+                {getNumberTwo(product?.price)}
               </span>
             </TableCell>
 
             <TableCell>
               <span className="text-sm font-semibold">
                 {currency}
-                {product?.isCombination
-                  ? getNumberTwo(product?.variants[0]?.price)
-                  : getNumberTwo(product?.prices?.price)}
+                {getNumberTwo(product?.salePrice || product?.price)}
               </span>
             </TableCell>
 
             <TableCell>
-              <span className="text-sm">{product.stock}</span>
+              <span className="text-sm">{product.stockLevel}</span>
             </TableCell>
             <TableCell>
-              {product.stock > 0 ? (
+              {product.isAvailable ? (
                 <Badge type="success">{t("Selling")}</Badge>
               ) : (
                 <Badge type="danger">{t("SoldOut")}</Badge>
@@ -121,7 +139,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
             </TableCell>
             <TableCell>
               <Link
-                to={`/product/${product._id}`}
+                to={`/product/${product.uuid}`}
                 className="flex justify-center text-gray-400 hover:text-emerald-600"
               >
                 <Tooltip
@@ -133,21 +151,34 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
               </Link>
             </TableCell>
             <TableCell className="text-center">
-              <ShowHideButton id={product._id} status={product.status} />
-              {/* {product.status} */}
+              <ShowHideButton id={product.id} status={product.isAvailable} />
             </TableCell>
             <TableCell>
               <EditDeleteButton
-                id={product._id}
+                id={product.uuid}
                 product={product}
                 isCheck={isCheck}
                 handleUpdate={handleUpdate}
                 handleModalOpen={handleModalOpen}
-                title={showingTranslateValue(product?.title)}
+                title={product?.name}
               />
             </TableCell>
           </TableRow>
         ))}
+
+        {/* Display fetched product details if available */}
+        {fetchedProduct && (
+          <TableRow>
+            <TableCell colSpan="10">
+              <div className="p-4">
+                <h2 className="text-lg font-bold">{fetchedProduct.name}</h2>
+                <p>{fetchedProduct.description}</p>
+                <p className="font-semibold">{currency}{fetchedProduct.price}</p>
+                {/* Add any additional product details you want to display here */}
+              </div>
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </>
   );
