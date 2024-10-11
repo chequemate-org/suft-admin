@@ -45,12 +45,15 @@ const ProductDrawer = ({ id }) => {
   const {
     tag,
     setTag,
+    size,
+    setSize,
+    color,
+    setColor,
     values,
     language,
     register,
     onSubmit,
     errors,
-    slug,
     openModal,
     attribue,
     setValues,
@@ -162,10 +165,6 @@ const ProductDrawer = ({ id }) => {
         <form onSubmit={handleSubmit(onSubmit)} className="block" id="block">
           {tapValue === "Basic Info" && (
             <div className="px-6 pt-8 flex-grow w-full h-full max-h-full pb-40 md:pb-32 lg:pb-32 xl:pb-32">
-              {/* <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductID")} />
-                <div className="col-span-8 sm:col-span-4">{productId}</div>
-              </div> */}
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
                 <LabelArea label={t("ProductTitleName")} />
                 <div className="col-span-8 sm:col-span-4">
@@ -197,18 +196,27 @@ const ProductDrawer = ({ id }) => {
                   <Error errorName={errors.description} />
                 </div>
               </div>
+
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductImage")} />
+                <LabelArea label="Product Price" />
                 <div className="col-span-8 sm:col-span-4">
-                  <Uploader
+                  <InputValue
+                    disabled={isCombination}
+                    register={register}
+                    maxValue={2000}
+                    minValue={1}
+                    label="Original Price"
+                    name="originalPrice"
+                    type="number"
+                    placeholder="OriginalPrice"
+                    defaultValue={0.0}
+                    required={true}
                     product
-                    folder="product"
-                    imageUrl={imageUrl}
-                    setImageUrl={setImageUrl}
+                    currency={currency}
                   />
+                  <Error errorName={errors.originalPrice} />
                 </div>
               </div>
-
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
                 <LabelArea label={t("ProductSKU")} />
                 <div className="col-span-8 sm:col-span-4">
@@ -236,19 +244,82 @@ const ProductDrawer = ({ id }) => {
                   <Error errorName={errors.barcode} />
                 </div>
               </div>
-
+              
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("Category")} />
+                <LabelArea label={t("ProductTag")} />
                 <div className="col-span-8 sm:col-span-4">
-                  <ParentCategory
-                    lang={language}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                    setDefaultCategory={setDefaultCategory}
+                  <ReactTagInput
+                    placeholder={t("ProductTagPlaceholder")}
+                    tags={tag}
+                    onChange={(newTags) => setTag(newTags)}
                   />
                 </div>
               </div>
-
+              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                <LabelArea label={t("ProductImage")} />
+                <div className="col-span-8 sm:col-span-4">
+                  <Uploader
+                    product
+                    folder="product"
+                    imageUrl={imageUrl}
+                    setImageUrl={setImageUrl}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                <LabelArea label={t("Size")} />
+                <div className="col-span-8 sm:col-span-4">
+                  <ReactTagInput
+                    placeholder={t("SizePlaceholder")}
+                    tags={size}
+                    onChange={(newTags) => setSize(newTags)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                <LabelArea label={t("Color")} />
+                <div className="col-span-8 sm:col-span-4">
+                  <ReactTagInput
+                    placeholder={t("ColorPlaceholder")}
+                    tags={color}
+                    onChange={(newTags) => setColor(newTags)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                <LabelArea label={t("Details")} />
+                <div className="col-span-8 sm:col-span-4">
+                  <Textarea
+                    className="border text-sm  block w-full bg-gray-100 border-gray-200"
+                    {...register("description", {
+                      required: false,
+                    })}
+                    name="description"
+                    placeholder={t("Details")}
+                    rows="4"
+                    spellCheck="false"
+                  />
+                  <Error errorName={errors.description} />
+                </div>
+              </div>
+              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6 relative">
+                <LabelArea label={t("StockLevel")} />
+                <div className="col-span-8 sm:col-span-4">
+                  <InputValueFive
+                    required={true}
+                    disabled={isCombination}
+                    register={register}
+                    minValue={0}
+                    defaultValue={0}
+                    label="Quantity"
+                    name="stock"
+                    type="number"
+                    placeholder={t("StockLevel")}
+                  />
+                  <Error errorName={errors.stock} />
+                </div>
+              </div>
+              
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
                 <LabelArea label={t("DefaultCategory")} />
                 <div className="col-span-8 sm:col-span-4">
@@ -266,94 +337,6 @@ const ProductDrawer = ({ id }) => {
                     options={selectedCategory}
                     placeholder={"Default Category"}
                   ></Multiselect>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label="Product Price" />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputValue
-                    disabled={isCombination}
-                    register={register}
-                    maxValue={2000}
-                    minValue={1}
-                    label="Original Price"
-                    name="originalPrice"
-                    type="number"
-                    placeholder="OriginalPrice"
-                    defaultValue={0.0}
-                    required={true}
-                    product
-                    currency={currency}
-                  />
-                  <Error errorName={errors.originalPrice} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("SalePrice")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputValue
-                    disabled={isCombination}
-                    product
-                    register={register}
-                    minValue={0}
-                    defaultValue={0.0}
-                    required={true}
-                    label="Sale price"
-                    name="price"
-                    type="number"
-                    placeholder="Sale price"
-                    currency={currency}
-                  />
-                  <Error errorName={errors.price} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6 relative">
-                <LabelArea label={t("ProductQuantity")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputValueFive
-                    required={true}
-                    disabled={isCombination}
-                    register={register}
-                    minValue={0}
-                    defaultValue={0}
-                    label="Quantity"
-                    name="stock"
-                    type="number"
-                    placeholder={t("ProductQuantity")}
-                  />
-                  <Error errorName={errors.stock} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductSlug")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <Input
-                    {...register(`slug`, {
-                      required: "slug is required!",
-                    })}
-                    className=" mr-2 p-2"
-                    name="slug"
-                    type="text"
-                    defaultValue={slug}
-                    placeholder={t("ProductSlug")}
-                    onBlur={(e) => handleProductSlug(e.target.value)}
-                  />
-                  <Error errorName={errors.slug} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductTag")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <ReactTagInput
-                    placeholder={t("ProductTagPlaseholder")}
-                    tags={tag}
-                    onChange={(newTags) => setTag(newTags)}
-                  />
                 </div>
               </div>
             </div>

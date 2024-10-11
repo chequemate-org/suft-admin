@@ -27,8 +27,6 @@ const useProductSubmit = (id) => {
   // react hook
   const [imageUrl, setImageUrl] = useState([]);
   const [tag, setTag] = useState([]);
-  const [size, setSize] = useState([]);
-  const [color, setColor] = useState([]);
   const [values, setValues] = useState({});
   let [variants, setVariants] = useState([]);
   const [variant, setVariant] = useState([]);
@@ -136,6 +134,9 @@ const useProductSubmit = (id) => {
           [language]: data.description || "",
           // ...descriptionTranslates,
         }),
+        slug: data.slug
+          ? data.slug
+          : data.title.toLowerCase().replace(/[^A-Z0-9]+/gi, "-"),
 
         categories: selectedCategory.map((item) => item._id),
         category: defaultCategory[0]._id,
@@ -143,8 +144,6 @@ const useProductSubmit = (id) => {
         image: imageUrl,
         stock: variants?.length < 1 ? data.stock : Number(totalStock),
         tag: JSON.stringify(tag),
-        size: JSON.stringify(size),
-        color: JSON.stringify(color),
 
         prices: {
           price: getNumber(data.price),
@@ -187,12 +186,11 @@ const useProductSubmit = (id) => {
           setUpdatedId(res._id);
           setValue("title", res.title[language ? language : "en"]);
           setValue("description", res.description[language ? language : "en"]);
+          setValue("slug", res.slug);
           setValue("show", res.show);
           setValue("barcode", res.barcode);
           setValue("stock", res.stock);
           setTag(JSON.parse(res.tag));
-          setSize(JSON.parse(res.size));
-          setColor(JSON.parse(res.color));
           setImageUrl(res.image);
           setVariants(res.variants);
           setValue("productId", res.productId);
@@ -251,6 +249,7 @@ const useProductSubmit = (id) => {
       setResData({});
       setValue("sku");
       setValue("title");
+      setValue("slug");
       setValue("description");
       setValue("quantity");
       setValue("stock");
@@ -263,8 +262,6 @@ const useProductSubmit = (id) => {
       // setValue('show');
       setImageUrl([]);
       setTag([]);
-      setSize([]);
-      setColor([]);
       setVariants([]);
       setVariant([]);
       setValues({});
@@ -277,6 +274,7 @@ const useProductSubmit = (id) => {
 
       clearErrors("sku");
       clearErrors("title");
+      clearErrors("slug");
       clearErrors("description");
       clearErrors("stock");
       clearErrors("quantity");
@@ -307,12 +305,14 @@ const useProductSubmit = (id) => {
 
           if (res) {
             setResData(res);
+            setSlug(res.slug);
             setUpdatedId(res._id);
             setValue("title", res.title[language ? language : "en"]);
             setValue(
               "description",
               res.description[language ? language : "en"]
             );
+            setValue("slug", res.slug);
             setValue("show", res.show);
             setValue("sku", res.sku);
             setValue("barcode", res.barcode);
@@ -651,10 +651,6 @@ const useProductSubmit = (id) => {
   return {
     tag,
     setTag,
-    size,
-    setSize,
-    color,
-    setColor,
     values,
     language,
     register,
