@@ -133,6 +133,12 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
                 <span>{category.description}</span>
               </TableCell>
 
+          <TableCell>
+            <span>{category.slug || "N/A"}</span>
+          </TableCell>
+          <TableCell>
+            <span>{category.order || "N/A"}</span>
+          </TableCell>
               {/* Show/Hide Button for Category */}
               <TableCell className="text-center">
                 <ShowHideButton id={category.uuid} status={category.isPublished} />
