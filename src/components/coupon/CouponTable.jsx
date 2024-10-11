@@ -4,6 +4,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  
 } from "@windmill/react-ui";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -43,38 +44,38 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
       console.log('Fetched coupons:', response.data);
 
       if (Array.isArray(response.data.data)) {
-        setCoupons(response.data.data);  // Set coupons from response.data.data
+        setCoupons(response.data.data); 
       } else {
         console.error('Coupons data is not an array:', response.data);
-        setCoupons([]);  // Reset coupons to an empty array if data is invalid
+        setCoupons([]); 
       }
     } catch (error) {
       console.error('Error fetching coupons:', error);
-      setCoupons([]);  // Reset coupons to an empty array on error
+      setCoupons([]); 
     }
   };
 
-  // Fetch single coupon by ID for editing
-  const fetchCouponById = async (id) => {
+  // Fetch coupon by UUID
+  const fetchCouponByUUID = async (uuid) => {
     try {
-      const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/coupon/${id}`);
+      const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-coupon/${uuid}`);
       if (response.data) {
-        setSelectedCoupon(response.data); // Set the selected coupon details
-        console.log('Fetched coupon for editing:', response.data);
+        setSelectedCoupon(response.data); // Set coupon to state for drawer
+        console.log('Fetched coupon for editing by UUID:', response.data);
       }
     } catch (error) {
-      console.error('Error fetching coupon by ID:', error);
+      console.error('Error fetching coupon by UUID:', error);
     }
   };
 
   // Handle the edit button click
-  const handleEdit = async (id) => {
-    await fetchCouponById(id);  // Fetch coupon details by ID
-    handleUpdate(id);  // Open the drawer with coupon details
+  const handleEdit = async (uuid) => {
+    await fetchCouponByUUID(uuid); // Fetch coupon by UUID when edit button is clicked
+    handleUpdate(uuid);  // Open drawer for editing
   };
 
   useEffect(() => {
-    fetchCoupons();  // Call fetchCoupons on component mount
+    fetchCoupons();  // Fetch all coupons on component load
   }, []);
 
   useEffect(() => {
@@ -86,43 +87,37 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
         ...el,
         updatedDate: newDate,
       };
-    }) : [];  // Return an empty array if coupons is not an array
+    }) : [];  
 
     setUpdatedCoupons(result);
   }, [coupons, globalSetting?.default_time_zone]);
-  const deleteCoupon = async (id) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this coupon?");
-  if (!confirmDelete) return;
 
-  try {
-    await axios.delete(`https://suft-90bec7a20f24.herokuapp.com/coupon/${id}`);
-    // Fetch coupons again to refresh the list after deletion
-    fetchCoupons(); 
-  } catch (error) {
-    console.error('Error deleting coupon:', error);
-  }
-};
+  
 
   return (
     <>
       {isCheck.length < 1 && <DeleteModal id={serviceId} title={title} />}
       {isCheck.length < 2 && (
         <MainDrawer>
-          <CouponDrawer id={serviceId} coupon={selectedCoupon} /> {/* Pass selectedCoupon data to CouponDrawer */}
+          <CouponDrawer 
+            id={serviceId} 
+            coupon={selectedCoupon} 
+            fetchCoupons={fetchCoupons} 
+          />
         </MainDrawer>
       )}
 
       <TableBody>
         {Array.isArray(updatedCoupons) && updatedCoupons.length > 0 ? (
           updatedCoupons.map((coupon) => (
-            <TableRow key={coupon.id}>
+            <TableRow key={coupon.uuid}>  {/* Use uuid as key */}
               <TableCell>
                 <CheckBox
                   type="checkbox"
                   name={coupon.name}
-                  id={coupon.id}
+                  uuid={coupon.uuid}
                   handleClick={handleClick}
-                  isChecked={isCheck.includes(coupon.id)}
+                  isChecked={isCheck.includes(coupon.uuid)}
                 />
               </TableCell>
 
@@ -159,9 +154,9 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
 
               <TableCell>
                 <EditDeleteButton
-                  id={coupon.id}
+                  id={coupon.uuid}  // Use uuid here
                   isCheck={isCheck}
-                  handleUpdate={() => handleEdit(coupon.id)}  // Handle edit button click
+                  handleUpdate={() => handleEdit(coupon.uuid)}  // Handle edit button click with UUID
                   handleModalOpen={handleModalOpen}
                   title={showingTranslateValue(coupon.name)}
                 />

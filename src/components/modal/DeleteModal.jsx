@@ -27,209 +27,100 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleDelete = async () => {
-    // return notifyError("This feature is disabled for demo!");
     try {
       setIsSubmitting(true);
+      let res;
+
+      // Handle product deletion
       if (location.pathname === "/products") {
         if (ids) {
-          const res = await ProductServices.deleteManyProducts({
-            ids: ids,
-          });
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setIsCheck([]);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await ProductServices.deleteManyProducts({ ids });
         } else {
-          const res = await ProductServices.deleteProduct(id);
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await ProductServices.deleteProduct(id);
         }
       }
 
+      // Handle coupon deletion
       if (location.pathname === "/coupons") {
         if (ids) {
-          const res = await CouponServices.deleteManyCoupons({
-            ids: ids,
-          });
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setIsCheck([]);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await CouponServices.deleteManyCoupons({ ids });
         } else {
-          const res = await CouponServices.deleteCoupon(id);
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await CouponServices.deleteCoupon(id);
         }
       }
 
+      // Handle category deletion
       if (location.pathname === "/categories" || category) {
         if (ids) {
-          //  console.log('delete modal categorices',ids)
-          const res = await CategoryServices.deleteManyCategory({
-            ids: ids,
-          });
-          //  console.log('delete many category res',res)
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setIsCheck([]);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await CategoryServices.deleteManyCategory({ ids });
         } else {
-          if (id === undefined || !id) {
+          if (!id) {
             notifyError("Please select a category first!");
             setIsSubmitting(false);
-            return closeModal();
+            return;
           }
-          // console.log('delete modal open',id)
-          const res = await CategoryServices.deleteCategory(id);
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          closeModal();
-          setServiceId();
-          setIsSubmitting(false);
+          res = await CategoryServices.deleteCategory(id);
         }
-      } else if (
-        location.pathname === `/categories/${useParamId}` ||
-        category
-      ) {
-        // console.log('delete modal ')
-        if (id === undefined || !id) {
+      }
+
+      // Handle child category deletion
+      if (location.pathname === `/categories/${useParamId}` || category) {
+        if (!id) {
           notifyError("Please select a category first!");
           setIsSubmitting(false);
-          return closeModal();
+          return;
         }
-
-        const res = await CategoryServices.deleteCategory(id);
-        setIsUpdate(true);
-        notifySuccess(res.message);
-        closeModal();
-        setServiceId();
-        setIsSubmitting(false);
+        res = await CategoryServices.deleteCategory(id);
       }
 
+      // Handle customer deletion
       if (location.pathname === "/customers") {
-        const res = await CustomerServices.deleteCustomer(id);
-        setIsUpdate(true);
-        notifySuccess(res.message);
-        setServiceId();
-        closeModal();
-        setIsSubmitting(false);
+        res = await CustomerServices.deleteCustomer(id);
       }
 
+      // Handle attribute deletion
       if (location.pathname === "/attributes") {
         if (ids) {
-          const res = await AttributeServices.deleteManyAttribute({
-            ids: ids,
-          });
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setIsCheck([]);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await AttributeServices.deleteManyAttribute({ ids });
         } else {
-          const res = await AttributeServices.deleteAttribute(id);
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await AttributeServices.deleteAttribute(id);
         }
       }
 
-      if (
-        location.pathname === `/attributes/${location.pathname.split("/")[2]}`
-      ) {
-        if (ids) {
-          const res = await AttributeServices.deleteManyChildAttribute({
-            id: location.pathname.split("/")[2],
-            ids: ids,
-          });
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setServiceId();
-          setIsCheck([]);
-          closeModal();
-          setIsSubmitting(false);
-        } else {
-          // console.log("att value delete", id, location.pathname.split("/")[2]);
-
-          const res = await AttributeServices.deleteChildAttribute({
-            id: id,
-            ids: location.pathname.split("/")[2],
-          });
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
-        }
-      }
-
+      // Handle staff deletion
       if (location.pathname === "/our-staff") {
-        const res = await AdminServices.deleteStaff(id);
-        setIsUpdate(true);
-        notifySuccess(res.message);
-        setServiceId();
-        closeModal();
-        setIsSubmitting(false);
+        res = await AdminServices.deleteStaff(id);
       }
 
+      // Handle language deletion
       if (location.pathname === "/languages") {
         if (ids) {
-          const res = await LanguageServices.deleteManyLanguage({
-            ids: ids,
-          });
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setIsCheck([]);
-          closeModal();
-          setIsSubmitting(false);
+          res = await LanguageServices.deleteManyLanguage({ ids });
         } else {
-          const res = await LanguageServices.deleteLanguage(id);
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await LanguageServices.deleteLanguage(id);
         }
       }
 
+      // Handle currency deletion
       if (location.pathname === "/currencies") {
         if (ids) {
-          const res = await CurrencyServices.deleteManyCurrency({
-            ids: ids,
-          });
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setIsCheck([]);
-          closeModal();
-          setIsSubmitting(false);
+          res = await CurrencyServices.deleteManyCurrency({ ids });
         } else {
-          const res = await CurrencyServices.deleteCurrency(id);
-          setIsUpdate(true);
-          notifySuccess(res.message);
-          setServiceId();
-          closeModal();
-          setIsSubmitting(false);
+          res = await CurrencyServices.deleteCurrency(id);
         }
       }
-    } catch (err) {
-      notifyError(err ? err?.response?.data?.message : err?.message);
-      setServiceId();
+
+      // If the deletion was successful
+      setIsUpdate(true);
+      notifySuccess(res.message);
       setIsCheck([]);
+      setServiceId();
       closeModal();
+
+    } catch (err) {
+      // If an error occurs
+      notifyError(err?.response?.data?.message || err?.message);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -239,12 +130,11 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
   return (
     <>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalBody className="text-center custom-modal px-8 pt-6 pb-4">
-          <span className="flex justify-center text-3xl mb-6 text-red-500">
+        <ModalBody className="custom-modal px-8 pt-6 pb-4 text-center">
+          <span className="flex justify-center mb-6 text-3xl text-red-500">
             <FiTrash2 />
           </span>
-          {/* <h2 className="text-xl font-medium mb-1">{t('DeleteModalH2')}</h2> */}
-          <h2 className="text-xl font-medium mb-2">
+          <h2 className="mb-2 text-xl font-medium">
             {t("DeleteModalH2")} <span className="text-red-500">{title}</span>?
           </h2>
           <p>{t("DeleteModalPtag")}</p>
@@ -252,7 +142,7 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
 
         <ModalFooter className="justify-center">
           <Button
-            className="w-full sm:w-auto hover:bg-white hover:border-gray-50"
+            className="sm:w-auto hover:bg-white hover:border-gray-50 w-full"
             layout="outline"
             onClick={closeModal}
           >
@@ -263,7 +153,7 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
               <Button
                 disabled={true}
                 type="button"
-                className="w-full h-12 sm:w-auto"
+                className="sm:w-auto w-full h-12"
               >
                 <img
                   src={spinnerLoadingImage}
@@ -271,20 +161,14 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
                   width={20}
                   height={10}
                 />{" "}
-                <span className="font-serif ml-2 font-light">
+                <span className="ml-2 font-serif font-light">
                   {t("Processing")}
                 </span>
               </Button>
             ) : (
-              <Button onClick={handleDelete} className="w-full h-12 sm:w-auto">
+              <Button onClick={handleDelete} className="sm:w-auto w-full h-12">
                 {t("modalDeletBtn")}
               </Button>
-              // <button
-              //   type="submit"
-              //   className="text-sm mt-6 leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-serif text-center justify-center border-0 border-transparent rounded-md focus-visible:outline-none focus:outline-none text-white px-4 md:px-6 lg:px-8 py-4 md:py-3.5 lg:py-4 hover:text-white bg-emerald-400 hover:bg-emerald-500 h-10"
-              // >
-              //   Park Order
-              // </button>
             )}
           </div>
         </ModalFooter>

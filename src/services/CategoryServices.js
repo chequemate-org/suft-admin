@@ -30,8 +30,8 @@ const CategoryServices = {
     return requests.put(`/category/status/${id}`, body);
   },
 
-  deleteCategory: async (id, body) => {
-    return requests.delete(`/category/admin-delete/${id}`, body);
+  deleteCategory: async (uuid, body) => {
+    return requests.delete(`/category/admin-delete/${uuid}`, body);
   },
 
   updateManyCategory: async (body) => {
