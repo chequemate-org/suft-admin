@@ -30,13 +30,13 @@ const ProductServices = {
     }
   },
   addProduct: async (body) => {
-    return requests.post("/products/add", body);
+    return requests.post("/product/admin/create", body);
   },
   addAllProducts: async (body) => {
     return requests.post("/products/all", body);
   },
   updateProduct: async (id, body) => {
-    return requests.patch(`/products/${id}`, body);
+    return requests.patch(`/product/admin/update/${id}`, body);
   },
   updateManyProducts: async (body) => {
     return requests.patch("products/update/many", body);
