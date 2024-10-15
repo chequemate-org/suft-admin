@@ -38,13 +38,13 @@ const StaffTable = ({ staffs, lang }) => {
             <TableCell>
               <div className="flex items-center">
                 <Avatar
-                  className="hidden mr-3 md:block bg-gray-50"
+                  className="md:block bg-gray-50 hidden mr-3"
                   src={staff.image}
                   alt="staff"
                 />
                 <div>
                   <h2 className="text-sm font-medium">
-                    {showingTranslateValue(staff?.name)}
+                    {staff.name}
                   </h2>
                 </div>
               </div>
@@ -54,30 +54,30 @@ const StaffTable = ({ staffs, lang }) => {
               <span className="text-sm">{staff.email}</span>{" "}
             </TableCell>
             <TableCell>
-              <span className="text-sm ">{staff.phone}</span>
+              <span className=" text-sm">{staff.phone}</span>
             </TableCell>
 
             <TableCell>
               <span className="text-sm">
                 {/* {dayjs(staff.joiningData).format("DD/MM/YYYY")} */}
-                {showDateFormat(staff.joiningData)}
+                {/* {showDateFormat(staff.joiningData)} */}
               </span>
             </TableCell>
             <TableCell>
-              <span className="text-sm font-semibold">{staff?.role}</span>
+              {/* <span className="text-sm font-semibold">{staff?.role}</span> */}
             </TableCell>
-            <TableCell className="text-center text-xs">
+            {/* <TableCell className="text-xs text-center">
               <Status status={staff.status} />
-            </TableCell>
+            </TableCell> */}
 
-            <TableCell className="text-center">
+            {/* <TableCell className="text-center">
               <ActiveInActiveButton
                 id={staff?._id}
                 staff={staff}
                 option="staff"
                 status={staff.status}
               />
-            </TableCell>
+            </TableCell> */}
 
             <TableCell>
               <EditDeleteButton

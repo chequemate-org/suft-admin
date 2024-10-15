@@ -1,8 +1,8 @@
 import requests from "./httpService";
 
 const CustomerServices = {
-  getAllCustomers: async ({ searchText = "" }) => {
-    return requests.get(`/customer?searchText=${searchText}`);
+  getAllCustomers: async (body) => {
+    return requests.get("/admin/users", body);
   },
 
   addAllCustomers: async (body) => {

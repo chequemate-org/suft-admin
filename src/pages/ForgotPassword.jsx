@@ -1,67 +1,103 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@windmill/react-ui";
 
-//internal import
+// Internal import
 import Error from "@/components/form/others/Error";
-import useLoginSubmit from "@/hooks/useLoginSubmit";
 import LabelArea from "@/components/form/selectOption/LabelArea";
 import InputArea from "@/components/form/input/InputArea";
 import ImageLight from "@/assets/img/forgot-password-office.jpeg";
 import ImageDark from "@/assets/img/forgot-password-office-dark.jpeg";
 
 const ForgotPassword = () => {
-  const { onSubmit, register, handleSubmit, errors, loading } =
-    useLoginSubmit();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      setError("Email is required.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("https://suft-90bec7a20f24.herokuapp.com/admin/admin-forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage("Password recovery email sent successfully.");
+      } else {
+        setError(result.message || "An error occurred. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
-      <div className="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
-        <div className="flex flex-col overflow-y-auto md:flex-row">
-          <div className="h-32 md:h-auto md:w-1/2">
+    <div className="bg-gray-50 dark:bg-gray-900 flex items-center min-h-screen p-6">
+      <div className="dark:bg-gray-800 flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl">
+        <div className="md:flex-row flex flex-col overflow-y-auto">
+          <div className="md:h-auto md:w-1/2 h-32">
             <img
               aria-hidden="true"
-              className="object-cover w-full h-full dark:hidden"
+              className="dark:hidden object-cover w-full h-full"
               src={ImageLight}
               alt="Office"
             />
             <img
               aria-hidden="true"
-              className="hidden object-cover w-full h-full dark:block"
+              className="dark:block hidden object-cover w-full h-full"
               src={ImageDark}
               alt="Office"
             />
           </div>
-          <main className="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
+          <main className="sm:p-12 md:w-1/2 flex items-center justify-center p-6">
             <div className="w-full">
-              <h1 className="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
+              <h1 className="dark:text-gray-200 mb-4 text-xl font-semibold text-gray-700">
                 Forgot password
               </h1>
 
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form onSubmit={handleSubmit}>
                 <LabelArea label="Email" />
                 <InputArea
                   required={true}
-                  register={register}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   label="Email"
                   name="verifyEmail"
                   type="email"
                   placeholder="john@doe.com"
                 />
-                <Error errorName={errors.verifyEmail} />
+                {error && <Error errorName={error} />}
+                {successMessage && <p className="text-green-500">{successMessage}</p>}
 
                 <Button
                   disabled={loading}
                   type="submit"
                   block
-                  className="mt-4 h-12"
+                  className="h-12 mt-4"
                 >
-                  Recover password
+                  {loading ? "Sending..." : "Recover password"}
                 </Button>
               </form>
               <p className="mt-4">
                 <Link
-                  className="text-sm font-medium text-emerald-500 dark:text-emerald-400 hover:underline"
+                  className="text-emerald-500 dark:text-emerald-400 hover:underline text-sm font-medium"
                   to="/login"
                 >
                   Already have an account? Login

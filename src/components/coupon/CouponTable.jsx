@@ -96,7 +96,7 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
 
   return (
     <>
-      {isCheck.length < 1 && <DeleteModal id={serviceId} title={title} />}
+      {isCheck.length < 1 && <DeleteModal id={serviceId} title={title} setIsCheck={setIsCheck}  />}
       {isCheck.length < 2 && (
         <MainDrawer>
           <CouponDrawer 
@@ -110,7 +110,7 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
       <TableBody>
         {Array.isArray(updatedCoupons) && updatedCoupons.length > 0 ? (
           updatedCoupons.map((coupon) => (
-            <TableRow key={coupon.uuid}>  {/* Use uuid as key */}
+            <TableRow key={coupon.uuid}>  
               <TableCell>
                 <CheckBox
                   type="checkbox"

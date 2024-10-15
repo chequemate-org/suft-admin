@@ -19,7 +19,7 @@ import AttributeServices from "@/services/AttributeServices";
 import CurrencyServices from "@/services/CurrencyServices";
 import { notifyError, notifySuccess } from "@/utils/toast";
 
-const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
+const DeleteModal = ({ id,uuid, ids, setIsCheck, category, title, useParamId }) => {
   const { isModalOpen, closeModal, setIsUpdate } = useContext(SidebarContext);
   const { setServiceId } = useToggleDrawer();
   const location = useLocation();
@@ -45,7 +45,7 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
         if (ids) {
           res = await CouponServices.deleteManyCoupons({ ids });
         } else {
-          res = await CouponServices.deleteCoupon(id);
+          res = await CouponServices.deleteCoupon(uuid);
         }
       }
 
@@ -54,23 +54,23 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
         if (ids) {
           res = await CategoryServices.deleteManyCategory({ ids });
         } else {
-          if (!id) {
+          if (!uuid) {
             notifyError("Please select a category first!");
             setIsSubmitting(false);
             return;
           }
-          res = await CategoryServices.deleteCategory(id);
+          res = await CategoryServices.deleteCategory(uuid);
         }
       }
 
       // Handle child category deletion
       if (location.pathname === `/categories/${useParamId}` || category) {
-        if (!id) {
+        if (!uuid) {
           notifyError("Please select a category first!");
           setIsSubmitting(false);
           return;
         }
-        res = await CategoryServices.deleteCategory(id);
+        res = await CategoryServices.deleteCategory(uuid);
       }
 
       // Handle customer deletion

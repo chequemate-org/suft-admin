@@ -42,13 +42,13 @@ const StaffTable = ({ staffs = [], lang }) => {
             <TableCell>
               <div className="flex items-center">
                 <Avatar
-                  className="hidden mr-3 md:block bg-gray-50"
+                  className="md:block bg-gray-50 hidden mr-3"
                   src={staff.image || "/default-avatar.png"} // Fallback to a default image if staff.image is null
                   alt="staff"
                 />
                 <div>
                   <h2 className="text-sm font-medium">
-                    {showingTranslateValue(staff?.name)}
+                    {staff.name}
                   </h2>
                 </div>
               </div>
@@ -58,20 +58,20 @@ const StaffTable = ({ staffs = [], lang }) => {
               <span className="text-sm">{staff.email}</span>
             </TableCell>
             <TableCell>
-              <span className="text-sm ">{staff.phone}</span>
+              <span className=" text-sm">{staff.phone}</span>
             </TableCell>
 
-            <TableCell>
-              <span className="text-sm">
-                {showDateFormat(staff.createdAt)} {/* Use createdAt as the joining date */}
-              </span>
-            </TableCell>
-            <TableCell>
-              <span className="text-sm font-semibold">{staff?.role}</span>
-            </TableCell>
-            <TableCell className="text-center text-xs">
-              <Status status={staff.status} />
-            </TableCell>
+            {/* <TableCell> */}
+              {/* <span className="text-sm"> */}
+                {/* {showDateFormat(staff.createdAt)}  */}
+              {/* </span> */}
+            {/* </TableCell> */}
+            {/* <TableCell> */}
+              {/* <span className="text-sm font-semibold">{staff?.role}</span> */}
+            {/* </TableCell> */}
+            {/* <TableCell className="text-xs text-center"> */}
+              {/* <Status status={staff.status} /> */}
+            {/* </TableCell> */}
 
             <TableCell className="text-center">
               <ActiveInActiveButton

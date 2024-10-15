@@ -9,8 +9,8 @@ const AdminServices = {
     return requests.post(`/admin/admin-login`, body);
   },
 
-  forgetPassword: async (body) => {
-    return requests.put("/admin/forget-password", body);
+  forgetPassword: async ({email : verifyEmail}) => {
+    return requests.post("/admin/admin-forgot-password", ({email : verifyEmail}));
   },
 
   resetPassword: async (body) => {

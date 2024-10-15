@@ -55,10 +55,7 @@ const useStaffSubmit = (id) => {
       // );
 
       const staffData = {
-        name: handleRemoveEmptyKey({
-          [language]: data.name,
-          // ...nameTranslates,
-        }),
+        name: data.name,
         email: data.email,
         password: data.password,
         phone: data.phone,

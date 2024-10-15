@@ -89,13 +89,13 @@ const Staff = () => {
       </MainDrawer>
 
       <AnimatedContent>
-        <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
+        <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
           <CardBody>
             <form
               onSubmit={handleSubmitUser}
-              className="py-3 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex"
+              className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
             >
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
                   ref={userRef}
                   type="search"
@@ -104,10 +104,10 @@ const Staff = () => {
                 />
                 <button
                   type="submit"
-                  className="absolute right-0 top-0 mt-5 mr-1"
+                  className="absolute top-0 right-0 mt-5 mr-1"
                 ></button>
               </div>
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Select onChange={(e) => setRole(e.target.value)}>
                   <option value="All" defaultValue hidden>
                     {t("StaffRole")}
@@ -118,10 +118,10 @@ const Staff = () => {
                 </Select>
               </div>
 
-              <div className="w-full md:w-56 lg:w-56 xl:w-56">
+              <div className="md:w-56 lg:w-56 xl:w-56 w-full">
                 <Button
                   onClick={toggleDrawer}
-                  className="w-full rounded-md h-12"
+                  className="w-full h-12 rounded-md"
                 >
                   <span className="mr-3">
                     <FiPlus />
@@ -129,9 +129,9 @@ const Staff = () => {
                   {t("AddStaff")}
                 </Button>
               </div>
-              <div className="mt-2 md:mt-0 flex items-center xl:gap-x-4 gap-x-1 flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="md:mt-0 xl:gap-x-4 gap-x-1 md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 mt-2">
                 <div className="w-full mx-1">
-                  <Button type="submit" className="h-12 w-full bg-emerald-700">
+                  <Button type="submit" className="bg-emerald-700 w-full h-12">
                     Filter
                   </Button>
                 </div>
@@ -141,9 +141,9 @@ const Staff = () => {
                     layout="outline"
                     onClick={handleResetField}
                     type="reset"
-                    className="px-4 md:py-1 py-3 text-sm dark:bg-gray-700"
+                    className="md:py-1 dark:bg-gray-700 px-4 py-3 text-sm"
                   >
-                    <span className="text-black dark:text-gray-200">Reset</span>
+                    <span className="dark:text-gray-200 text-black">Reset</span>
                   </Button>
                 </div>
               </div>
@@ -155,7 +155,7 @@ const Staff = () => {
       {loading ? (
         <TableLoading row={12} col={7} width={163} height={20} />
       ) : error ? (
-        <span className="text-center mx-auto text-red-500">{error}</span>
+        <span className="mx-auto text-center text-red-500">{error}</span>
       ) : staffData?.length !== 0 ? (
         <TableContainer className="mb-8 rounded-b-lg">
           <Table>
@@ -164,11 +164,11 @@ const Staff = () => {
                 <TableCell>{t("StaffNameTbl")}</TableCell>
                 <TableCell>{t("StaffEmailTbl")}</TableCell>
                 <TableCell>{t("StaffContactTbl")}</TableCell>
-                <TableCell>{t("StaffJoiningDateTbl")}</TableCell>
-                <TableCell>{t("StaffRoleTbl")}</TableCell>
-                <TableCell className="text-center">
+                {/* <TableCell>{t("StaffJoiningDateTbl")}</TableCell> */}
+                {/* <TableCell>{t("StaffRoleTbl")}</TableCell> */}
+                {/* <TableCell className="text-center">
                   {t("OderStatusTbl")}
-                </TableCell>
+                </TableCell> */}
                 <TableCell className="text-center">
                   {t("PublishedTbl")}
                 </TableCell>
