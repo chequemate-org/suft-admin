@@ -40,7 +40,7 @@ const AdminServices = {
   },
 
   deleteStaff: async (id) => {
-    return requests.delete(`/admin${id}`);
+    return requests.delete(`admin/users/delete/${id}`);
   },
 };
 

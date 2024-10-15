@@ -12,19 +12,15 @@ const InputArea = ({
   placeholder,
 }) => {
   return (
-    <>
-      <Input
-        {...register(`${name}`, {
-          required: required ? `${label} is required!` : false,
-        })}
-        defaultValue={defaultValue}
-        type={type}
-        placeholder={placeholder}
-        name={name}
-        autoComplete={autoComplete}
-        className="mr-2 h-12 p-2"
-      />
-    </>
+    <Input
+      {...(register && register(name, { required: required ? `${label} is required!` : false }))}
+      defaultValue={defaultValue}
+      type={type}
+      placeholder={placeholder}
+      name={name}
+      autoComplete={autoComplete}
+      className="h-12 p-2 mr-2"
+    />
   );
 };
 

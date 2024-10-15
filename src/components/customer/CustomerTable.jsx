@@ -14,7 +14,8 @@ import Tooltip from "@/components/tooltip/Tooltip";
 import CustomerDrawer from "@/components/drawer/CustomerDrawer";
 import EditDeleteButton from "@/components/table/EditDeleteButton";
 
-const CustomerTable = () => {
+// Component
+const CustomerTable = ({ customers }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const [customers, setCustomers] = useState([]); // State to store customers
   const [loading, setLoading] = useState(true); // State to handle loading
@@ -60,73 +61,53 @@ const CustomerTable = () => {
         <CustomerDrawer id={serviceId} />
       </MainDrawer>
 
-      {/* Check if data is still loading */}
-      {loading ? (
-        <p className="text-center">Loading customers...</p>
-      ) : (
-        <TableBody>
-          {Array.isArray(customers) && customers.length > 0 ? (
-            customers.map((user) => (
-              <TableRow key={user.uuid}>
-                <TableCell>
-                  <span className="font-semibold uppercase text-xs">
-                    {user?.uuid?.substring(0, 8)}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">
-                    {dayjs(user.createdAt).format("MMM D, YYYY")}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{user.name}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{user.email}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm font-medium">{user.phone}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{user.country}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">
-                    {dayjs(user.dob).format("MMM D, YYYY")}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-end text-right">
-                    <div className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600">
-                      <Link to={`/customer-order/${user.uuid}`}>
-                        <Tooltip
-                          id="view"
-                          Icon={FiZoomIn}
-                          title={t("ViewOrder")}
-                          bgColor="#34D399"
-                        />
-                      </Link>
-                    </div>
+      <TableBody>
+        {customers?.map((user) => (
+          <TableRow key={user.uuid}>
+            <TableCell>
+              <span className="text-xs font-semibold uppercase">
+                {user.uuid?.substring(0, 4) || "N/A"}
+              </span>
+            </TableCell>
+            <TableCell>
+              <span className="text-sm">
+                {dayjs(user.createdAt).format("MMM D, YYYY") || "Unknown"}
+              </span>
+            </TableCell>
+            <TableCell>
+              <span className="text-sm">{user.name || "No Name"}</span>
+            </TableCell>
+            <TableCell>
+              <span className="text-sm">{user.email || "No Email"}</span>
+            </TableCell>
+            <TableCell>
+              <span className="text-sm font-medium">{user.phone || "No Phone"}</span>
+            </TableCell>
 
-                    <EditDeleteButton
-                      title={user.name}
-                      id={user.uuid}
-                      handleUpdate={handleUpdate}
-                      handleModalOpen={handleModalOpen}
+            <TableCell>
+              <div className="flex justify-end text-right">
+                <div className="hover:text-emerald-600 p-2 text-gray-400 cursor-pointer">
+                  <Link to={`/customer-order/${user.uuid}`}>
+                    <Tooltip
+                      id="view"
+                      Icon={FiZoomIn}
+                      title={t("ViewOrder")}
+                      bgColor="#34D399"
                     />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center">
-                No customers available
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      )}
+                  </Link>
+                </div>
+
+                <EditDeleteButton
+                  title={user.name}
+                  id={user.uuid}
+                  handleUpdate={handleUpdate}
+                  handleModalOpen={handleModalOpen}
+                />
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
     </>
   );
 };

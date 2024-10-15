@@ -1,9 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import Ajv from "ajv";
 import csvToJson from "csvtojson";
 import { useContext, useState } from "react";
-
-//internal import
 import { SidebarContext } from "@/context/SidebarContext";
 import ProductServices from "@/services/ProductServices";
 import { notifyError, notifySuccess } from "@/utils/toast";
@@ -13,21 +10,17 @@ const schema = {
   type: "object",
   properties: {
     categories: { type: "array" },
-    image: { type: "array" },
-    tag: { type: "array" },
-    variants: { type: "array" },
-    show: { type: "array" },
-    status: { type: "string" },
-    prices: { type: "object" },
-    isCombination: { type: "boolean" },
-    title: { type: "object" },
-    productId: { type: "string" },
-    slug: { type: "string" },
-    category: { type: "object" },
-    stock: { type: "number" },
-    description: { type: "object" },
+    imageUrl: { type: "array" }, // update for imageUrl
+    size: { type: "array" },
+    color: { type: "array" },
+    stockLevel: { type: "number" }, // update for stockLevel
+    isAvailable: { type: "boolean" },
+    name: { type: "string" },
+    price: { type: "string" },
+    avgRating: { type: "string" },
+    totalReviews: { type: "number" },
   },
-  required: ["categories", "category", "prices", "title"],
+  required: ["name", "price", "stockLevel", "isAvailable"],
 };
 
 const useProductFilter = (data) => {
@@ -39,24 +32,18 @@ const useProductFilter = (data) => {
   const [filename, setFileName] = useState("");
   const [isDisabled, setIsDisable] = useState(false);
 
-  //service data filtering
   const serviceData = data;
 
-  //  console.log('selectedFile',selectedFile)
-
   const handleOnDrop = (data) => {
-    // console.log('data', data);
     for (let i = 0; i < data.length; i++) {
       newProducts.push(data[i].data);
     }
   };
 
   const handleUploadProducts = () => {
-    // return notifyError("This feature is disabled for demo!");
     if (newProducts.length < 1) {
-      notifyError("Please upload/select csv file first!");
+      notifyError("Please upload/select a CSV file first!");
     } else {
-      // return notifySuccess("CRUD operation disable for demo!");
       ProductServices.addAllProducts(newProducts)
         .then((res) => {
           notifySuccess(res.message);
@@ -67,7 +54,6 @@ const useProductFilter = (data) => {
 
   const handleSelectFile = async (e) => {
     e.preventDefault();
-
     const fileReader = new FileReader();
     const file = e.target?.files[0];
 
@@ -78,24 +64,15 @@ const useProductFilter = (data) => {
       fileReader.readAsText(file, "UTF-8");
       fileReader.onload = (e) => {
         const text = JSON.parse(e.target.result);
-
         const productData = text.map((value) => {
           return {
-            categories: value.categories,
-            image: value.image,
-            barcode: value.barcode,
-            tag: value.tag,
-            variants: value.variants,
-            status: value.status,
-            prices: value.prices,
-            isCombination: JSON.parse(value.isCombination.toLowerCase()),
-            title: value.title,
-            productId: value.productId,
-            slug: value.slug,
-            sku: value.sku,
-            category: value.category,
-            stock: value.stock,
-            description: value.description,
+            name: value.name,
+            price: value.price,
+            imageUrl: value.imageUrl, // handle imageUrl array
+            size: value.size,
+            color: value.color,
+            stockLevel: value.stockLevel,
+            isAvailable: value.isAvailable,
           };
         });
 
@@ -108,24 +85,15 @@ const useProductFilter = (data) => {
       fileReader.onload = async (event) => {
         const text = event.target.result;
         const json = await csvToJson().fromString(text);
-        // console.log("json", json);
         const productData = json.map((value) => {
           return {
-            categories: JSON.parse(value.categories),
-            image: JSON.parse(value.image),
-            barcode: value.barcode,
-            tag: JSON.parse(value.tag),
-            variants: JSON.parse(value.variants),
-            status: value.status,
-            prices: JSON.parse(value.prices),
-            isCombination: JSON.parse(value.isCombination.toLowerCase()),
-            title: JSON.parse(value.title),
-            productId: value.productId,
-            slug: value.slug,
-            sku: value.sku,
-            category: JSON.parse(value.category),
-            stock: JSON.parse(value.stock),
-            description: JSON.parse(value.description),
+            name: value.name,
+            price: value.price,
+            imageUrl: JSON.parse(value.imageUrl), // convert imageUrl to array
+            size: JSON.parse(value.size),
+            color: JSON.parse(value.color),
+            stockLevel: JSON.parse(value.stockLevel),
+            isAvailable: JSON.parse(value.isAvailable.toLowerCase()),
           };
         });
 
@@ -136,46 +104,11 @@ const useProductFilter = (data) => {
     } else {
       setFileName(file?.name);
       setIsDisable(true);
-
       notifyError("Unsupported file type!");
     }
   };
 
-  const handleUploadMultiple = (e) => {
-    // return notifyError("This feature is disabled for demo!");
-    if (selectedFile.length > 1) {
-      setLoading(true);
-      let productDataValidation = selectedFile.map((value) =>
-        ajv.validate(schema, value)
-      );
-
-      const isBelowThreshold = (currentValue) => currentValue === true;
-      const validationData = productDataValidation.every(isBelowThreshold);
-      // console.log('validationdata',validationData)
-
-      if (validationData) {
-        ProductServices.addAllProducts(selectedFile)
-          .then((res) => {
-            setIsUpdate(true);
-            setLoading(false);
-            notifySuccess(res.message);
-          })
-          .catch((err) => {
-            setLoading(false);
-            notifyError(err.message);
-          });
-      } else {
-        setLoading(false);
-        notifyError("Please enter valid data!");
-      }
-    } else {
-      setLoading(false);
-      notifyError("Please select a valid json, csv & xls file first!");
-    }
-  };
-
   const handleRemoveSelectFile = (e) => {
-    // console.log('remove');
     setFileName("");
     setSelectedFile([]);
     setTimeout(() => setIsDisable(false), 1000);
@@ -190,7 +123,6 @@ const useProductFilter = (data) => {
     handleOnDrop,
     handleUploadProducts,
     handleRemoveSelectFile,
-    handleUploadMultiple,
   };
 };
 
