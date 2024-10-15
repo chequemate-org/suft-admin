@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Avatar, TableBody, TableCell, TableRow } from "@windmill/react-ui";
 import axios from "axios";
@@ -88,7 +89,7 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
       )}
 
       <MainDrawer>
-        <CategoryDrawer id={serviceId} lang={lang} />
+        <CategoryDrawer id={serviceId} data={categories} lang={lang} />
       </MainDrawer>
 
       <TableBody>
@@ -104,16 +105,12 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
                   isChecked={isCheck?.includes(category.uuid)}
                 />
               </TableCell>
-
-              {/* Category ID (shortened version) */}
-              <TableCell className="text-xs font-semibold uppercase">
               <TableCell className="text-xs font-semibold uppercase">
                 {category.uuid.substring(0, 8)}
               </TableCell>
               <TableCell>
                 {category.iconUrl ? (
                   <Avatar
-                    className="md:block bg-gray-50 hidden p-1 mr-3"
                     className="md:block bg-gray-50 hidden p-1 mr-3"
                     src={category.iconUrl}
                     alt={category.name}
@@ -123,13 +120,9 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
                     src="https://images.pexels.com/photos/60597/dahlia-red-blossom-bloom-60597.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="product"
                     className="md:block bg-gray-50 p-1 mr-2 shadow-none"
-                    className="md:block bg-gray-50 p-1 mr-2 shadow-none"
                   />
                 )}
               </TableCell>
-
-              {/* Category Name */}
-              <TableCell className="text-sm font-medium">
               <TableCell className="text-sm font-medium">
                 <span>{category.name}</span>
               </TableCell>
@@ -144,7 +137,6 @@ const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => 
                   id={category.uuid}
                   parent={category}
                   isCheck={isCheck}
-                  handleDelete={() => handleDelete(category.uuid)} // Pass the uuid for deletion
                   handleUpdate={handleUpdate}
                   handleModalOpen={handleModalOpen}
                   title={category.name}

@@ -1,10 +1,10 @@
+
 import {
   Avatar,
   Badge,
   TableBody,
   TableCell,
   TableRow,
-  
   
 } from "@windmill/react-ui";
 import dayjs from "dayjs";
@@ -46,34 +46,25 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
 
       if (Array.isArray(response.data.data)) {
         setCoupons(response.data.data); 
-        setCoupons(response.data.data); 
       } else {
         console.error('Coupons data is not an array:', response.data);
-        setCoupons([]); 
         setCoupons([]); 
       }
     } catch (error) {
       console.error('Error fetching coupons:', error);
-      setCoupons([]); 
       setCoupons([]); 
     }
   };
 
   // Fetch coupon by UUID
   const fetchCouponByUUID = async (uuid) => {
-  // Fetch coupon by UUID
-  const fetchCouponByUUID = async (uuid) => {
     try {
-      const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-coupon/${uuid}`);
       const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-coupon/${uuid}`);
       if (response.data) {
         setSelectedCoupon(response.data); // Set coupon to state for drawer
         console.log('Fetched coupon for editing by UUID:', response.data);
-        setSelectedCoupon(response.data); // Set coupon to state for drawer
-        console.log('Fetched coupon for editing by UUID:', response.data);
       }
     } catch (error) {
-      console.error('Error fetching coupon by UUID:', error);
       console.error('Error fetching coupon by UUID:', error);
     }
   };
@@ -82,13 +73,9 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
   const handleEdit = async (uuid) => {
     await fetchCouponByUUID(uuid); // Fetch coupon by UUID when edit button is clicked
     handleUpdate(uuid);  // Open drawer for editing
-  const handleEdit = async (uuid) => {
-    await fetchCouponByUUID(uuid); // Fetch coupon by UUID when edit button is clicked
-    handleUpdate(uuid);  // Open drawer for editing
   };
 
   useEffect(() => {
-    fetchCoupons();  // Fetch all coupons on component load
     fetchCoupons();  // Fetch all coupons on component load
   }, []);
 
@@ -102,25 +89,17 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
         updatedDate: newDate,
       };
     }) : [];  
-    }) : [];  
 
     setUpdatedCoupons(result);
   }, [coupons, globalSetting?.default_time_zone]);
 
   
 
-  
-
   return (
     <>
-      {isCheck.length < 1 && <DeleteModal id={serviceId} title={title} setIsCheck={setIsCheck}  />}
+      {isCheck.length < 1 && <DeleteModal id={serviceId} title={title} />}
       {isCheck.length < 2 && (
         <MainDrawer>
-          <CouponDrawer 
-            id={serviceId} 
-            coupon={selectedCoupon} 
-            fetchCoupons={fetchCoupons} 
-          />
           <CouponDrawer 
             id={serviceId} 
             coupon={selectedCoupon} 
@@ -132,15 +111,13 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
       <TableBody>
         {Array.isArray(updatedCoupons) && updatedCoupons.length > 0 ? (
           updatedCoupons.map((coupon) => (
-            <TableRow key={coupon.uuid}>  
+            <TableRow key={coupon.uuid}>  {/* Use uuid as key */}
               <TableCell>
                 <CheckBox
                   type="checkbox"
                   name={coupon.name}
                   uuid={coupon.uuid}
-                  uuid={coupon.uuid}
                   handleClick={handleClick}
-                  isChecked={isCheck.includes(coupon.uuid)}
                   isChecked={isCheck.includes(coupon.uuid)}
                 />
               </TableCell>
@@ -179,9 +156,7 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
               <TableCell>
                 <EditDeleteButton
                   id={coupon.uuid}  // Use uuid here
-                  id={coupon.uuid}  // Use uuid here
                   isCheck={isCheck}
-                  handleUpdate={() => handleEdit(coupon.uuid)}  // Handle edit button click with UUID
                   handleUpdate={() => handleEdit(coupon.uuid)}  // Handle edit button click with UUID
                   handleModalOpen={handleModalOpen}
                   title={showingTranslateValue(coupon.name)}
