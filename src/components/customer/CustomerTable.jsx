@@ -1,10 +1,9 @@
 import { TableBody, TableCell, TableRow } from "@windmill/react-ui";
 import dayjs from "dayjs";
 import { t } from "i18next";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FiZoomIn } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 // Internal imports
 import MainDrawer from "@/components/drawer/MainDrawer";
@@ -17,45 +16,9 @@ import EditDeleteButton from "@/components/table/EditDeleteButton";
 // Component
 const CustomerTable = ({ customers }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
-  const [customers, setCustomers] = useState([]); // State to store customers
-  const [loading, setLoading] = useState(true); // State to handle loading
-
-  // Function to fetch customers
-  const fetchCustomers = async () => {
-    try {
-      const response = await axios.get(
-        "https://suft-90bec7a20f24.herokuapp.com/admin/users"
-      );
-
-      console.log("Full API response:", response); // Log the full response
-      console.log("Fetched customer data:", response.data?.data); // Log customer data
-
-      // Access customer data inside response.data.data
-      const customersData = response.data?.data || []; // Ensure an empty array fallback if not present
-
-      if (Array.isArray(customersData)) {
-        setCustomers(customersData); // Set customer data into state
-      } else {
-        console.error("Customer data is not an array:", customersData);
-        setCustomers([]); // Fallback if not an array
-      }
-
-      setLoading(false); // Set loading to false after processing the response
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-      setCustomers([]); // Empty array on error
-      setLoading(false); // Ensure loading is set to false in case of an error
-    }
-  };
-
-  // Fetch customers on component mount
-  useEffect(() => {
-    fetchCustomers();
-  }, []);
 
   return (
     <>
-      {/* Render modals */}
       <DeleteModal id={serviceId} title={title} />
       <MainDrawer>
         <CustomerDrawer id={serviceId} />
@@ -113,3 +76,4 @@ const CustomerTable = ({ customers }) => {
 };
 
 export default CustomerTable;
+

@@ -7,6 +7,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { FiUploadCloud, FiXCircle } from "react-icons/fi";
 
+
 //internal import
 import useAsync from "@/hooks/useAsync";
 import SettingServices from "@/services/SettingServices";
@@ -18,6 +19,15 @@ import Container from "@/components/image-uploader/Container";
 //   api_key: import.meta.env.VITE_APP_CLOUDINARY_API_KEY,
 //   api_secret: import.meta.env.VITE_APP_CLOUDINARY_API_SECRET,
 // });
+const api_key = import.meta.env.VITE_APP_CLOUDINARY_API_KEY
+const api_secret = import.meta.env.VITE_APP_CLOUDINARY_API_SECRET
+const cloudinary_name = import.meta.env.VITE_APP_CLOUD_NAME
+const cloudinary_url = import.meta.env.VITE_APP_CLOUDINARY_URL
+console.log("Api_key: ", api_key)
+console.log("Api_Secret: ", api_secret)
+console.log("cloudinary_name: ", cloudinary_name)
+console.log("cloudinary_url: ", cloudinary_url)
+
 
 const Uploader = ({ setImageUrl, imageUrl, product, folder }) => {
   const [files, setFiles] = useState([]);
@@ -83,7 +93,7 @@ const Uploader = ({ setImageUrl, imageUrl, product, folder }) => {
 
         if (product) {
           const result = imageUrl?.find(
-            (img) => img === `${import.meta.env.VITE_APP_CLOUDINARY_URL}`
+            (img) => img === `${cloudinary_url}`
           );
 
           if (result) return setLoading(false);
@@ -94,20 +104,20 @@ const Uploader = ({ setImageUrl, imageUrl, product, folder }) => {
 
         const formData = new FormData();
         formData.append("file", file);
-        formData.append(
-          "upload_preset",
-          import.meta.env.VITE_APP_CLOUDINARY_UPLOAD_PRESET
-        );
-        formData.append("cloud_name", import.meta.env.VITE_APP_CLOUD_NAME);
+        // formData.append(
+        //   "upload_preset",
+        //   import.meta.env.VITE_APP_CLOUDINARY_UPLOAD_PRESET
+        // );
+        formData.append("cloud_name", cloudinary_name);
         formData.append("folder", folder);
         formData.append("public_id", public_id);
 
         axios({
-          url: import.meta.env.VITE_APP_CLOUDINARY_URL,
+          url: '',
           method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+          // headers: {
+          //   "Content-Type": "application/x-www-form-urlencoded",
+          // },
           data: formData,
         })
           .then((res) => {
@@ -133,7 +143,7 @@ const Uploader = ({ setImageUrl, imageUrl, product, folder }) => {
     <div key={file.name}>
       <div>
         <img
-          className="inline-flex border-2 border-gray-100 w-24 max-h-24"
+          className="max-h-24 inline-flex w-24 border-2 border-gray-100"
           src={file.preview}
           alt={file.name}
         />
@@ -149,43 +159,18 @@ const Uploader = ({ setImageUrl, imageUrl, product, folder }) => {
     [files]
   );
 
-  const handleRemoveImage = async (img) => {
-    try {
-      // const url = img.substring(img.length - 25);
-      // const url = img.split("/").pop().split(".")[0];
-      // const public_id = `${folder}/${url}`;
-
-      // const res = await cloudinary.v2.uploader.destroy(public_id);
-
-      setLoading(false);
-      // notifyError(
-      //   res.result === "ok" ? "Image delete successfully!" : res.result
-      // );
-      notifyError("Image delete successfully!");
-      if (product) {
-        const result = imageUrl?.filter((i) => i !== img);
-        setImageUrl(result);
-      } else {
-        setImageUrl("");
-      }
-    } catch (err) {
-      console.error("err", err);
-      notifyError(err.Message);
-      setLoading(false);
-    }
-  };
-
+  
   return (
     <div className="w-full text-center">
       <div
-        className="border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md cursor-pointer px-6 pt-5 pb-6"
+        className="dark:border-gray-600 px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
         {...getRootProps()}
       >
         <input {...getInputProps()} />
-        <span className="mx-auto flex justify-center">
-          <FiUploadCloud className="text-3xl text-emerald-500" />
+        <span className="flex justify-center mx-auto">
+          <FiUploadCloud className="text-emerald-500 text-3xl" />
         </span>
-        <p className="text-sm mt-2">{t("DragYourImage")}</p>
+        <p className="mt-2 text-sm">{t("DragYourImage")}</p>
         <em className="text-xs text-gray-400">{t("imageFormat")}</em>
       </div>
 
@@ -203,13 +188,13 @@ const Uploader = ({ setImageUrl, imageUrl, product, folder }) => {
           <div className="relative">
             {" "}
             <img
-              className="inline-flex border rounded-md border-gray-100 dark:border-gray-600 w-24 max-h-24 p-2"
+              className="dark:border-gray-600 max-h-24 inline-flex w-24 p-2 border border-gray-100 rounded-md"
               src={imageUrl}
               alt="product"
             />
             <button
               type="button"
-              className="absolute top-0 right-0 text-red-500 focus:outline-none"
+              className="focus:outline-none absolute top-0 right-0 text-red-500"
               onClick={() => handleRemoveImage(imageUrl)}
             >
               <FiXCircle />

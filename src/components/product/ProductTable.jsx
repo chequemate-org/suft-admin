@@ -9,6 +9,7 @@ import {
 import { t } from "i18next";
 import { FiZoomIn } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import axios from  "axios";
 
 // internal imports
 import MainDrawer from "@/components/drawer/MainDrawer";
@@ -26,27 +27,42 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
   const { currency, getNumberTwo } = useUtilsFunction();
 
   // State to store the fetched product data
+  const [product, setProduct] = useState([]);
   const [fetchedProduct, setFetchedProduct] = useState(null);
 
+  const fetchProductByUUID = async (uuid) => {
+    try {
+      const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`);
+      if (response.data) {
+        setFetchedProduct(response.data); // Set fetched product to state
+        console.log("Fetched product for editing by UUID:", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching product by UUID:", error);
+    }
+  };
+
+  const handleEdit = async (uuid) => {
+    await fetchProductByUUID(uuid); // Fetch product data
+    handleUpdate(uuid); // Open the drawer for editing
+  };
+
   useEffect(() => {
-    const fetchProduct = async (uuid) => {
+    const fetchProducts = async () => {
       try {
-        const response = await fetch(`https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`);
+        // const response = await fetch('https://suft-90bec7a20f24.herokuapp.com/product');
         const data = await response.json();
-        
         if (response.ok) {
-          setFetchedProduct(data.data); // Store the product data
+          setProduct(data.data); // Store the product data
         } else {
           console.error(data.message); // Handle error messages
         }
       } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error('Error fetching products:', error);
       }
     };
 
-    // Example UUID, replace it with a real one when using it in your application
-    const exampleUUID = "da3cea08-63b1-44fa-b678-e0071ce958db";
-    fetchProduct(exampleUUID);
+    fetchProducts(); // Fetch products on component mount
   }, []);
 
   const handleClick = (e) => {
@@ -64,7 +80,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
       {isCheck?.length < 2 && (
         <MainDrawer>
-          <ProductDrawer currency={currency} id={serviceId} />
+          <ProductDrawer currency={currency} id={serviceId}  product={fetchedProduct} />
         </MainDrawer>
       )}
 
@@ -85,13 +101,13 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
               <div className="flex items-center">
                 {product?.imageUrl?.[0] ? (
                   <Avatar
-                    className="hidden p-1 mr-2 md:block bg-gray-50 shadow-none"
+                    className="md:block bg-gray-50 p-1 mr-2 shadow-none"
                     src={product.imageUrl[0]}
                     alt="product"
                   />
                 ) : (
                   <Avatar
-                    src={`https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png`}
+                    src={'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg'}
                     alt="product"
                   />
                 )}
@@ -140,7 +156,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
             <TableCell>
               <Link
                 to={`/product/${product.uuid}`}
-                className="flex justify-center text-gray-400 hover:text-emerald-600"
+                className="hover:text-emerald-600 flex justify-center text-gray-400"
               >
                 <Tooltip
                   id="view"
@@ -158,7 +174,8 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 id={product.uuid}
                 product={product}
                 isCheck={isCheck}
-                handleUpdate={handleUpdate}
+                handleUpdate={() => handleEdit(product.uuid)} 
+                // handleUpdate={handleUpdate}
                 handleModalOpen={handleModalOpen}
                 title={product?.name}
               />

@@ -25,7 +25,7 @@ const AdminServices = {
     return requests.post("/admin/create-user", body);
   },
   getAllStaff: async (body) => {
-    return requests.get("/admin/users", body);
+    return requests.get("/admin/", body);
   },
   getStaffById: async (id, body) => {
     return requests.post(`/admin${id}`, body);

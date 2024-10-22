@@ -30,23 +30,23 @@ const ProductServices = {
     }
   },
   addProduct: async (body) => {
-    return requests.post("/products/add", body);
+    // return requests.post(`/product/admin/create/`, body);
   },
   addAllProducts: async (body) => {
     return requests.post("/products/all", body);
   },
-  updateProduct: async (id, body) => {
-    return requests.patch(`/products/${id}`, body);
+  updateProduct: async (uuid, body) => {
+    return requests.patch(`/product/admin/update/${uuid}`, body);
   },
   updateManyProducts: async (body) => {
     return requests.patch("products/update/many", body);
   },
   updateStatus: async (id, body) => {
-    return requests.put(`/products/status/${id}`, body);
+    return requests.put(`/product/admin/update/${id}`, body);
   },
 
-  deleteProduct: async (id) => {
-    return requests.delete(`/product/admin/delete/${id}`);
+  deleteProduct: async (uuid) => {
+    return requests.delete(`/product/admin/delete/${uuid}`);
   },
   deleteManyProducts: async (body) => {
     return requests.patch("/products/delete/many", body);

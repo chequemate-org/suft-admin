@@ -1,8 +1,8 @@
 import requests from "./httpService";
 
 const CustomerServices = {
-  getAllCustomers: async ({ searchText = "" }) => {
-    return requests.get("/admin/users");
+  getAllCustomers: async ({body}) => {
+    return requests.get("/admin/users", body);
   },
 
   addAllCustomers: async (body) => {
@@ -21,8 +21,8 @@ const CustomerServices = {
     return requests.get(`/admin/users/${id}`);
   },
 
-  updateCustomer: async (id, body) => {
-    return requests.put(`/admin/users/${id}`, body);
+  updateCustomer: async (uuid, body) => {
+    return requests.put(`/admin/users/${uuid}`, body);
   },
 
   deleteCustomer: async (id) => {

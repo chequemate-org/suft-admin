@@ -1,96 +1,858 @@
-import ReactTagInput from "@pathofdev/react-tag-input";
-import {
-  Button,
-  Input,
-  TableCell,
-  TableContainer,
-  TableHeader,
-  Textarea,
-  Table,
-} from "@windmill/react-ui";
-import Multiselect from "multiselect-react-dropdown";
-import React from "react";
-import { Scrollbars } from "react-custom-scrollbars-2";
-import { MultiSelect } from "react-multi-select-component";
-import { Modal } from "react-responsive-modal";
-import "react-responsive-modal/styles.css";
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { FiX } from "react-icons/fi";
+// // import React, { useState } from "react";
+// // import {
+// //   Button,
+// //   Input,
+// //   product,
+// //   TableCell,
+// //   TableContainer,
+// //   TableHeader,
+// //   Textarea,
+// //   Table,
+// // } from "@windmill/react-ui";
+// // import { Scrollbars } from "react-custom-scrollbars-2";
+// // import useAsync from "@/hooks/useAsync";
+// // import SettingServices from "@/services/SettingServices";
+// // import { notifyError, notifySuccess } from "@/utils/toast";
+// // import Container from "@/components/image-uploader/Container";
+// // import { useDropzone } from "react-dropzone";
+// // import { FiUploadCloud, FiXCircle } from "react-icons/fi";
+// // import { DndProvider } from "react-dnd";
+// // import { HTML5Backend } from "react-dnd-html5-backend";
+// // import { MultiSelect } from "react-multi-select-component";
+// // import { Modal } from "react-responsive-modal";
+// // import "react-responsive-modal/styles.css";
+// // import { Link } from "react-router-dom";
+// // import { useTranslation } from "react-i18next";
+// // import { FiX } from "react-icons/fi";
+// // import ReactTagInput from "@pathofdev/react-tag-input";
+// // import { useForm } from "react-hook-form";
+// // import { toast } from "react-toastify";
+// // import "react-toastify/dist/ReactToastify.css";
 
-//internal import
+// // // internal imports
+// // import Title from "@/components/form/others/Title";
+// // import Error from "@/components/form/others/Error";
+// // import InputArea from "@/components/form/input/InputArea";
+// // import useUtilsFunction from "@/hooks/useUtilsFunction";
+// // import LabelArea from "@/components/form/selectOption/LabelArea";
+// // import DrawerButton from "@/components/form/button/DrawerButton";
+// // import InputValue from "@/components/form/input/InputValue";
+// // import useProductSubmit from "@/hooks/useProductSubmit";
+// // import ActiveButton from "@/components/form/button/ActiveButton";
+// // import InputValueFive from "@/components/form/input/InputValueFive";
+// // import Uploader from "@/components/image-uploader/Uploader";
+// // import UploaderThree from "../image-uploader/UploaderThree";
+// // import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleForCombination";
 
-import Title from "@/components/form/others/Title";
-import Error from "@/components/form/others/Error";
-import InputArea from "@/components/form/input/InputArea";
+// // const ProductDrawer = ({ id }) => {
+// //   const { t } = useTranslation();
+// //   const { tapValue, isCombination } = useProductSubmit(id);
+// //   const {
+// //     openModal,
+// //     handleIsCombination,
+// //     handleProductTap,
+// //     onCloseModal,
+// //     handleGenerateCombination,
+// //     handleSelectImage,
+// //     handleSelectLanguage,
+// //     register,
+// //     handleSubmit,
+// //     formState: { errors }
+// //   } = useForm(); // react-hook-form
+
+// //   // State for main images and extra images
+// //   const [imageUrl, setImageUrl] = useState([]);
+// //   const [extraImages, setExtraImages] = useState([]);
+// //   const [loading, setLoading] = useState(false);
+
+// //   // Form input states
+// //   const [name, setName] = useState("");
+// //   const [description, setDescription] = useState("");
+// //   const [price, setPrice] = useState("");
+// //   const [sku, setSku] = useState("");
+// //   const [stockLevel, setStockLevel] = useState("");
+// //   const [slug, setSlug] = useState("");
+// //   const [details, setDetails] = useState("");
+// //   // const [color, setColors] = useState([]);
+// //   const [size, setSize] = useState([]);
+// //   const [tags, setTags] = useState([]);
+// //   const [color, setColor] = useState([]);
+// //   const [processOption, setProcessOption] = useState(false);
+// //   const [isSubmitting, setIsSubmitting] = useState(false);
+
+// // const handleButton = () => {
+// //   setIsSubmitting(true);
+// // };
+
+// //   const handleProcess = (checked) => {
+// //     setProcessOption(checked);
+// //   };
+
+// //   const colorHexMapping = {
+// //     red: "#FF0000",
+// //     black: "#000000",
+// //     yellow: "#FFFF00",
+// //     blue: "#0000FF",
+// //   };
+
+// //   const handleImageUpload = (acceptedFiles) => {
+// //     setImageUrl((prevImages) => [
+// //       ...prevImages,
+// //       ...acceptedFiles.map((file) =>
+// //         Object.assign(file, { preview: URL.createObjectURL(file) })
+// //       ),
+// //     ]);
+// //   };
+
+// //   const handleExtraImageUpload = (acceptedFiles) => {
+// //     setExtraImages((prevImages) => [
+// //       ...prevImages,
+// //       ...acceptedFiles.map((file) =>
+// //         Object.assign(file, { preview: URL.createObjectURL(file) })
+// //       ),
+// //     ]);
+// //   };
+// //   // console.log("result");
+
+// //   const handleProductSubmit = async (data) => {
+// //     const formData = new FormData();
+// //     formData.append("name", data.name);
+// //     formData.append("description", data.description);
+// //     formData.append("sku", data.sku);
+// //     formData.append("slug", data.slug);
+// //     formData.append("price", data.price);
+// //     formData.append("stockLevel", data.stockLevel);
+// //     formData.append("details", data.details);
+
+// //     // Append selected sizes and colors (arrays) to FormData
+// //     formData.append("size", JSON.stringify(size));
+// //     formData.append("color", JSON.stringify(color));
+
+// //     // Append tags
+// //     formData.append("tags", JSON.stringify(tags));
+
+// //     // Append images
+// //     imageUrl.forEach((file, idx) => {
+// //       formData.append(`images[${idx}]`, file);
+// //     });
+
+// //     extraImages.forEach((file, idx) => {
+// //       formData.append(`extraImages[${idx}]`, file);
+// //     });
+
+// //     // Handle image validations
+// //     if (imageUrl.length === 0) {
+// //       toast.warn("Please upload at least one main image.");
+// //       return;
+// //     }
+
+// //     try {
+// //       setLoading(true);
+// //       const response = await fetch("https://suft-90bec7a20f24.herokuapp.com/product/admin/create", {
+// //         method: "POST",
+// //         body: formData,
+// //       });
+
+// //       const responseData = await response.json();
+// //       setLoading(false);
+
+// //       if (response.ok) {
+// //         toast.success("Product and images uploaded successfully!");
+// //       } else {
+// //         toast.error("Error uploading product: " + responseData.message);
+// //       }
+// //     } catch (error) {
+// //       setLoading(false);
+// //       toast.error("Error uploading product: " + error.message);
+// //     }
+// //   };
+
+// //   const { getRootProps: getRootPropsMain, getInputProps: getInputPropsMain } =
+// //     useDropzone({
+// //       accept: {
+// //         "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+// //       },
+// //       multiple: true,
+// //       maxSize: 5000000,
+// //       onDrop: handleImageUpload,
+// //     });
+
+// //   const { getRootProps: getRootPropsExtra, getInputProps: getInputPropsExtra } =
+// //     useDropzone({
+// //       accept: {
+// //         "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+// //       },
+// //       multiple: true,
+// //       maxSize: 5000000,
+// //       onDrop: handleExtraImageUpload,
+// //     });
+
+// //   const mainImageThumbs = imageUrl.map((file) => (
+// //     <div key={file.name} className="relative">
+// //       <img
+// //         className="max-h-24 inline-flex w-24 border-2 border-gray-100"
+// //         src={file.preview}
+// //         alt={file.name}
+// //       />
+// //       <button
+// //         type="button"
+// //         className="absolute top-0 right-0 text-red-500"
+// //         onClick={() => handleRemoveImage(file, setImageUrl)}
+// //       >
+// //         <FiXCircle />
+// //       </button>
+// //     </div>
+// //   ));
+
+// //   const extraImageThumbs = extraImages.map((file) => (
+// //     <div key={file.name} className="relative">
+// //       <img
+// //         className="max-h-24 inline-flex w-24 border-2 border-gray-100"
+// //         src={file.preview}
+// //         alt={file.name}
+// //       />
+// //       <button
+// //         type="button"
+// //         className="absolute top-0 right-0 text-red-500"
+// //         onClick={() => handleRemoveImage(file, setExtraImages)}
+// //       >
+// //         <FiXCircle />
+// //       </button>
+// //     </div>
+// //   ));
+// //   const handleRemoveImage = (file, setImages) => {
+// //     setImages((prevImages) => prevImages.filter((image) => image !== file));
+// //   };
+
+// //   const handleSizeSelection = (e) => {
+// //     const selectedSize = e.target.value;
+// //     if (selectedSize && !size.includes(selectedSize)) {
+// //       setSize([...size, selectedSize]);
+// //     }
+// //   };
+
+// //   const handleColorSelection = (e) => {
+// //     const colorName = e.target.value;
+// //     const hexCode = colorHexMapping[colorName];
+
+// //     if (!color.find((color) => color.name === colorName)) {
+// //       setColor([...color, { name: colorName, hex: hexCode }]);
+// //     }
+// //   };
+// //   const removeColor = (colorToRemove) => {
+// //     setColor(
+// //       color.filter((color) => color.name !== colorToRemove)
+// //     );
+// //   };
+
+// //   // const removeSize = (size) => {
+// //   //   setSize(size.filter((s) => s !== size));
+// //   // };
+
+// // const removeSize = (sizeToRemove) => {
+// //   setSize((prevSizes) => prevSizes.filter((size) => size !== sizeToRemove));
+// // };
+// //   return (
+// //     <>
+// //       <Modal
+// //         open={openModal}
+// //         onClose={onCloseModal}
+// //         center
+// //         closeIcon={
+// //           <div className="active:outline-none absolute top-0 right-0 text-xl text-red-500 border-0">
+// //             <FiX className="text-3xl" />
+// //           </div>
+// //         }
+// //       >
+// //         <div className="cursor-pointer">
+// //           <UploaderThree
+// //             imageUrl={imageUrl}
+// //             setImageUrl={setImageUrl}
+// //             handleSelectImage={handleSelectImage}
+// //           />
+// //         </div>
+// //       </Modal>
+
+// //       <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-6 border-b border-gray-100">
+// //         {id ? (
+// //           <Title
+// //             register={register}
+// //             handleSelectLanguage={handleSelectLanguage}
+// //             title={t("UpdateProduct")}
+// //             description={t("UpdateProductDescription")}
+// //           />
+// //         ) : (
+// //           <Title
+// //             register={register}
+// //             handleSelectLanguage={handleSelectLanguage}
+// //             title={t("DrawerAddProduct")}
+// //             description={t("AddProductDescription")}
+// //           />
+// //         )}
+// //       </div>
+
+// //       <div className="dark:text-gray-400 dark:border-gray-600 dark:bg-gray-700 text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+// //         <SwitchToggleForCombination
+// //          title="Product Variants"
+// //          product={true}
+// //          handleProcess={handleProcess}
+// //          processOption={processOption}
+
+// //         />
+
+// //         <ul className="flex flex-wrap -mb-px">
+// //           <li className="mr-2">
+// //             <ActiveButton
+// //               tapValue={tapValue}
+// //               activeValue="Basic Info"
+// //               handleProductTap={handleProductTap}
+// //             />
+// //           </li>
+
+// //           {isCombination && (
+// //             <li className="mr-2">
+// //               <ActiveButton
+// //                 tapValue={tapValue}
+// //                 activeValue="Combination"
+// //                 handleProductTap={handleProductTap}
+// //               />
+// //             </li>
+// //           )}
+// //         </ul>
+// //       </div>
+// //       <Scrollbars className="w-full">
+// //         <form onSubmit={handleSubmit(handleProductSubmit)} className="block">
+// //           {tapValue === "Basic Info" && (
+// //             <div className="w-full px-6 pt-8 pb-40">
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label={t("ProductTitleName")} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <Input
+// //                     {...register("name", { required: true })}
+// //                     type="text"
+// //                     value={name}
+// //                     onChange={(e) => setName(e.target.value)}
+// //                     placeholder={t("ProductTitleName")}
+// //                   />
+// //                   {errors.name && (
+// //                     <Error errorName="Product title is required." />
+// //                   )}
+// //                 </div>
+// //               </div>
+
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label={t("ProductDescription")} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <Textarea
+// //                     {...register("description", { required: true })}
+// //                     value={description}
+// //                     onChange={(e) => setDescription(e.target.value)}
+// //                     placeholder={t("ProductDescription")}
+// //                     rows="4"
+// //                   />
+// //                   {errors.description && (
+// //                     <Error errorName="Product description is required." />
+// //                   )}
+// //                 </div>
+// //               </div>
+
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label="Product Price" />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <InputValue
+// //                     label="Original Price"
+// //                     {...register("price", { required: true })}
+// //                     value={price}
+// //                     onChange={(e) => setPrice(e.target.value)}
+// //                     placeholder="Product Price"
+// //                   />
+// //                   {errors.price && <Error errorName="Price is required." />}
+// //                 </div>
+// //               </div>
+
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label={"Product Slug"} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <InputArea
+// //                     label="Slug"
+// //                     {...register("slug", { required: true })}
+// //                     value={slug}
+// //                     onChange={(e) => setSlug(e.target.value)}
+// //                     placeholder={t("ProductSlug")}
+// //                   />
+// //                   {errors.slug && <Error errorName="Slug is required." />}
+// //                 </div>
+// //               </div>
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label={"Product Sku"} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <InputArea
+// //                     label="Sku"
+// //                     {...register("sku", { required: true })}
+// //                     value={sku}
+// //                     onChange={(e) => setSku(e.target.value)}
+// //                     placeholder={("ProductSku")}
+// //                   />
+// //                   {errors.slug && <Error errorName="Sku is required." />}
+// //                 </div>
+// //               </div>
+
+// //               {/* Image upload for main images */}
+// //               <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+// //               <LabelArea label={"Product Image"} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <div
+// //                     {...getRootPropsMain()}
+// //                     className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+// //                   >
+// //                     <input {...getInputPropsMain()} />
+// //                     <span className="flex justify-center mx-auto">
+// //                       <FiUploadCloud className="text-emerald-500 text-3xl" />
+// //                     </span>
+// //                     <p className="mt-2 text-sm">Drag your image here</p>
+// //                     <em className="text-xs text-gray-400">
+// //                       (Only *.jpeg,*.png, and *.webp images will be accepted (Max: 5MB))
+// //                     </em>
+// //                   </div>
+// //                   <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
+// //                 </div>
+// //               </div>
+
+// //               <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+// //               <LabelArea label={"Extra Images"} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <div
+// //                     {...getRootPropsExtra()}
+// //                     className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+// //                   >
+// //                     <input {...getInputPropsExtra()} />
+// //                     <span className="flex justify-center mx-auto">
+// //                       <FiUploadCloud className="text-emerald-500 text-3xl" />
+// //                     </span>
+// //                     <p className="mt-2 text-sm">Drag your image here</p>
+// //                     <em className="text-xs text-gray-400">
+// //                       (Only *.jpeg,*.png, and *.webp images will be accepted (Max: 5MB))
+// //                     </em>
+// //                   </div>
+// //                   <div className="flex flex-wrap mt-4">{extraImageThumbs}</div>
+// //                 </div>
+// //               </div>
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label="Colors" />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <select
+// //                     name="color"
+// //                     onChange={handleColorSelection}
+// //                     className="w-full border border-gray-200 bg-gray-100 p-2 rounded outline-none h-[48px]"
+// //                   >
+// //                     <option value="" disabled selected hidden>
+// //                       Select a Color
+// //                     </option>
+// //                     <option value="red">Red</option>
+// //                     <option value="black">Black</option>
+// //                     <option value="yellow">Yellow</option>
+// //                     <option value="blue">Blue</option>
+// //                   </select>
+
+// //                   {/* Display selected colors */}
+// //                   <div className="flex flex-wrap mt-3">
+// //                     {color.map((color, index) => (
+// //                       <div
+// //                         key={index}
+// //                         className="flex items-center px-3 py-1 m-1 text-white bg-blue-500 rounded-full"
+// //                       >
+// //                         {/* Display color name and its hex code */}
+// //                         {color.name} ({color.hex})
+// //                         <FiX
+// //                           className="ml-2 cursor-pointer"
+// //                           onClick={() => removeColor(color.name)}
+// //                         />
+// //                       </div>
+// //                     ))}
+// //                   </div>
+// //                 </div>
+// //               </div>
+
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label="Sizes" />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <select
+// //                     name="size"
+// //                     onChange={handleSizeSelection}
+// //                     className="w-full border border-gray-200 bg-gray-100 p-2 rounded outline-none h-[48px]"
+// //                   >
+// //                     <option value="" disabled selected hidden>
+// //                       Select a Size
+// //                     </option>
+// //                     <option value="S">S</option>
+// //                     <option value="M">M</option>
+// //                     <option value="L">L</option>
+// //                     <option value="XL">XL</option>
+// //                   </select>
+
+// //                   {/* Display selected sizes */}
+// //                   <div className="flex flex-wrap mt-3">
+// //                     {size.map((sizeValue, index) => (
+// //                       <div
+// //                         key={index}
+// //                         className="flex items-center px-3 py-1 m-1 text-white bg-blue-500 rounded-full"
+// //                       >
+// //                         {sizeValue}
+// //                         <FiX
+// //                           className="ml-2 cursor-pointer"
+// //                           onClick={() => removeSize(sizeValue)}
+// //                         />
+// //                       </div>
+// //                     ))}
+// //                   </div>
+// //                 </div>
+// //               </div>
+
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label={"Details"} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <Textarea
+// //                     {...register("details", { required: true })}
+// //                     value={details}
+// //                     onChange={(e) => setDetails(e.target.value)}
+// //                     placeholder={"ProductDetails"}
+// //                     rows="4"
+// //                   />
+// //                   {errors.details && (
+// //                     <Error errorName="Product details is required." />
+// //                   )}
+// //                 </div>
+// //               </div>
+
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label={"StockLevel"} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <InputValueFive
+// //                     label={"StockLevel"}
+// //                     {...register("stockLevel", { required: true })}
+// //                     value={stockLevel}
+// //                     onChange={(e) => setStockLevel(e.target.value)}
+// //                     placeholder={"StockLevel"}
+// //                   />
+// //                   {errors.stockLevel && (
+// //                     <Error errorName="Stock level is required." />
+// //                   )}
+// //                 </div>
+// //               </div>
+
+// //               <div className="grid grid-cols-6 gap-3 mb-6">
+// //                 <LabelArea label={"ProductTags"} />
+// //                 <div className="sm:col-span-4 col-span-8">
+// //                   <ReactTagInput
+// //                     tags={tags}
+// //                     placeholder={"AddTag"}
+// //                     onChange={(newTags) => setTags(newTags)}
+// //                   />
+// //                 </div>
+// //               </div>
+// //             </div>
+// //           )}
+
+// //           {tapValue === "Combination" && (
+// //             <div className="w-full px-6 pt-8 pb-40">
+// //               <div className="w-full mb-6">
+// //                 <Button onClick={handleGenerateCombination}>
+// //                   Generate Combination
+// //                 </Button>
+// //               </div>
+// //               <AttributeListTable />
+// //             </div>
+// //           )}
+// //           {isCombination ? (
+// //             <DrawerButton
+// //               id={id}
+// //               save
+// //               title="Product"
+// //               handleButton={handleButton}
+// //               isSubmitting={isSubmitting}
+// //               handleProductTap={handleProductTap}
+// //             />
+// //           ) : (
+// //             <DrawerButton id={id} title="Product" isSubmitting={isSubmitting} />
+// //           )}
+
+// //           {tapValue === "Combination" && (
+// //             <DrawerButton id={id} title="Product" isSubmitting={isSubmitting} />
+// //           )}
+// //           {/* <DrawerButton id={id} title="Product" isSubmitting={isSubmitting} /> */}
+// //         </form>
+// //       </Scrollbars>
+// //     </>
+// //   );
+// // };
+
+// // export default ProductDrawer;
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { FiUploadCloud, FiXCircle } from "react-icons/fi";
+import { useDropzone } from "react-dropzone";
+import { toast } from "react-toastify";
+import axios from "axios";
+import LabelArea from "../form/selectOption/LabelArea";
 import useUtilsFunction from "@/hooks/useUtilsFunction";
-import LabelArea from "@/components/form/selectOption/LabelArea";
-import DrawerButton from "@/components/form/button/DrawerButton";
-import InputValue from "@/components/form/input/InputValue";
 import useProductSubmit from "@/hooks/useProductSubmit";
+import DrawerButton from "@/components/form/button/DrawerButton";
 import ActiveButton from "@/components/form/button/ActiveButton";
-import InputValueFive from "@/components/form/input/InputValueFive";
-import Uploader from "@/components/image-uploader/Uploader";
-import ParentCategory from "@/components/category/ParentCategory";
+import { Modal } from "react-responsive-modal";
 import UploaderThree from "@/components/image-uploader/UploaderThree";
-import AttributeOptionTwo from "@/components/attribute/AttributeOptionTwo";
-import AttributeListTable from "@/components/attribute/AttributeListTable";
+import Title from "@/components/form/others/Title";
+import { useTranslation } from "react-i18next";
+import Switch from "react-switch";
+// import Title from "@/components/form/others/Title";
 import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleForCombination";
 
-//internal import
-
-const ProductDrawer = ({ id }) => {
+const ProductDrawer = ({ id, title, uuid, fetchProducts, product}) => {
   const { t } = useTranslation();
-
   const {
-    tag,
-    setTag,
-    values,
-    language,
     register,
-    onSubmit,
-    errors,
-    slug,
-    openModal,
-    attribue,
-    setValues,
-    variants,
-    imageUrl,
-    setImageUrl,
     handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const {
     isCombination,
-    variantTitle,
-    attributes,
-    attTitle,
-    handleAddAtt,
-    // productId,
     onCloseModal,
-    isBulkUpdate,
-    globalSetting,
     isSubmitting,
     tapValue,
-    setTapValue,
-    resetRefTwo,
-    handleSkuBarcode,
     handleProductTap,
-    selectedCategory,
-    setSelectedCategory,
-    setDefaultCategory,
-    defaultCategory,
-    handleProductSlug,
     handleSelectLanguage,
     handleIsCombination,
-    handleEditVariant,
-    handleRemoveVariant,
-    handleClearVariant,
-    handleQuantityPrice,
+    openModal,
     handleSelectImage,
-    handleSelectInlineImage,
     handleGenerateCombination,
   } = useProductSubmit(id);
 
-  const { currency, showingTranslateValue } = useUtilsFunction();
+  // const { currency, showingTranslateValue } = useUtilsFunction();
 
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [size, setSize] = useState([]);
+  const [color, setColor] = useState([]);
+  const [details, setDetails] = useState("");
+  const [imageUrl, setImageUrl] = useState([]);
+  const [extraImages, setExtraImages] = useState([]);
+  const [stockLevel, setStockLevel] = useState("");
+  const [isAvailable, setIsAvailable] = useState(true);
+  const [sku, setSku] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [processOption, setProcessOption] = useState(false);
+
+  const colorOptions = [
+    { name: "Mandy", hex: "#C2405C" },
+    { name: "Magenta", hex: "#FF00FF" },
+    { name: "Grey", hex: "#808080" },
+  ];
+
+
+  // useEffect(() => {
+  //   if (uuid && product) {
+  //     setName(product.name || "");
+  //     setDescription(product.description || "");
+  //     setPrice(product.price || "");
+  //     setSize(product.size || []);
+  //     setColor(product.color || []);
+  //     setDetails(product.details || "");
+  //     setStockLevel(product.stockLevel || "");
+  //     setIsAvailable(product.isAvailable);
+  //     setSku(product.sku || "");
+
+  //     setImageUrl(
+  //       product.imageUrl.map((url) => ({
+  //         preview: url,
+  //         name: url,
+  //       }))
+  //     );
+  //     setExtraImages(
+  //       product.extraImages.map((url) => ({
+  //         preview: url,
+  //         name: url,
+  //       }))
+  //     );
+  //   } else {
+  //     resetForm(); // Call the resetForm function when no product is available
+  //   }
+  // }, [uuid, product]);
+
+
+  const handleProcess = (checked) => {
+    setProcessOption(checked);
+  };
+  // Image Upload Handlers
+  const handleImageUpload = (acceptedFiles, setImages) => {
+    const oversizedFiles = acceptedFiles.filter((file) => file.size > 5000000);
+    if (oversizedFiles.length > 0) {
+      toast.error("Some files are larger than 5MB and cannot be uploaded.");
+      return;
+    }
+
+    setUploadingImages(true); // Set uploading state to true
+    setImages((prevImages) => [
+      ...prevImages,
+      ...acceptedFiles.map((file) =>
+        Object.assign(file, { preview: URL.createObjectURL(file) })
+      ),
+    ]);
+
+    setUploadingImages(false); // Set uploading state to false
+    toast.success("Image uploaded successfully!");
+  };
+
+  const { getRootProps: getRootPropsMain, getInputProps: getInputPropsMain } =
+    useDropzone({
+      accept: {
+        "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+      },
+      multiple: true,
+      maxSize: 5000000,
+      onDrop: (files) => handleImageUpload(files, setImageUrl),
+    });
+
+  const { getRootProps: getRootPropsExtra, getInputProps: getInputPropsExtra } =
+    useDropzone({
+      accept: {
+        "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+      },
+      multiple: true,
+      maxSize: 5000000,
+      onDrop: (files) => handleImageUpload(files, setExtraImages),
+    });
+
+  const handleRemoveImage = (file, setImages) => {
+    setImages((prevImages) => prevImages.filter((image) => image !== file));
+    toast.success("Image removed successfully!");
+  };
+
+  const mainImageThumbs = imageUrl.map((file, index) => (
+    <div key={index} className="relative">
+      <img className="w-24 h-24" src={file.preview} alt={file.name} />
+      <button
+        type="button"
+        className="absolute top-0 right-0 text-red-500"
+        onClick={() => handleRemoveImage(file, setImageUrl)}
+      >
+        <FiXCircle />
+      </button>
+    </div>
+  ));
+
+  const extraImageThumbs = extraImages.map((file, index) => (
+    <div key={index} className="relative">
+      <img className="w-24 h-24" src={file.preview} alt={file.name} />
+      <button
+        type="button"
+        className="absolute top-0 right-0 text-red-500"
+        onClick={() => handleRemoveImage(file, setExtraImages)}
+      >
+        <FiXCircle />
+      </button>
+    </div>
+  ));
+
+  const handleColorSelection = (e) => {
+    const selectedColorName = e.target.value;
+    const selectedColor = colorOptions.find(
+      (c) => c.name === selectedColorName
+    );
+
+    if (selectedColor && !color.find((c) => c.name === selectedColor.name)) {
+      setColor([...color, selectedColor]);
+    }
+  };
+
+  const handleSizeSelection = (e) => {
+    const selectedSize = e.target.value;
+    if (selectedSize && !size.includes(selectedSize)) {
+      setSize([...size, selectedSize]);
+    }
+  };
+
+  const removeColor = (colorToRemove) => {
+    setColor(color.filter((c) => c.name !== colorToRemove));
+  };
+
+  const removeSize = (sizeToRemove) => {
+    setSize(size.filter((s) => s !== sizeToRemove));
+  };
+
+  const onSubmit = async (data) => {
+    const formData = new FormData();
+
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("price", data.price);
+    formData.append("stockLevel", data.stockLevel);
+    formData.append("details", data.details);
+    formData.append("sku", data.sku);
+    formData.append("isAvailable", isAvailable);
+    formData.append("size", JSON.stringify(size));
+    formData.append("color", JSON.stringify(color));
+
+    // Append images (only new files)
+    imageUrl.forEach((file, idx) => {
+      if (file instanceof File) {
+        formData.append(`images`, file);
+      }
+    });
+
+    extraImages.forEach((file, idx) => {
+      if (file instanceof File) {
+        formData.append(`extraImages`, file);
+      }
+    });
+
+    try {
+      setLoading(true);
+      let response;
+      if (uuid) {
+        // Update existing product
+        response = await axios.put(
+          `https://suft-90bec7a20f24.herokuapp.com/product/admin/update/${uuid}`,
+          formData
+        );
+      } else {
+        // Create new product
+        response = await axios.post(
+          "https://suft-90bec7a20f24.herokuapp.com/product/admin/create",
+          formData
+        );
+      }
+
+      if (response.status === 200) {
+        toast.success(
+          id ? "Product updated successfully!" : "Product added successfully!"
+        );
+        fetchProduct();
+        // Optionally reset form or close drawer here
+      } else {
+        console.error("Server error response:", response.data);
+        toast.error("Error: " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Error submitting the product:", error);
+      toast.error("Failed to submit the product!");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+    setSize([]);
+    setColor([]);
+    setDetails("");
+    setStockLevel("");
+    setIsAvailable(false);
+    setSku("");
+    setImageUrl([]);
+    setExtraImages([]);
+  };
   return (
     <>
       <Modal
@@ -98,8 +860,8 @@ const ProductDrawer = ({ id }) => {
         onClose={onCloseModal}
         center
         closeIcon={
-          <div className="absolute top-0 right-0 text-red-500  active:outline-none text-xl border-0">
-            <FiX className="text-3xl" />
+          <div className="active:outline-none absolute top-0 right-0 text-xl text-red-500 border-0">
+            <FiXCircle className="text-3xl" />
           </div>
         }
       >
@@ -112,7 +874,7 @@ const ProductDrawer = ({ id }) => {
         </div>
       </Modal>
 
-      <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+      <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-6 border-b border-gray-100">
         {id ? (
           <Title
             register={register}
@@ -130,7 +892,7 @@ const ProductDrawer = ({ id }) => {
         )}
       </div>
 
-      <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+      <div className="dark:text-gray-400 dark:border-gray-600 dark:bg-gray-700 text-sm font-medium text-center text-gray-500 border-b border-gray-200">
         <SwitchToggleForCombination
           product
           handleProcess={handleIsCombination}
@@ -158,344 +920,306 @@ const ProductDrawer = ({ id }) => {
         </ul>
       </div>
 
-      <Scrollbars className="track-horizontal thumb-horizontal w-full md:w-7/12 lg:w-8/12 xl:w-8/12 relative dark:bg-gray-700 dark:text-gray-200">
-        <form onSubmit={handleSubmit(onSubmit)} className="block" id="block">
-          {tapValue === "Basic Info" && (
-            <div className="px-6 pt-8 flex-grow w-full h-full max-h-full pb-40 md:pb-32 lg:pb-32 xl:pb-32">
-              {/* <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductID")} />
-                <div className="col-span-8 sm:col-span-4">{productId}</div>
-              </div> */}
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductTitleName")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <Input
-                    {...register(`title`, {
-                      required: "TItle is required!",
-                    })}
-                    name="title"
-                    type="text"
-                    placeholder={t("ProductTitleName")}
-                    onBlur={(e) => handleProductSlug(e.target.value)}
-                  />
-                  <Error errorName={errors.title} />
-                </div>
-              </div>
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductDescription")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <Textarea
-                    className="border text-sm  block w-full bg-gray-100 border-gray-200"
-                    {...register("description", {
-                      required: false,
-                    })}
-                    name="description"
-                    placeholder={t("ProductDescription")}
-                    rows="4"
-                    spellCheck="false"
-                  />
-                  <Error errorName={errors.description} />
-                </div>
-              </div>
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductImage")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <Uploader
-                    product
-                    folder="product"
-                    imageUrl={imageUrl}
-                    setImageUrl={setImageUrl}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductSKU")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputArea
-                    register={register}
-                    label={t("ProductSKU")}
-                    name="sku"
-                    type="text"
-                    placeholder={t("ProductSKU")}
-                  />
-                  <Error errorName={errors.sku} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductBarcode")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputArea
-                    register={register}
-                    label={t("ProductBarcode")}
-                    name="barcode"
-                    type="text"
-                    placeholder={t("ProductBarcode")}
-                  />
-                  <Error errorName={errors.barcode} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("Category")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <ParentCategory
-                    lang={language}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                    setDefaultCategory={setDefaultCategory}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("DefaultCategory")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <Multiselect
-                    displayValue="name"
-                    isObject={true}
-                    singleSelect={true}
-                    ref={resetRefTwo}
-                    hidePlaceholder={true}
-                    onKeyPressFn={function noRefCheck() {}}
-                    onRemove={function noRefCheck() {}}
-                    onSearch={function noRefCheck() {}}
-                    onSelect={(v) => setDefaultCategory(v)}
-                    selectedValues={defaultCategory}
-                    options={selectedCategory}
-                    placeholder={"Default Category"}
-                  ></Multiselect>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label="Product Price" />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputValue
-                    disabled={isCombination}
-                    register={register}
-                    maxValue={2000}
-                    minValue={1}
-                    label="Original Price"
-                    name="originalPrice"
-                    type="number"
-                    placeholder="OriginalPrice"
-                    defaultValue={0.0}
-                    required={true}
-                    product
-                    currency={currency}
-                  />
-                  <Error errorName={errors.originalPrice} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("SalePrice")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputValue
-                    disabled={isCombination}
-                    product
-                    register={register}
-                    minValue={0}
-                    defaultValue={0.0}
-                    required={true}
-                    label="Sale price"
-                    name="price"
-                    type="number"
-                    placeholder="Sale price"
-                    currency={currency}
-                  />
-                  <Error errorName={errors.price} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6 relative">
-                <LabelArea label={t("ProductQuantity")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <InputValueFive
-                    required={true}
-                    disabled={isCombination}
-                    register={register}
-                    minValue={0}
-                    defaultValue={0}
-                    label="Quantity"
-                    name="stock"
-                    type="number"
-                    placeholder={t("ProductQuantity")}
-                  />
-                  <Error errorName={errors.stock} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductSlug")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <Input
-                    {...register(`slug`, {
-                      required: "slug is required!",
-                    })}
-                    className=" mr-2 p-2"
-                    name="slug"
-                    type="text"
-                    defaultValue={slug}
-                    placeholder={t("ProductSlug")}
-                    onBlur={(e) => handleProductSlug(e.target.value)}
-                  />
-                  <Error errorName={errors.slug} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <LabelArea label={t("ProductTag")} />
-                <div className="col-span-8 sm:col-span-4">
-                  <ReactTagInput
-                    placeholder={t("ProductTagPlaseholder")}
-                    tags={tag}
-                    onChange={(newTags) => setTag(newTags)}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {tapValue === "Combination" &&
-            isCombination &&
-            (attribue.length < 1 ? (
-              <div
-                className="bg-teal-100 border border-teal-600 rounded-md text-teal-900 px-4 py-3 m-4"
-                role="alert"
-              >
-                <div className="flex">
-                  <div className="py-1">
-                    <svg
-                      className="fill-current h-6 w-6 text-teal-500 mr-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm">
-                      {t("AddCombinationsDiscription")}{" "}
-                      <Link to="/attributes" className="font-bold">
-                        {t("AttributesFeatures")}
-                      </Link>
-                      {t("AddCombinationsDiscriptionTwo")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-6">
-                {/* <h4 className="mb-4 font-semibold text-lg">Variants</h4> */}
-                <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3 md:gap-3 xl:gap-3 lg:gap-2 mb-3">
-                  <MultiSelect
-                    options={attTitle}
-                    value={attributes}
-                    onChange={(v) => handleAddAtt(v)}
-                    labelledBy="Select"
-                  />
-
-                  {attributes?.map((attribute, i) => (
-                    <div key={attribute._id}>
-                      <div className="flex w-full h-10 justify-between font-sans rounded-tl rounded-tr bg-gray-200 px-4 py-3 text-left text-sm font-normal text-gray-700 hover:bg-gray-200">
-                        {"Select"}
-                        {showingTranslateValue(attribute?.title)}
-                      </div>
-
-                      <AttributeOptionTwo
-                        id={i + 1}
-                        values={values}
-                        lang={language}
-                        attributes={attribute}
-                        setValues={setValues}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex justify-end mb-6">
-                  {attributes?.length > 0 && (
-                    <Button
-                      onClick={handleGenerateCombination}
-                      type="button"
-                      className="mx-2"
-                    >
-                      <span className="text-xs">{t("GenerateVariants")}</span>
-                    </Button>
-                  )}
-
-                  {variantTitle.length > 0 && (
-                    <Button onClick={handleClearVariant} className="mx-2">
-                      <span className="text-xs">{t("ClearVariants")}</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-
-          {isCombination ? (
-            <DrawerButton
-              id={id}
-              save
-              title="Product"
-              isSubmitting={isSubmitting}
-              handleProductTap={handleProductTap}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="p-6 bg-gray-100 rounded-lg"
+      >
+        <div className=" grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product Name"} />
+          <div className="sm:col-span-4 col-span-8">
+            <input
+              type="text"
+              {...register("name", { required: true })}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={"product name"}
+              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
-          ) : (
-            <DrawerButton id={id} title="Product" isSubmitting={isSubmitting} />
-          )}
+            {errors.name && (
+              <span className="text-red-600">Name is required.</span>
+            )}
+          </div>
+        </div>
 
-          {tapValue === "Combination" && (
-            <DrawerButton id={id} title="Product" isSubmitting={isSubmitting} />
-          )}
-        </form>
+        <div className="grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Description"} />
+          <div className="sm:col-span-4 col-span-8">
+            <textarea
+              {...register("description", { required: true })}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={"product description"}
+              className="focus:bg-white w-full p-2 mt-1 bg-gray-100 border rounded outline-none"
+              rows="4"
+            />
+            {errors.description && (
+              <span className="text-red-600">Description is required.</span>
+            )}
+          </div>
+        </div>
 
-        {tapValue === "Combination" &&
-          isCombination &&
-          variantTitle.length > 0 && (
-            <div className="px-6 overflow-x-auto">
-              {/* {variants?.length >= 0 && ( */}
-              {isCombination && (
-                <TableContainer className="md:mb-32 mb-40 rounded-b-lg">
-                  <Table>
-                    <TableHeader>
-                      <tr>
-                        <TableCell>{t("Image")}</TableCell>
-                        <TableCell>{t("Combination")}</TableCell>
-                        <TableCell>{t("Sku")}</TableCell>
-                        <TableCell>{t("Barcode")}</TableCell>
-                        <TableCell>{t("Price")}</TableCell>
-                        <TableCell>{t("SalePrice")}</TableCell>
-                        <TableCell>{t("QuantityTbl")}</TableCell>
-                        <TableCell className="text-right">
-                          {t("Action")}
-                        </TableCell>
-                      </tr>
-                    </TableHeader>
-
-                    <AttributeListTable
-                      lang={language}
-                      variants={variants}
-                      setTapValue={setTapValue}
-                      variantTitle={variantTitle}
-                      isBulkUpdate={isBulkUpdate}
-                      handleSkuBarcode={handleSkuBarcode}
-                      handleEditVariant={handleEditVariant}
-                      handleRemoveVariant={handleRemoveVariant}
-                      handleQuantityPrice={handleQuantityPrice}
-                      handleSelectInlineImage={handleSelectInlineImage}
-                    />
-                  </Table>
-                </TableContainer>
-              )}
+        <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product Image"} />
+          <div className="sm:col-span-4 col-span-8">
+            <div
+              {...getRootPropsMain()}
+              className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+            >
+              <input {...getInputPropsMain()} />
+              <span className="flex justify-center mx-auto">
+                <FiUploadCloud className="text-emerald-500 text-3xl" />
+              </span>
+              <p className="mt-2 text-sm">Drag your image here</p>
+              <em className="text-xs text-gray-400">
+                (Only *.jpeg,*.png, and *.webp images will be accepted (Max:
+                5MB))
+              </em>
             </div>
-          )}
-      </Scrollbars>
+            <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
+          </div>
+        </div>
+
+        <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Extra Images"} />
+          <div className="sm:col-span-4 col-span-8">
+            <div
+              {...getRootPropsExtra()}
+              className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+            >
+              <input {...getInputPropsExtra()} />
+              <span className="flex justify-center mx-auto">
+                <FiUploadCloud className="text-emerald-500 text-3xl" />
+              </span>
+              <p className="mt-2 text-sm">Drag your image here</p>
+              <em className="text-xs text-gray-400">
+                (Only *.jpeg,*.png, and *.webp images will be accepted (Max:
+                5MB))
+              </em>
+            </div>
+            <div className="flex flex-wrap mt-4">{extraImageThumbs}</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product Price"} />
+          <div className="sm:col-span-4 col-span-8">
+            <input
+              type="number"
+              {...register("price", { required: true })}
+              value={price}
+              placeholder={"product price"}
+              onChange={(e) => setPrice(e.target.value)}
+              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+            />
+            {errors.price && (
+              <span className="text-red-600">Price is required.</span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product Size"} />
+          <div className="sm:col-span-4 col-span-8">
+            <select
+              onChange={handleSizeSelection}
+              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+            >
+              <option value="" hidden>
+                Select a Size
+              </option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+            </select>
+            <div className="flex mt-2">
+              {size.map((s, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center p-2 mr-2 text-white bg-[#059669] text-white rounded-full"
+                >
+                  {s}
+                  <FiXCircle
+                    onClick={() => removeSize(s)}
+                    className="ml-2 cursor-pointer"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product Color"} />
+          <div className="sm:col-span-4 col-span-8">
+            <select
+              onChange={handleColorSelection}
+              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+            >
+              <option value="" hidden>
+                Select a Color
+              </option>
+              {colorOptions.map((c, idx) => (
+                <option key={idx} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <div className="flex mt-2">
+              {color.map((c, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center p-2 mr-4 text-white bg-[#059669] text-white rounded-full"
+                >
+                  {c.name} ({c.hex})
+                  <FiXCircle
+                    onClick={() => removeColor(c.name)}
+                    className="ml-2 cursor-pointer"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product StockLevel"} />
+          <div className="sm:col-span-4 col-span-8">
+            <input
+              type="number"
+              {...register("stockLevel", { required: true })}
+              value={stockLevel}
+              onChange={(e) => setStockLevel(e.target.value)}
+              placeholder={"product stocklevel"}
+              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+            />
+            {errors.stockLevel && (
+              <span className="text-red-600">Stock Level is required.</span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product Details"} />
+          <div className="sm:col-span-4 col-span-8">
+            <textarea
+              {...register("details", { required: true })}
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder={"product details"}
+              className=" focus:bg-white w-full p-2 mt-1 bg-gray-100 border rounded outline-none"
+              rows="4"
+            />
+            {errors.details && (
+              <span className="text-red-600">Details are required.</span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={"Product Sku"} />
+          <div className="sm:col-span-4 col-span-8">
+            <input
+              type="text"
+              {...register("sku", { required: true })}
+              value={sku}
+              onChange={(e) => setSku(e.target.value)}
+              placeholder={"product sku"}
+              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+            />
+            {errors.sku && (
+              <span className="text-red-600">SKU is required.</span>
+            )}
+          </div>
+        </div>
+        <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-[10rem]">
+          <LabelArea label={"Published"} />
+          <div className="sm:col-span-4 col-span-8">
+            <div className={`${"mb-3"}`}>
+              <div className="flex flex-wrap items-center">
+                <label className="dark:text-gray-300 block mb-1 text-sm font-semibold text-gray-700">
+                  {title}
+                </label>
+
+                <Switch
+                  id={id || title || ""}
+                  onChange={handleProcess}
+                  checked={processOption}
+                  className="react-switch md:ml-0 ml-3"
+                  uncheckedIcon={
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                        fontSize: 14,
+                        color: "white",
+                        paddingRight: 5,
+                        paddingTop: 1,
+                      }}
+                    >
+                      No
+                    </div>
+                  }
+                  width={80}
+                  height={30}
+                  handleDiameter={28}
+                  offColor="#E53E3E"
+                  onColor="#2F855A"
+                  checkedIcon={
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                        fontSize: 14,
+                        color: "white",
+                        paddingLeft: 8,
+                        paddingTop: 1,
+                      }}
+                    >
+                      Yes
+                    </div>
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {tapValue === "Combination" && (
+          <div className="w-full px-6 pt-8 pb-40">
+            <div className="w-full mb-6">
+              <Button onClick={handleGenerateCombination}>
+                Generate Combination
+              </Button>
+            </div>
+            <AttributeListTable />
+          </div>
+        )}
+        {isCombination ? (
+          <DrawerButton
+            id={id}
+            save
+            title="Product"
+            loading={loading}
+            text={uuid ? t("UpdateProduct") : t("AddProduct")}
+            // handleButton={handleButton}
+            isSubmitting={isSubmitting}
+            handleProductTap={handleProductTap}
+          />
+        ) : (
+          <DrawerButton id={id} title="Product" isSubmitting={isSubmitting} />
+        )}
+
+        {tapValue === "Combination" && (
+          <DrawerButton id={id} title="Product" isSubmitting={isSubmitting} />
+        )}
+      </form>
     </>
   );
 };
 
-export default React.memo(ProductDrawer);
+export default ProductDrawer;

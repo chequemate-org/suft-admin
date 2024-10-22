@@ -19,7 +19,7 @@ import AttributeServices from "@/services/AttributeServices";
 import CurrencyServices from "@/services/CurrencyServices";
 import { notifyError, notifySuccess } from "@/utils/toast";
 
-const DeleteModal = ({ id,uuid, ids, setIsCheck, category, title, useParamId }) => {
+const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
   const { isModalOpen, closeModal, setIsUpdate } = useContext(SidebarContext);
   const { setServiceId } = useToggleDrawer();
   const location = useLocation();
@@ -27,100 +27,209 @@ const DeleteModal = ({ id,uuid, ids, setIsCheck, category, title, useParamId }) 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleDelete = async () => {
+    // return notifyError("This feature is disabled for demo!");
     try {
       setIsSubmitting(true);
-      let res;
-
-      // Handle product deletion
       if (location.pathname === "/products") {
         if (ids) {
-          res = await ProductServices.deleteManyProducts({ ids });
+          const res = await ProductServices.deleteManyProducts({
+            ids: ids,
+          });
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setIsCheck([]);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         } else {
-          res = await ProductServices.deleteProduct(id);
+          const res = await ProductServices.deleteProduct(id);
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         }
       }
 
-      // Handle coupon deletion
       if (location.pathname === "/coupons") {
         if (ids) {
-          res = await CouponServices.deleteManyCoupons({ ids });
+          const res = await CouponServices.deleteManyCoupons({
+            ids: ids,
+          });
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setIsCheck([]);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         } else {
-          res = await CouponServices.deleteCoupon(uuid);
+          const res = await CouponServices.deleteCoupon(id);
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         }
       }
 
-      // Handle category deletion
       if (location.pathname === "/categories" || category) {
         if (ids) {
-          res = await CategoryServices.deleteManyCategory({ ids });
+          //  console.log('delete modal categorices',ids)
+          const res = await CategoryServices.deleteManyCategory({
+            ids: ids,
+          });
+          //  console.log('delete many category res',res)
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setIsCheck([]);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         } else {
-          if (!uuid) {
+          if (id === undefined || !id) {
             notifyError("Please select a category first!");
             setIsSubmitting(false);
-            return;
+            return closeModal();
           }
-          res = await CategoryServices.deleteCategory(uuid);
+          // console.log('delete modal open',id)
+          const res = await CategoryServices.deleteCategory(id);
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          closeModal();
+          setServiceId();
+          setIsSubmitting(false);
         }
-      }
-
-      // Handle child category deletion
-      if (location.pathname === `/categories/${useParamId}` || category) {
-        if (!uuid) {
+      } else if (
+        location.pathname === `/categories/${useParamId}` ||
+        category
+      ) {
+        // console.log('delete modal ')
+        if (id === undefined || !id) {
           notifyError("Please select a category first!");
           setIsSubmitting(false);
-          return;
+          return closeModal();
         }
-        res = await CategoryServices.deleteCategory(uuid);
+
+        const res = await CategoryServices.deleteCategory(id);
+        setIsUpdate(true);
+        notifySuccess(res.message);
+        closeModal();
+        setServiceId();
+        setIsSubmitting(false);
       }
 
-      // Handle customer deletion
       if (location.pathname === "/customers") {
-        res = await CustomerServices.deleteCustomer(id);
+        const res = await CustomerServices.deleteCustomer(id);
+        setIsUpdate(true);
+        notifySuccess(res.message);
+        setServiceId();
+        closeModal();
+        setIsSubmitting(false);
       }
 
-      // Handle attribute deletion
       if (location.pathname === "/attributes") {
         if (ids) {
-          res = await AttributeServices.deleteManyAttribute({ ids });
+          const res = await AttributeServices.deleteManyAttribute({
+            ids: ids,
+          });
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setIsCheck([]);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         } else {
-          res = await AttributeServices.deleteAttribute(id);
+          const res = await AttributeServices.deleteAttribute(id);
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         }
       }
 
-      // Handle staff deletion
-      if (location.pathname === "/our-staff") {
-        res = await AdminServices.deleteStaff(id);
+      if (
+        location.pathname === `/attributes/${location.pathname.split("/")[2]}`
+      ) {
+        if (ids) {
+          const res = await AttributeServices.deleteManyChildAttribute({
+            id: location.pathname.split("/")[2],
+            ids: ids,
+          });
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setServiceId();
+          setIsCheck([]);
+          closeModal();
+          setIsSubmitting(false);
+        } else {
+          // console.log("att value delete", id, location.pathname.split("/")[2]);
+
+          const res = await AttributeServices.deleteChildAttribute({
+            id: id,
+            ids: location.pathname.split("/")[2],
+          });
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
+        }
       }
 
-      // Handle language deletion
+      if (location.pathname === "/our-staff") {
+        const res = await AdminServices.deleteStaff(id);
+        setIsUpdate(true);
+        notifySuccess(res.message);
+        setServiceId();
+        closeModal();
+        setIsSubmitting(false);
+      }
+
       if (location.pathname === "/languages") {
         if (ids) {
-          res = await LanguageServices.deleteManyLanguage({ ids });
+          const res = await LanguageServices.deleteManyLanguage({
+            ids: ids,
+          });
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setIsCheck([]);
+          closeModal();
+          setIsSubmitting(false);
         } else {
-          res = await LanguageServices.deleteLanguage(id);
+          const res = await LanguageServices.deleteLanguage(id);
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         }
       }
 
-      // Handle currency deletion
       if (location.pathname === "/currencies") {
         if (ids) {
-          res = await CurrencyServices.deleteManyCurrency({ ids });
+          const res = await CurrencyServices.deleteManyCurrency({
+            ids: ids,
+          });
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setIsCheck([]);
+          closeModal();
+          setIsSubmitting(false);
         } else {
-          res = await CurrencyServices.deleteCurrency(id);
+          const res = await CurrencyServices.deleteCurrency(id);
+          setIsUpdate(true);
+          notifySuccess(res.message);
+          setServiceId();
+          closeModal();
+          setIsSubmitting(false);
         }
       }
-
-      // If the deletion was successful
-      setIsUpdate(true);
-      notifySuccess(res.message);
-      setIsCheck([]);
-      setServiceId();
-      closeModal();
-
     } catch (err) {
-      // If an error occurs
-      notifyError(err?.response?.data?.message || err?.message);
-    } finally {
+      notifyError(err ? err?.response?.data?.message : err?.message);
+      setServiceId();
+      setIsCheck([]);
+      closeModal();
       setIsSubmitting(false);
     }
   };
@@ -134,6 +243,7 @@ const DeleteModal = ({ id,uuid, ids, setIsCheck, category, title, useParamId }) 
           <span className="flex justify-center mb-6 text-3xl text-red-500">
             <FiTrash2 />
           </span>
+          {/* <h2 className="mb-1 text-xl font-medium">{t('DeleteModalH2')}</h2> */}
           <h2 className="mb-2 text-xl font-medium">
             {t("DeleteModalH2")} <span className="text-red-500">{title}</span>?
           </h2>
@@ -169,6 +279,12 @@ const DeleteModal = ({ id,uuid, ids, setIsCheck, category, title, useParamId }) 
               <Button onClick={handleDelete} className="sm:w-auto w-full h-12">
                 {t("modalDeletBtn")}
               </Button>
+              // <button
+              //   type="submit"
+              //   className="text-sm mt-6 leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-serif text-center justify-center border-0 border-transparent rounded-md focus-visible:outline-none focus:outline-none text-white px-4 md:px-6 lg:px-8 py-4 md:py-3.5 lg:py-4 hover:text-white bg-emerald-400 hover:bg-emerald-500 h-10"
+              // >
+              //   Park Order
+              // </button>
             )}
           </div>
         </ModalFooter>

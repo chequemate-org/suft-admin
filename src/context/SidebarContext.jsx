@@ -60,9 +60,15 @@ export const SidebarProvider = ({ children }) => {
     i18n.changeLanguage(lang);
     setLang(lang);
   };
-
-  const handleChangePage = (p) => {
-    setCurrentPage(p);
+  const handleChangePage = (newPage) => {
+    setCurrentPage(newPage);
+  };
+  // const handleChangePage = (p) => {
+  //   setCurrentPage(p);
+  // };
+  const handleLimitChange = (e) => {
+    setLimitData(parseInt(e.target.value));
+    setCurrentPage(1); 
   };
 
   const handleSubmitForAll = (e) => {
@@ -150,6 +156,7 @@ export const SidebarProvider = ({ children }) => {
         setSearchText,
         category,
         setCategory,
+        handleLimitChange,
         searchRef,
         handleSubmitForAll,
         status,
