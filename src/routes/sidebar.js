@@ -31,14 +31,14 @@ const sidebar = [
         path: "/products",
         name: "Products",
       },
-      {
-        path: "/categories",
-        name: "Categories",
-      },
-      {
-        path: "/attributes",
-        name: "Attributes",
-      },
+      // {
+      //   path: "/categories",
+      //   name: "Categories",
+      // },
+      // {
+      //   path: "/attributes",
+      //   name: "Attributes",
+      // },
       {
         path: "/coupons",
         name: "Coupons",

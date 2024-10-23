@@ -1,33 +1,59 @@
 import { Input } from "@windmill/react-ui";
-import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
 import SwitchToggle from "@/components/form/switch/SwitchToggle";
 import Uploader from "@/components/image-uploader/Uploader";
-import useCouponSubmit from "@/hooks/useCouponSubmit";
 import Title from "@/components/form/others/Title";
-import { t } from "i18next";
 import DrawerButton from "../form/button/DrawerButton";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify"; 
+import useCategorySubmit from "@/hooks/useCategorySubmit";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import TextAreaCom from "@/components/form/input/TextAreaCom";
+import LabelArea from "@/components/form/selectOption/LabelArea";
 
 const CategoryDrawer = ({ id }) => {
+  const { t } = useTranslation();
   const {
     register,
-    onSubmit,
-    published,
-    setPublished,
-    isSubmitting,
     handleSelectLanguage,
-  } = useCouponSubmit(id);
-
-  // Initialize form states
+  } = useCategorySubmit(id);
+  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [isPublished, setIsPublished] = useState(true);
   const [error, setError] = useState('');
-  
 
+  useEffect(() => {
+    const fetchCategoryById = async (uuid) => {
+      try {
+        const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/category/admin-get/${uuid}`);
+        const category = response.data.data;
+
+        if (category) {
+          setName(category.name || '');
+          setDescription(category.description || '');
+          setImageUrl(category.iconUrl || '');
+          setIsPublished(category.isPublished || true);
+        } else {
+          console.error("Category not found");
+          setError("Category not found");
+        }
+      } catch (err) {
+        console.error("Error fetching category:", err);
+        setError("Failed to fetch the category. Please try again.");
+      }
+    };
+
+    if (id) {
+      fetchCategoryById(id);
+    } else {
+      resetForm();
+    }
+  }, [id]);
+
+  // Handle form submission for updating/creating a category
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -39,81 +65,116 @@ const CategoryDrawer = ({ id }) => {
     };
 
     try {
-      const response = await axios.post("https://suft-90bec7a20f24.herokuapp.com/category/admin-add", categoryData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      let response;
+      if (id) {
+        // Update category if id (uuid) exists
+        response = await axios.put(
+          `https://suft-90bec7a20f24.herokuapp.com/category/admin-update/${id}`,
+          categoryData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      if (response.status === 201) {
-        toast.success("Category created successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        resetForm();
-        console.log("Category created successfully", response.data);
+        if (response.status === 200) {
+          toast.success("Category updated successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+      } else {
+        // Create a new category if no id
+        response = await axios.post(
+          "https://suft-90bec7a20f24.herokuapp.com/category/admin-add",
+          categoryData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.status === 201) {
+          toast.success("Category created successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
       }
+      resetForm();
     } catch (err) {
-      console.error("Error creating category:", err);
-      setError("Failed to create the category. Please try again.");
+      console.error("Error saving category:", err);
+      setError(
+        id
+          ? "Failed to update the category. Please try again."
+          : "Failed to create the category. Please try again."
+      );
     }
   };
+
+  // Reset the form fields
   const resetForm = () => {
-    setName('');        
-    setDescription('');        
-    setImageUrl('');           
-    setIsPublished(true); 
+    setName('');
+    setDescription('');
+    setImageUrl('');
+    setIsPublished(true);
+    setError('');
   };
 
   return (
-    <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-      {id ? (
-        <Title
-          register={register}
-          handleSelectLanguage={handleSelectLanguage}
-          title={t("UpdateCategory")}
-          description={t("UpdateCategoryDescription")}
-        />
-      ) : (
-        <Title
-          register={register}
-          handleSelectLanguage={handleSelectLanguage}
-          title={t("AddCategoryTitle")}
-          description={t("AddCategoryDescription")}
-        />
-      )}
-
+    <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-2 border-b border-gray-100">
+     <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-2 border-b border-gray-100">
+        {id ? (
+          <Title
+            register={register}
+            handleSelectLanguage={handleSelectLanguage}
+            title={t("UpdateCategory")}
+            description={t("UpdateCategoryDescription")}
+          />
+        ) : (
+          <Title
+            register={register}
+            handleSelectLanguage={handleSelectLanguage}
+            title={t("AddCategoryTitle")}
+            description={t("AddCategoryDescription")}
+          />
+        )}
+      </div>
       <form onSubmit={handleSubmit}>
-        <div className="p-6">
-          <div className="grid grid-cols-6 gap-3 mb-6">
-            <label className="col-span-2">Name</label>
+        <div className="scrollbar-hide flex-grow w-full max-h-full p-6 pb-40">
+          {/* Name Field */}
+          <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+          <LabelArea label={t("Name")} />
             <div className="col-span-4">
               <Input
+                required={true}
+                register={register}
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Category title"
                 className="w-full"
-                required
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-6 gap-3 mb-6">
-            <label className="col-span-2">Description</label>
+          {/* Description Field */}
+          <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+            <LabelArea label={t("Description")} />
             <div className="col-span-4">
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Category Description"
-                className="w-full p-2 border border-gray-300 rounded"
+                className="focus:border-gray-300 focus:bg-white block w-full p-2 text-sm bg-gray-100 border border-gray-200 rounded outline-none"
                 rows="4"
               />
             </div>
           </div>
 
-
-          <div className="grid grid-cols-6 gap-3 mb-6">
-            <label className="col-span-2">Category Image</label>
+          {/* Image Upload Field */}
+          <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+            <LabelArea label={t("ParentCategory")} />
             <div className="col-span-4">
               <Uploader
                 imageUrl={imageUrl}
@@ -123,9 +184,9 @@ const CategoryDrawer = ({ id }) => {
             </div>
           </div>
 
-
-          <div className="grid grid-cols-6 gap-3 mb-20">
-            <label className="col-span-2">Published</label>
+          {/* Published Switch */}
+          <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+            <LabelArea label={t("Published")} />
             <div className="col-span-4">
               <SwitchToggle
                 handleProcess={setIsPublished}
@@ -134,9 +195,11 @@ const CategoryDrawer = ({ id }) => {
             </div>
           </div>
 
+          {/* Error message display */}
           {error && <p className="text-red-500">{error}</p>}
 
-          <DrawerButton id={id} title="Category" isSubmitting={isSubmitting} />
+          {/* Submit Button */}
+          <DrawerButton id={id} title="Category" isSubmitting={false} />
         </div>
       </form>
     </div>

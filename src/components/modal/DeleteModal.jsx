@@ -239,12 +239,12 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
   return (
     <>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalBody className="text-center custom-modal px-8 pt-6 pb-4">
-          <span className="flex justify-center text-3xl mb-6 text-red-500">
+        <ModalBody className="custom-modal px-8 pt-6 pb-4 text-center">
+          <span className="flex justify-center mb-6 text-3xl text-red-500">
             <FiTrash2 />
           </span>
-          {/* <h2 className="text-xl font-medium mb-1">{t('DeleteModalH2')}</h2> */}
-          <h2 className="text-xl font-medium mb-2">
+          {/* <h2 className="mb-1 text-xl font-medium">{t('DeleteModalH2')}</h2> */}
+          <h2 className="mb-2 text-xl font-medium">
             {t("DeleteModalH2")} <span className="text-red-500">{title}</span>?
           </h2>
           <p>{t("DeleteModalPtag")}</p>
@@ -252,7 +252,7 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
 
         <ModalFooter className="justify-center">
           <Button
-            className="w-full sm:w-auto hover:bg-white hover:border-gray-50"
+            className="sm:w-auto hover:bg-white hover:border-gray-50 w-full"
             layout="outline"
             onClick={closeModal}
           >
@@ -263,7 +263,7 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
               <Button
                 disabled={true}
                 type="button"
-                className="w-full h-12 sm:w-auto"
+                className="sm:w-auto w-full h-12"
               >
                 <img
                   src={spinnerLoadingImage}
@@ -271,12 +271,12 @@ const DeleteModal = ({ id, ids, setIsCheck, category, title, useParamId }) => {
                   width={20}
                   height={10}
                 />{" "}
-                <span className="font-serif ml-2 font-light">
+                <span className="ml-2 font-serif font-light">
                   {t("Processing")}
                 </span>
               </Button>
             ) : (
-              <Button onClick={handleDelete} className="w-full h-12 sm:w-auto">
+              <Button onClick={handleDelete} className="sm:w-auto w-full h-12">
                 {t("modalDeletBtn")}
               </Button>
               // <button

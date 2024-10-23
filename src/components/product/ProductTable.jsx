@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from "axios";
 import {
   Avatar,
   Badge,
@@ -25,29 +26,29 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const { currency, getNumberTwo } = useUtilsFunction();
 
-  // State to store the fetched product data
-  const [fetchedProduct, setFetchedProduct] = useState(null);
+  // State to store the fetched single product data
+  const [fetchedProducts, setFetchedProducts] = useState(null);
 
-  useEffect(() => {
-    const fetchProduct = async (uuid) => {
-      try {
-        const response = await fetch(`https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`);
-        const data = await response.json();
-        
-        if (response.ok) {
-          setFetchedProduct(data.data); // Store the product data
-        } else {
-          console.error(data.message); // Handle error messages
-        }
-      } catch (error) {
-        console.error('Error fetching product:', error);
+  // Function to fetch product by UUID
+  const fetchProductByUUID = async (uuid) => {
+    try {
+      const response = await axios.get(
+        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+      );
+      if (response.data) {
+        setFetchedProducts(response.data); // Set coupon to state for drawer
+        console.log("Fetched Product for editing by UUID:", response.data);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching product by UUID:", error);
+    }
+  };
 
-    // Example UUID, replace it with a real one when using it in your application
-    const exampleUUID = "da3cea08-63b1-44fa-b678-e0071ce958db";
-    fetchProduct(exampleUUID);
-  }, []);
+  // Handle the edit button click
+  const handleEdit = async (uuid) => {
+    await fetchProductByUUID(uuid);
+    handleUpdate(uuid); // Open the drawer for editing
+  };
 
   const handleClick = (e) => {
     const { id, checked } = e.target;
@@ -64,7 +65,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
       {isCheck?.length < 2 && (
         <MainDrawer>
-          <ProductDrawer currency={currency} id={serviceId} />
+          <ProductDrawer currency={currency} id={serviceId} product={fetchedProducts}  />
         </MainDrawer>
       )}
 
@@ -85,13 +86,13 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
               <div className="flex items-center">
                 {product?.imageUrl?.[0] ? (
                   <Avatar
-                    className="hidden p-1 mr-2 md:block bg-gray-50 shadow-none"
+                    className="md:block bg-gray-50 p-1 mr-2 shadow-none"
                     src={product.imageUrl[0]}
                     alt="product"
                   />
                 ) : (
                   <Avatar
-                    src={`https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png`}
+                    src={'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg'}
                     alt="product"
                   />
                 )}
@@ -140,7 +141,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
             <TableCell>
               <Link
                 to={`/product/${product.uuid}`}
-                className="flex justify-center text-gray-400 hover:text-emerald-600"
+                className="hover:text-emerald-600 flex justify-center text-gray-400"
               >
                 <Tooltip
                   id="view"
@@ -158,7 +159,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 id={product.uuid}
                 product={product}
                 isCheck={isCheck}
-                handleUpdate={handleUpdate}
+                handleUpdate={() => handleEdit(product.uuid)} 
                 handleModalOpen={handleModalOpen}
                 title={product?.name}
               />
@@ -167,13 +168,13 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
         ))}
 
         {/* Display fetched product details if available */}
-        {fetchedProduct && (
+        {fetchedProducts && (
           <TableRow>
             <TableCell colSpan="10">
               <div className="p-4">
-                <h2 className="text-lg font-bold">{fetchedProduct.name}</h2>
-                <p>{fetchedProduct.description}</p>
-                <p className="font-semibold">{currency}{fetchedProduct.price}</p>
+                <h2 className="text-lg font-bold">{fetchedProducts.name}</h2>
+                <p>{fetchedProducts.description}</p>
+                <p className="font-semibold">{currency}{fetchedProducts.price}</p>
                 {/* Add any additional product details you want to display here */}
               </div>
             </TableCell>

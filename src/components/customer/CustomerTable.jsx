@@ -28,7 +28,7 @@ const CustomerTable = ({ customers }) => {
         {customers?.map((user) => (
           <TableRow key={user.uuid}>
             <TableCell>
-              <span className="font-semibold uppercase text-xs">
+              <span className="text-xs font-semibold uppercase">
                 {user.uuid?.substring(0, 4) || "N/A"}
               </span>
             </TableCell>
@@ -49,7 +49,7 @@ const CustomerTable = ({ customers }) => {
 
             <TableCell>
               <div className="flex justify-end text-right">
-                <div className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600">
+                <div className="hover:text-emerald-600 p-2 text-gray-400 cursor-pointer">
                   <Link to={`/customer-order/${user.uuid}`}>
                     <Tooltip
                       id="view"
@@ -76,3 +76,4 @@ const CustomerTable = ({ customers }) => {
 };
 
 export default CustomerTable;
+

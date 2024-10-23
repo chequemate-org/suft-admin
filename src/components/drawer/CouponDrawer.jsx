@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Scrollbars } from "react-custom-scrollbars-2";
-import { t } from "i18next";
 import { Input } from '@windmill/react-ui';
 import LabelArea from '@/components/form/selectOption/LabelArea';
 import useCouponSubmit from "@/hooks/useCouponSubmit";
@@ -8,23 +6,13 @@ import Error from '@/components/form/others/Error';
 import DrawerButton from '@/components/form/button/DrawerButton';
 import SwitchToggle from "@/components/form/switch/SwitchToggle";
 import Title from "@/components/form/others/Title";
+import { useTranslation } from "react-i18next";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 
-const CouponDrawer = ({ id }) => {
-  const {
-    register,
-    onSubmit,
-    setImageUrl,
-    imageUrl,
-    published,
-    setPublished,
-    currency,
-    discountType,
-    setDiscountType,
-    isSubmitting,
-    handleSelectLanguage,
-  } = useCouponSubmit(id);
+const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
+  const { t } = useTranslation();
+  const { register, handleSelectLanguage } = useCouponSubmit(id);
 
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
@@ -33,8 +21,19 @@ const CouponDrawer = ({ id }) => {
   const [isPublished, setIsPublished] = useState(true);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [coupons, setCoupons] = useState([]); 
-  const [editingCoupon, setEditingCoupon] = useState(null);
+
+  // Fetch the coupon data by ID
+  useEffect(() => {
+    if (id && coupon) {
+      setName(coupon.data.name);
+      setCode(coupon.data.code);
+      setDiscount(coupon.data.discount);
+      setExpiryDate(coupon.data.expiryDate);
+      setIsPublished(coupon.data.isPublished);
+    } else {
+      resetForm();
+    }
+  }, [id, coupon]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -60,13 +59,16 @@ const CouponDrawer = ({ id }) => {
       try {
         setLoading(true);
         let response;
-        if (editingCoupon) {
-          response = await fetch(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-update/coupon/${editingCoupon.id}`, {
+
+        if (id) {
+          // PUT request to update the coupon by ID
+          response = await fetch(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-update/coupon/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(couponData),
           });
         } else {
+          // POST request to create a new coupon
           response = await fetch('https://suft-90bec7a20f24.herokuapp.com/coupon/admin-create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -80,11 +82,12 @@ const CouponDrawer = ({ id }) => {
         }
 
         resetForm();
-        toast.success(editingCoupon ? 'Coupon updated successfully!' : 'Coupon created successfully!');
+        toast.success(id ? 'Coupon updated successfully!' : 'Coupon created successfully!');
+        fetchCoupons(); // Refetch coupons after submission
       } catch (error) {
-        console.error('Error submitting coupon:', error);
+        console.error('Error submitting coupon:', error.message);
         setErrors({ api: error.message });
-        toast.error('Failed to submit the coupon. Please try again.'); 
+        toast.error('Failed to submit the coupon. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -98,116 +101,85 @@ const CouponDrawer = ({ id }) => {
     setExpiryDate('');
     setIsPublished(true);
     setErrors({});
-    setEditingCoupon(null);
-  };
-
-  
-  const editCoupon = async (coupon) => {
-    setEditingCoupon(coupon);
-    try {
-      const response = await fetch(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-update/coupon/${coupon.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setName(data.name);
-        setCode(data.code);
-        setDiscount(data.discount);
-        setExpiryDate(data.expiryDate);
-        setIsPublished(data.isPublished);
-      } else {
-        toast.error('Failed to fetch coupon details.'); 
-      }
-    } catch (error) {
-      console.error('Error fetching coupon details:', error);
-      toast.error('Error occurred while fetching the coupon details.');
-    }
   };
 
   return (
-    <div className="p-6 bg-gray-50 rounded shadow-md">
-      {/* <ToastContainer/> */}
-    
-      {id ? (
+    <div className="bg-gray-50 p-6 rounded shadow-md">
+      {loading ? (
+        <p>Loading coupon data...</p>
+      ) : (
+        <>
           <Title
             register={register}
             handleSelectLanguage={handleSelectLanguage}
-            title={t("UpdateCoupon")}
-            description={t("UpdateCouponDescription")}
+            title={id ? t("UpdateCoupon") : t("AddCoupon")}
+            description={id ? t("UpdateCouponDescription") : t("AddCouponDescription")}
           />
-        ) : (
-          <Title
-            register={register}
-            handleSelectLanguage={handleSelectLanguage}
-            title={t("AddCoupon")}
-            description={t("AddCouponDescription")}
-          />
-        )}
- 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <LabelArea label="Coupon Name" />
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter coupon name"
-            className={`border rounded-md p-2 w-full ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-          />
-          {errors.name && <Error errorName={errors.name} />}
-        </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <LabelArea label="Coupon Name" />
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter coupon name"
+                className={`border rounded-md p-2 w-full ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors.name && <Error errorName={errors.name} />}
+            </div>
 
-        <div className="mb-4">
-          <LabelArea label="Coupon Code" />
-          <Input
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="Enter coupon code"
-            className={`border rounded-md p-2 w-full ${errors.code ? 'border-red-500' : 'border-gray-300'}`}
-          />
-          {errors.code && <Error errorName={errors.code} />}
-        </div>
+            <div className="mb-4">
+              <LabelArea label="Coupon Code" />
+              <Input
+                type="text"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Enter coupon code"
+                className={`border rounded-md p-2 w-full ${errors.code ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors.code && <Error errorName={errors.code} />}
+            </div>
 
-        <div className="mb-4">
-          <LabelArea label="Discount Percentage" />
-          <div className="relative flex items-center">
-            <span className="absolute p-2 text-gray-500 font-semibold">%</span>
-            <div className="absolute h-full left-2 border-l border-gray-300"></div>
-            <Input
-              type="number"
-              value={discount}
-              onChange={(e) => setDiscount(e.target.value)}
-              placeholder="Enter discount percentage (1-100)"
-              className={`border rounded-md p-2 pl-10 w-full ${errors.discount ? 'border-red-500' : 'border-gray-300'}`}
-            />
-          </div>
-          {errors.discount && <Error errorName={errors.discount} />}
-        </div>
+            <div className="mb-4">
+              <LabelArea label="Discount Percentage" />
+              <div className="relative flex items-center">
+                <span className="absolute p-2 font-semibold text-gray-500">%</span>
+                <Input
+                  type="number"
+                  value={discount}
+                  onChange={(e) => setDiscount(e.target.value)}
+                  placeholder="Enter discount percentage (1-100)"
+                  className={`border rounded-md p-2 pl-10 w-full ${errors.discount ? 'border-red-500' : 'border-gray-300'}`}
+                />
+              </div>
+              {errors.discount && <Error errorName={errors.discount} />}
+            </div>
 
-        <div className="mb-4">
-          <LabelArea label="Expiry Date" />
-          <Input
-            type="date"
-            value={expiryDate}
-            onChange={(e) => setExpiryDate(e.target.value)}
-            className={`border rounded-md p-2 w-full ${errors.expiryDate ? 'border-red-500' : 'border-gray-300'}`}
-          />
-          {errors.expiryDate && <Error errorName={errors.expiryDate} />}
-        </div>
+            <div className="mb-4">
+              <LabelArea label="Expiry Date" />
+              <Input
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                className={`border rounded-md p-2 w-full ${errors.expiryDate ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors.expiryDate && <Error errorName={errors.expiryDate} />}
+            </div>
 
-        <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-          <LabelArea label={t("Published")} />
-          <div className="col-span-8 sm:col-span-4">
-            <SwitchToggle
-              handleProcess={setPublished}
-              processOption={published}
-            />
-            {errors.productType && <Error errorName={errors.productType} />}
-          </div>
-        </div>
+            <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+              <LabelArea label={t("Published")} />
+              <div className="sm:col-span-4 col-span-8">
+                <SwitchToggle
+                  handleProcess={setIsPublished}
+                  processOption={isPublished}
+                />
+              </div>
+            </div>
 
-        <DrawerButton id={id} title="Coupon" />
-      </form>
-      
+            <DrawerButton id={id} title="Coupon" />
+          </form>
+        </>
+      )}
     </div>
   );
 };

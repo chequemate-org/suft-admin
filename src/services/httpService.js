@@ -51,7 +51,7 @@ const requests = {
 
   patch: (url, body) => instance.patch(url, body).then(responseBody),
 
-  delete: (url, body) => instance.delete(url, body).then(responseBody),
+  delete: (url) => instance.delete(url).then(responseBody),
 };
 
 export default requests;

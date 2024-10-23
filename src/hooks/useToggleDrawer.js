@@ -18,8 +18,8 @@ const useToggleDrawer = () => {
     toggleBulkDrawer();
   };
 
-  const handleModalOpen = (id, title) => {
-    setServiceId(id);
+  const handleModalOpen = (uuid, title) => {
+    setServiceId(uuid);
     toggleModal();
     setTitle(title);
   };

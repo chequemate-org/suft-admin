@@ -13,6 +13,7 @@ import "@/assets/css/tailwind.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "@/i18n";
 import App from "@/App";
+import '@/App.css'
 import store from "@/reduxStore/store";
 import myTheme from "@/assets/theme/myTheme";
 import { AdminProvider } from "@/context/AdminContext";

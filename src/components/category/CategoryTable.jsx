@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, TableBody, TableCell, TableRow } from "@windmill/react-ui";
-import axios from "axios"; // Import axios for API calls
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { IoRemoveSharp } from "react-icons/io5";
 
 // Internal imports
 import CheckBox from "@/components/form/others/CheckBox";
@@ -12,150 +14,194 @@ import ShowHideButton from "@/components/table/ShowHideButton";
 import EditDeleteButton from "@/components/table/EditDeleteButton";
 import useUtilsFunction from "@/hooks/useUtilsFunction";
 
-const CategoryTable = ({ lang, isCheck, setIsCheck, useParamId, showChild }) => {
+const CategoryTable = ({
+  data,
+  lang,
+  isCheck,
+  setIsCheck,
+  useParamId,
+  showChild,
+}) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
-  const { showingTranslateValue } = useUtilsFunction();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null); // New state for selected category
 
-  const [categories, setCategories] = useState([]); // State to hold category data
-  const [loading, setLoading] = useState(true); // State to handle loading
-  const [error, setError] = useState(null); // State to handle errors
-
-  // Function to fetch categories
+  // Fetch categories from the API
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('https://suft-90bec7a20f24.herokuapp.com/category/admin-all');
-      console.log('categories:', response.data);
-
+      const response = await axios.get(
+        "https://suft-90bec7a20f24.herokuapp.com/category/admin-all"
+      );
       if (Array.isArray(response.data.data)) {
-        setCategories(response.data.data); 
-        setLoading(false) // Set coupons from response.data.data
+        setCategories(response.data.data);
+        setLoading(false);
       } else {
-        console.error('Categories data is not an array:', response.data);
-        setCategories([]);  // Reset coupons to an empty array if data is invalid
+        console.error("Categories data is not an array:", response.data);
+        setCategories([]);
       }
     } catch (error) {
-      console.error('Error fetching categories:', error);
-      setCategories([]);  // Reset coupons to an empty array on error
+      console.error("Error fetching categories:", error);
+      setCategories([]);
+      setError("Failed to fetch categories. Please try again.");
     }
   };
-  // const fetchCategories = async () => {
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  // Handle delete click - open modal with category name
+  const handleDeleteClick = (category) => {
+    setSelectedCategory(category); // Set the selected category (name and uuid)
+    handleModalOpen(); // Open the modal
+  };
+
+  // Handle actual category deletion
+  // const handleDelete = async (uuid) => {
   //   try {
-  //     const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/category/admin-all");
-  //     console.log(response.data);
+  //     const response = await axios.delete(
+  //       `https://suft-90bec7a20f24.herokuapp.com/category/admin-delete/${uuid}`
+  //     );
 
-  //     // Check if response data is an array
-  //     const categoriesData = Array.isArray(response.data) ? response.data : [];
-
-  //     setCategories(categoriesData); // Set categories state
-  //     setLoading(false); // Stop loading after fetching data
+  //     if (response.status === 200) {
+  //       toast.success("Category deleted successfully!", {
+  //         // position: toast.POSITION.TOP_RIGHT,
+  //       });
+  //       fetchCategories(); // Refresh the categories list after successful deletion
+  //       setSelectedCategory(null); // Reset selected category after deletion
+  //     }
   //   } catch (error) {
-  //     console.error("Error fetching categories:", error);
-  //     setError("Failed to load categories");
-  //     setLoading(false); // Stop loading even if there's an error
+  //     console.error("Error deleting category:", error);
+  //     toast.error("Failed to delete the category. Please try again.", {
+  //       // position: toast.POSITION.TOP_RIGHT,
+  //     });
   //   }
   // };
 
-  useEffect(() => {
-    fetchCategories(); // Fetch categories on component mount
-  }, []);
-
+  // Handle checkbox click to manage selected items
   const handleClick = (e) => {
     const { id, checked } = e.target;
-    setIsCheck([...isCheck, id]);
-    if (!checked) {
-      setIsCheck(isCheck.filter((item) => item !== id));
+    if (checked) {
+      setIsCheck((prev) => [...prev, id]);
+    } else {
+      setIsCheck((prev) => prev.filter((item) => item !== id));
     }
   };
 
-  // Conditional rendering based on loading and error states
   if (loading) {
-    return <div>Loading categories...</div>; // Return a div instead of <p>
+    return <div>Loading categories...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>; // Return a div instead of <p>
+    return <div>{error}</div>;
   }
 
   return (
     <>
-      {isCheck?.length < 1 && (
-        <DeleteModal useParamId={useParamId} id={serviceId} title={title} />
+      {selectedCategory && ( // Only show the modal when a category is selected
+        <DeleteModal
+          useParamId={useParamId}
+          id={selectedCategory.uuid}
+          title={selectedCategory.name}
+          onDelete={() => handleDelete(selectedCategory.uuid)}
+        />
       )}
 
       <MainDrawer>
-        <CategoryDrawer id={serviceId} data={categories} lang={lang} />
+        <CategoryDrawer id={serviceId} data={data} lang={lang} />
       </MainDrawer>
 
       <TableBody>
-        {Array.isArray(categories) && categories.length > 0 ? (
-          categories.map((category) => (
-            <TableRow key={category.uuid}>
-              {/* Checkbox for selecting categories */}
-              <TableCell>
-                <CheckBox
-                  type="checkbox"
-                  name="category"
-                  id={category.uuid}
-                  handleClick={handleClick}
-                  isChecked={isCheck?.includes(category.uuid)}
+        {categories?.map((category) => (
+          <TableRow key={category.uuid}>
+            <TableCell>
+              <CheckBox
+                type="checkbox"
+                name="category"
+                id={category.uuid}
+                handleClick={handleClick}
+                isChecked={isCheck?.includes(category.uuid)}
+              />
+            </TableCell>
+
+            <TableCell className="text-xs font-semibold uppercase">
+              {category.uuid.substring(20, 24)}
+            </TableCell>
+            <TableCell>
+              {category.iconUrl ? (
+                <Avatar
+                  className="md:block bg-gray-50 hidden p-1 mr-3"
+                  src={category.iconUrl}
+                  alt={category.name}
                 />
-              </TableCell>
+              ) : (
+                <Avatar
+                  src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
+                  alt="product"
+                  className="md:block bg-gray-50 hidden p-1 mr-2 shadow-none"
+                />
+              )}
+            </TableCell>
 
-              {/* Category ID (shortened version) */}
-              <TableCell className="font-semibold uppercase text-xs">
-                {category.uuid.substring(0, 8)}
-              </TableCell>
-
-              {/* Category Icon */}
-              <TableCell>
-                {category.iconUrl ? (
-                  <Avatar
-                    className="hidden mr-3 md:block bg-gray-50 p-1"
-                    src={category.iconUrl}
-                    alt={category.name}
-                  />
-                ) : (
-                  <Avatar
-                    src="https://images.pexels.com/photos/60597/dahlia-red-blossom-bloom-60597.jpeg?auto=compress&cs=tinysrgb&w=800"
-                    alt="product"
-                    className="p-1 mr-2 md:block bg-gray-50 shadow-none"
-                  />
-                )}
-              </TableCell>
-
-              {/* Category Name */}
-              <TableCell className="font-medium text-sm">
+            <TableCell className=" text-sm font-medium">
+              {category.children && category.children.length > 0 ? (
+                <Link to={`/categories/${category.id}`} className="text-blue-700">
+                  {category.name}
+                  <>
+                    {showChild && (
+                      <>
+                        {" "}
+                        <div className=" pl-2">
+                          {category?.children?.map((child) => (
+                            <div key={child._id}>
+                              <Link
+                                to={`/categories/${child?._id}`}
+                                className="text-blue-700"
+                              >
+                                <div className="flex items-center text-xs text-blue-800">
+                                  <span className=" pr-1 text-xs text-gray-500">
+                                    <IoRemoveSharp />
+                                  </span>
+                                  <span className="text-gray-500">
+                                    {showingTranslateValue(child.name)}
+                                  </span>
+                                </div>
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                </Link>
+              ) : (
                 <span>{category.name}</span>
-              </TableCell>
+              )}
+            </TableCell>
+            <TableCell className="text-sm">{category.description}</TableCell>
 
-              {/* Category Description */}
-              <TableCell className="text-sm">
-                <span>{category.description}</span>
-              </TableCell>
-
-              {/* Show/Hide Button for Category */}
-              <TableCell className="text-center">
-                <ShowHideButton id={category.uuid} status={category.isPublished} />
-              </TableCell>
-
-              {/* Edit/Delete Button */}
-              <TableCell>
-                <EditDeleteButton
-                  id={category.uuid}
-                  parent={category}
-                  isCheck={isCheck}
-                  handleUpdate={handleUpdate}
-                  handleModalOpen={handleModalOpen}
-                  title={category.name}
-                />
-              </TableCell>
-            </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell colSpan={9} className="text-center">No categories available</TableCell>
+            <TableCell className="text-center">
+              <ShowHideButton
+                id={category.uuid}
+                category
+                status={category.isPublished}
+              />
+            </TableCell>
+            <TableCell>
+              <EditDeleteButton
+                id={category.uuid}
+                parent={category}
+                isCheck={isCheck}
+                children={category?.children}
+                handleUpdate={handleUpdate}
+                handleModalOpen={() => handleDeleteClick(category)} 
+                title={category.name}
+              />
+            </TableCell>
           </TableRow>
-        )}
+        ))}
       </TableBody>
     </>
   );

@@ -82,13 +82,13 @@ const Customers = () => {
       <PageTitle>{t("CustomersPage")}</PageTitle>
 
       <AnimatedContent>
-        <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
+        <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
           <CardBody>
             <form
               onSubmit={handleSubmitUser}
-              className="py-3 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex"
+              className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
             >
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
                   ref={userRef}
                   type="search"
@@ -97,8 +97,8 @@ const Customers = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-2 flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                <Button type="submit" className="h-12 w-full bg-emerald-700">
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
+                <Button type="submit" className="bg-emerald-700 w-full h-12">
                   Filter
                 </Button>
 
@@ -106,9 +106,9 @@ const Customers = () => {
                   layout="outline"
                   onClick={handleResetField}
                   type="reset"
-                  className="px-4 md:py-1 py-2 h-12 text-sm dark:bg-gray-700"
+                  className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                 >
-                  <span className="text-black dark:text-gray-200">Reset</span>
+                  <span className="dark:text-gray-200 text-black">Reset</span>
                 </Button>
               </div>
             </form>
@@ -119,7 +119,7 @@ const Customers = () => {
       {loading ? (
         <TableLoading row={12} col={6} width={190} height={20} />
       ) : error ? (
-        <span className="text-center mx-auto text-red-500">{error}</span>
+        <span className="mx-auto text-center text-red-500">{error}</span>
       ) : customerData.length ? (
         <TableContainer className="mb-8">
           <Table>

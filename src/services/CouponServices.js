@@ -9,21 +9,6 @@ const CouponServices = {
   submitCoupon: (categoryCoupon) => {
     return axios.post("https://suft-90bec7a20f24.herokuapp.com/category/admin-search", categoryCoupon);
   },
-    // searchCoupons: async (searchQuery) => {
-    //   try {
-    //     const response = await axios.post("https://suft-90bec7a20f24.herokuapp.com/coupon/admin-filter/coupon?search=sale", {
-    //       params: { q: searchQuery },
-    //     });
-    //     return response.data;
-    //   } catch (error) {
-    //     console.error("Error fetching coupons", error);
-    //     throw error;
-    //   }
-    // },
-  // searchCoupons: async (searchTerm) => {
-  //   const response = await axios.post(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-filter/coupons?search=sale${searchTerm}`);
-  //   return response.data;
-  // },
   addCoupon: async (body) => {
     return requests.post('/coupon/admin-create', body);
   },
@@ -34,7 +19,7 @@ const CouponServices = {
     return requests.get('/coupon/');
   },
   getCouponById: async (id) => {
-    return requests.get(`/coupon/${id}`);
+    // return requests.get(`/coupon/${id}`);
   },
   updateCoupon: async (id, body) => {
     return requests.put(`/coupon/${id}`, body);
