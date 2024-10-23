@@ -58,8 +58,12 @@ const Products = () => {
     products: [],
     totalDoc: 0,
   });
+  const [isCheckAll, setIsCheckAll] = useState(false);
+  const [isCheck, setIsCheck] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // const [allProducts, setAllProducts] = useState([]);
+  const [fetchedProduct, setFetchedProduct] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -90,10 +94,24 @@ const Products = () => {
     };
     fetchProducts();
   }, [currentPage, limitData, category, searchText, sortedField]);
-
+  const fetchProduct = async (uuid) => {
+    try {
+      const response = await fetch(
+        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+      );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        setFetchedProduct(data.data);
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
+  };
   // Select all and handle selections
-  const [isCheckAll, setIsCheckAll] = useState(false);
-  const [isCheck, setIsCheck] = useState([]);
+  
 
   const handleSelectAll = () => {
     setIsCheckAll(!isCheckAll);
@@ -124,7 +142,7 @@ const Products = () => {
       <DeleteModal ids={allId} setIsCheck={setIsCheck} title={title} />
       <BulkActionDrawer ids={allId} title="Products" />
       <MainDrawer>
-        <ProductDrawer id={serviceId} />
+        <ProductDrawer id={serviceId} product={fetchedProduct}  />
       </MainDrawer>
       <AnimatedContent>
         <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
@@ -253,7 +271,7 @@ const Products = () => {
           </CardBody>
         </Card>
 
-        <div className="rounded-0 min-w-0 bg-white rounded-t-lg shadow-xs overflow-hidden">
+        <div className="rounded-0 min-w-0 overflow-hidden bg-white rounded-t-lg shadow-xs">
           <TableContainer className="mb-8">
             <Table>
               <TableHeader>
@@ -285,10 +303,12 @@ const Products = () => {
                 <TableLoading row={10} />
               ) : data.products?.length ? (
                 <ProductTable
+                  fetchProduct={fetchProduct}
                   isCheck={isCheck}
                   handleClick={handleClick}
                   isCheckAll={isCheckAll}
                   products={data.products}
+                  loading={loading}
                 />
               ) : (
                 <NotFound message="No Product found" />

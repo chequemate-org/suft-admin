@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from "axios";
 import {
   Avatar,
   Badge,
@@ -9,7 +10,6 @@ import {
 import { t } from "i18next";
 import { FiZoomIn } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import axios from  "axios";
 
 // internal imports
 import MainDrawer from "@/components/drawer/MainDrawer";
@@ -26,44 +26,29 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const { currency, getNumberTwo } = useUtilsFunction();
 
-  // State to store the fetched product data
-  const [product, setProduct] = useState([]);
-  const [fetchedProduct, setFetchedProduct] = useState(null);
+  // State to store the fetched single product data
+  const [fetchedProducts, setFetchedProducts] = useState(null);
 
+  // Function to fetch product by UUID
   const fetchProductByUUID = async (uuid) => {
     try {
-      const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`);
+      const response = await axios.get(
+        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+      );
       if (response.data) {
-        setFetchedProduct(response.data); // Set fetched product to state
-        console.log("Fetched product for editing by UUID:", response.data);
+        setFetchedProducts(response.data); // Set coupon to state for drawer
+        console.log("Fetched Product for editing by UUID:", response.data);
       }
     } catch (error) {
       console.error("Error fetching product by UUID:", error);
     }
   };
 
+  // Handle the edit button click
   const handleEdit = async (uuid) => {
-    await fetchProductByUUID(uuid); // Fetch product data
+    await fetchProductByUUID(uuid);
     handleUpdate(uuid); // Open the drawer for editing
   };
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        // const response = await fetch('https://suft-90bec7a20f24.herokuapp.com/product');
-        const data = await response.json();
-        if (response.ok) {
-          setProduct(data.data); // Store the product data
-        } else {
-          console.error(data.message); // Handle error messages
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-
-    fetchProducts(); // Fetch products on component mount
-  }, []);
 
   const handleClick = (e) => {
     const { id, checked } = e.target;
@@ -80,7 +65,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
       {isCheck?.length < 2 && (
         <MainDrawer>
-          <ProductDrawer currency={currency} id={serviceId}  product={fetchedProduct} />
+          <ProductDrawer currency={currency} id={serviceId} product={fetchedProducts}  />
         </MainDrawer>
       )}
 
@@ -175,7 +160,6 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 product={product}
                 isCheck={isCheck}
                 handleUpdate={() => handleEdit(product.uuid)} 
-                // handleUpdate={handleUpdate}
                 handleModalOpen={handleModalOpen}
                 title={product?.name}
               />
@@ -184,13 +168,13 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
         ))}
 
         {/* Display fetched product details if available */}
-        {fetchedProduct && (
+        {fetchedProducts && (
           <TableRow>
             <TableCell colSpan="10">
               <div className="p-4">
-                <h2 className="text-lg font-bold">{fetchedProduct.name}</h2>
-                <p>{fetchedProduct.description}</p>
-                <p className="font-semibold">{currency}{fetchedProduct.price}</p>
+                <h2 className="text-lg font-bold">{fetchedProducts.name}</h2>
+                <p>{fetchedProducts.description}</p>
+                <p className="font-semibold">{currency}{fetchedProducts.price}</p>
                 {/* Add any additional product details you want to display here */}
               </div>
             </TableCell>

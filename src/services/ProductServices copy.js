@@ -2,13 +2,13 @@ import requests from "./httpService";
 
 const ProductServices = {
   getAllProducts: async ({ page, limit, category, title, price }) => {
-    const searchCategory = category !== null ? category : "";
-    const searchTitle = title !== null ? title : "";
-    const searchPrice = price !== null ? price : "";
+    // const searchCategory = category !== null ? category : "";
+    // const searchTitle = title !== null ? title : "";
+    // const searchPrice = price !== null ? price : "";
 
-    return requests.get(
-      `/products?page=${page}&limit=${limit}&category=${searchCategory}&title=${searchTitle}&price=${searchPrice}`
-    );
+    // return requests.get(
+    //   `/products?page=${page}&limit=${limit}&category=${searchCategory}&title=${searchTitle}&price=${searchPrice}`
+    // );
   },
 
   getProductById: async (id) => {
