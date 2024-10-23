@@ -17,16 +17,16 @@ const CustomerServices = {
     return requests.post(`/customer/filter/${email}`);
   },
 
-  getCustomerById: async (id) => {
-    return requests.get(`/admin/users/${id}`);
+  getCustomerById: async (uuid) => {
+    return requests.get(`/admin/users/${uuid}`);
   },
 
-  updateCustomer: async (uuid, body) => {
-    return requests.put(`/admin/users/${uuid}`, body);
+  updateCustomer: async (id, body) => {
+    return requests.put(`/admin/users/${id}`, body);
   },
 
-  deleteCustomer: async (id) => {
-    return requests.delete(`admin/users/delete/${id}`);
+  deleteCustomer: async (uuid) => {
+    return requests.delete(`admin/users/delete/${uuid}`);
   },
 };
 

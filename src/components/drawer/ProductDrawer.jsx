@@ -603,16 +603,15 @@ import UploaderThree from "@/components/image-uploader/UploaderThree";
 import Title from "@/components/form/others/Title";
 import { useTranslation } from "react-i18next";
 import Switch from "react-switch";
-import Error from "@/components/form/others/Error";
 // import Title from "@/components/form/others/Title";
 import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleForCombination";
 
-const ProductDrawer = ({ id, title, product}) => {
+const ProductDrawer = ({ id, title, fetchProduct, product}) => {
   const { t } = useTranslation();
   const {
     register,
     handleSubmit,
-    // formState: { errors },
+    formState: { errors },
   } = useForm();
   const {
     isCombination,
@@ -644,8 +643,6 @@ const ProductDrawer = ({ id, title, product}) => {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [processOption, setProcessOption] = useState(false);
   const [uuid, setUuid] = useState(null); //
-  const [mode, setMode] = useState("add");
-  const [errors, setErrors] = useState({});
 
   const colorOptions = [
     { name: "Mandy", hex: "#C2405C" },
@@ -754,19 +751,9 @@ const ProductDrawer = ({ id, title, product}) => {
     setSize(size.filter((s) => s !== sizeToRemove));
   };
   
-  // useEffect(() => {
-  //   if (uuid) {
-  //     setMode("update"); // Switch to update mode
-  //     fetchProduct(); // Fetch product details for update
-  //   } else {
-  //     setMode("add"); // Switch to add mode
-  //     resetForm(); // Reset form fields for adding new product
-  //   }
-  // }, [uuid]);
-
   useEffect(() => {
     if (product) {
-      // Populate form fields with product data only in update mode
+      // Set the form fields based on the fetched product data
       setName(product.data.name || "");
       setDescription(product.data.description || "");
       setPrice(product.data.price || "");
@@ -778,95 +765,88 @@ const ProductDrawer = ({ id, title, product}) => {
       setSku(product.data.sku || "");
       setImageUrl(product.data.imageUrl || []);
       setExtraImages(product.data.extraImages || []);
+      
+      // Set the UUID for updating the product
+      setUuid(product.data.uuid || null); // Assuming the UUID is part of the product data
+    } else {
+      resetForm();
     }
   }, [product]);
-
-  // const fetchProduct = async () => {
-  //   try {
-  //     const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/product/single/cac2b592-f264-4651-8a4b-1b37a82511f3${uuid}`);
-  //     // Assuming your response structure
-  //     // You can set the product in state or directly use it in the form
-  //   } catch (error) {
-  //     toast.error("Failed to fetch product data.");
-  //   }
-  // };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!name) newErrors.name = "Product name is required.";
-    if (!description) newErrors.description = "Description is required.";
-    if (!price) newErrors.price = "Price is required.";
-    if (!stockLevel) newErrors.stockLevel = "Stock Level is required.";
-    if (!sku) newErrors.sku = "SKU is required.";
-    if (!details) newErrors.details = "Details are required."; 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-    // return Object.keys(newErrors).length === 0;// Updated error key
-  };
-
-  const onSubmit = async (e) => {
-    const isValid = validateForm(); // Now returns a boolean
-  if (!isValid) {
-    toast.error("Please fill in all required fields.");
-    return;
-  }
-    // const validationErrors = validateForm();
-    // if (Object.keys(validationErrors).length > 0) {
-    //   setErrors(validationErrors);
-    //   toast.error("Please fill in all required fields.");
-    //   return;
-    // }
-
+  
+  const onSubmit = async (data) => {
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("stockLevel", stockLevel);
-    formData.append("details", details);
-    formData.append("sku", sku);
+  
+    // Append form fields
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("price", data.price);
+    formData.append("stockLevel", data.stockLevel);
+    formData.append("details", data.details);
+    formData.append("sku", data.sku);
     formData.append("isAvailable", isAvailable);
     formData.append("size", JSON.stringify(size));
     formData.append("color", JSON.stringify(color));
-
-    // Append images (assumed logic to include images)
+  
+    // Append images (only new files)
     imageUrl.forEach((file) => {
       if (file instanceof File) {
         formData.append("imageUrl", file);
       }
     });
+  
     extraImages.forEach((file) => {
       if (file instanceof File) {
         formData.append("extraImages", file);
       }
     });
-
+  
     try {
       setLoading(true);
       let response;
+  
       if (uuid) {
-        response = await axios.put(`https://suft-90bec7a20f24.herokuapp.com/product/admin/update/${uuid}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        // If UUID exists, update the product
+        response = await axios.put(
+          `https://suft-90bec7a20f24.herokuapp.com/product/admin/update/${uuid}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data', // Important for file uploads
+            },
+          }
+        );
       } else {
-        response = await axios.post("https://suft-90bec7a20f24.herokuapp.com/product/admin/create", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        // If UUID doesn't exist, create a new product
+        response = await axios.post(
+          "https://suft-90bec7a20f24.herokuapp.com/product/admin/create",
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data', // Important for file uploads
+            },
+          }
+        );
       }
-
+  
+      // Log response from server
+      console.log(response);
+  
+      // Handle successful response
       if (response.status === 200 || response.status === 201) {
         toast.success(uuid ? "Product updated successfully!" : "Product added successfully!");
         resetForm();
-        // Optionally fetch products or perform other actions
       } else {
-        toast.error(`Error: ${response.data.message}`);
+        console.error("Server error:", response.data);
+        toast.error("Error: " + response.data.message);
       }
     } catch (error) {
+      console.error("Error submitting the product:", error.response ? error.response.data : error.message);
       toast.error("Failed to submit the product!");
     } finally {
-      setLoading(false);
+      setLoading(false); // End loading state
     }
   };
-
+  
   const resetForm = () => {
     setName("");
     setDescription("");
@@ -879,8 +859,10 @@ const ProductDrawer = ({ id, title, product}) => {
     setSku("");
     setImageUrl([]);
     setExtraImages([]);
+    setUuid(null); // Reset the UUID when form is reset
   };
-
+  
+  
   
   return (
     <>
@@ -902,9 +884,9 @@ const ProductDrawer = ({ id, title, product}) => {
           />
         </div>
       </Modal>
-      
+
       <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-6 border-b border-gray-100">
-        {mode === "update" ? (
+        {id ? (
           <Title
             register={register}
             handleSelectLanguage={handleSelectLanguage}
@@ -958,14 +940,15 @@ const ProductDrawer = ({ id, title, product}) => {
           <div className="sm:col-span-4 col-span-8">
             <input
               type="text"
-              {...register("name", {required: "Product name is required." })}
+              {...register("name", { required: true })}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={"product name"}
               className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
-             {errors.name && <Error errorName={errors.name.message} />}
-            {/* <Error errorName={errors.name} /> */}
+            {errors.name && (
+              <span className="text-red-600">Name is required.</span>
+            )}
           </div>
         </div>
 
@@ -980,9 +963,9 @@ const ProductDrawer = ({ id, title, product}) => {
               className="focus:bg-white w-full p-2 mt-1 bg-gray-100 border rounded outline-none"
               rows="4"
             />
-            {/* {errors.description && (
+            {errors.description && (
               <span className="text-red-600">Description is required.</span>
-            )} */}
+            )}
           </div>
         </div>
 
@@ -1039,9 +1022,9 @@ const ProductDrawer = ({ id, title, product}) => {
               onChange={(e) => setPrice(e.target.value)}
               className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
-            {/* {errors.price && (
+            {errors.price && (
               <span className="text-red-600">Price is required.</span>
-            )} */}
+            )}
           </div>
         </div>
 
@@ -1121,9 +1104,9 @@ const ProductDrawer = ({ id, title, product}) => {
               placeholder={"product stocklevel"}
               className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
-            {/* {errors.stockLevel && (
+            {errors.stockLevel && (
               <span className="text-red-600">Stock Level is required.</span>
-            )} */}
+            )}
           </div>
         </div>
 
@@ -1138,9 +1121,9 @@ const ProductDrawer = ({ id, title, product}) => {
               className=" focus:bg-white w-full p-2 mt-1 bg-gray-100 border rounded outline-none"
               rows="4"
             />
-            {/* {errors.details && (
+            {errors.details && (
               <span className="text-red-600">Details are required.</span>
-            )} */}
+            )}
           </div>
         </div>
 
@@ -1155,9 +1138,9 @@ const ProductDrawer = ({ id, title, product}) => {
               placeholder={"product sku"}
               className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
-            {/* {errors.sku && (
+            {errors.sku && (
               <span className="text-red-600">SKU is required.</span>
-            )} */}
+            )}
           </div>
         </div>
         <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-[10rem]">

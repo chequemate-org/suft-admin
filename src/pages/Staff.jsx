@@ -46,7 +46,7 @@ const Staff = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`,
+          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/all-staff`,
           {
             headers: {
               // Add authorization headers or other headers if required
