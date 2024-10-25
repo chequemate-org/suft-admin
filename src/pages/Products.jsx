@@ -42,28 +42,35 @@ const Products = () => {
     lang,
     currentPage,
     handleChangePage,
-    searchText,
+    // searchText,
     category,
     setCategory,
     searchRef,
     handleSubmitForAll,
-    sortedField,
-    setSortedField,
+    // sortedField,
+    // setSortedField,
     handleClick,
     limitData,
   } = useContext(SidebarContext);
 
   // State for products, loading, and error
-  const [data, setData] = useState({
-    products: [],
-    totalDoc: 0,
-  });
+  // const [data, setData] = useState({
+  //   products: [],
+  //   totalDoc: 0,
+  // });
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // const [allProducts, setAllProducts] = useState([]);
   const [fetchedProduct, setFetchedProduct] = useState(null);
+  const [data, setData] = useState({ products: [], totalDoc: 0 });
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [sortedField, setSortedField] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -112,6 +119,48 @@ const Products = () => {
   };
   // Select all and handle selections
   
+  const ProductSearch = async () => {
+    try {
+      const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/product/filter?", {
+        params: {
+          page: currentPage,
+          min: minPrice,
+          max: maxPrice,
+          color: color,
+          size: size,
+          search: searchText,
+          sortBy: sortedField,
+        },
+      });
+      setData({
+        products: response.data.data,
+        totalDoc: response.data.totalDocs,
+      });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  useEffect(() => {
+    ProductSearch();
+  }, [currentPage, minPrice, maxPrice, color, size, searchText, sortedField]);
+
+  // Handle search form submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    ProductSearch(); // Trigger fetch with updated parameters
+  };
+
+  // Reset the filters
+  const ResetField = () => {
+    setMinPrice("");
+    setMaxPrice("");
+    setColor("");
+    setSize("");
+    setSearchText("");
+    setSortedField("");
+    ProductSearch();
+  };
 
   const handleSelectAll = () => {
     setIsCheckAll(!isCheckAll);
@@ -206,7 +255,7 @@ const Products = () => {
         <Card className="dark:bg-gray-800 rounded-0 min-w-0 mb-4 overflow-hidden bg-white rounded-t-lg shadow-xs">
           <CardBody>
             <form
-              onSubmit={handleSubmitForAll}
+              onSubmit={handleSearchSubmit}
               className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
             >
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
@@ -214,6 +263,8 @@ const Products = () => {
                   ref={searchRef}
                   type="search"
                   name="search"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
                   placeholder="Search Product"
                 />
                 <button
@@ -251,7 +302,7 @@ const Products = () => {
               </div>
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
                 <div className="w-full mx-1">
-                  <Button type="submit" className="bg-emerald-700 w-full h-12">
+                  <Button type="submit"  className="bg-emerald-700 w-full h-12">
                     Filter
                   </Button>
                 </div>
@@ -259,7 +310,7 @@ const Products = () => {
                 <div className="w-full mx-1">
                   <Button
                     layout="outline"
-                    onClick={handleResetField}
+                    onClick={ResetField}
                     type="reset"
                     className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >

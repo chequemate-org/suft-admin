@@ -1,24 +1,18 @@
 import requests from "./httpService";
 
 const ProductServices = {
-  getAllProducts: async (params) => {
-    // try {
-    //   // Debugging - log the request params
-    //   console.log("Fetching products with params:", params);
+  getAllProducts: async ({ page, limit, category, title, price }) => {
+    const searchCategory = category !== null ? category : "";
+    const searchTitle = title !== null ? title : "";
+    const searchPrice = price !== null ? price : "";
 
-    //   const response = await requests.get("/products", { params });
-
-    //   // Debugging - log the API response
-    //   console.log("Products API response:", response.data);
-
-    //   return response.data;
-    // } catch (error) {
-    //   // Debugging - log the error if any
-    //   console.error("Error fetching products:", error);
-    //   throw error;
-    // }
+    return requests.get(
+      `/products?page=${page}&limit=${limit}&category=${searchCategory}&title=${searchTitle}&price=${searchPrice}`
+    );
   },
+  
   getProductById: async (id) => {
+    
     // try {
     //   console.log("Fetching product with ID:", id);
     //   const response = await requests.get(`/product/single/${id}`);

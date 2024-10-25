@@ -18,6 +18,9 @@ const CouponServices = {
   getAllCoupons: async () => {
     return requests.get('/coupon/');
   },
+  // searchCoupons : async (searchTerm)=>{
+  //   return requests.get('/coupon/admin-filter/coupon?', searchTerm);
+  // },
   getCouponById: async (id) => {
     // return requests.get(`/coupon/${id}`);
   },
