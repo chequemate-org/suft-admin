@@ -351,11 +351,11 @@ const Dashboard = () => {
         </div>
       </AnimatedContent>
 
-      {/* <PageTitle>{t("RecentOrder")}</PageTitle> */}
+      <PageTitle>{t("RecentOrder")}</PageTitle>
 
       {/* <Loading loading={loading} /> */}
-      
-      {/* {loadingRecentOrder ? (
+
+      {loadingRecentOrder ? (
         <TableLoading row={5} col={4} />
       ) : error ? (
         <span className="text-center mx-auto text-red-500">{error}</span>
@@ -388,7 +388,7 @@ const Dashboard = () => {
         </TableContainer>
       ) : (
         <NotFound title="Sorry, There are no orders right now." />
-      )} */}
+      )}
     </>
   );
 };

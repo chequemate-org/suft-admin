@@ -1,17 +1,16 @@
 import React, { useContext } from "react";
 import { Select } from "@windmill/react-ui";
 
-//internal import
+// Internal imports
 import OrderServices from "@/services/OrderServices";
 import { notifySuccess, notifyError } from "@/utils/toast";
 import { SidebarContext } from "@/context/SidebarContext";
 
-const SelectStatus = ({ id, order }) => {
-  // console.log('id',id ,'order',order)
+const SelectStatus = ({ uuid, order }) => {
   const { setIsUpdate } = useContext(SidebarContext);
-  const handleChangeStatus = (id, status) => {
-    // return notifyError("This option disabled for this option!");
-    OrderServices.updateOrder(id, { status: status })
+
+  const handleChangeStatus = (uuid, status) => {
+    OrderServices.updateOrder(uuid, { status })
       .then((res) => {
         notifySuccess(res.message);
         setIsUpdate(true);
@@ -20,31 +19,26 @@ const SelectStatus = ({ id, order }) => {
   };
 
   return (
-    <>
-      <Select
-        onChange={(e) => handleChangeStatus(id, e.target.value)}
-        className="h-8"
-      >
-        <option value="status" defaultValue hidden>
-          {order?.status}
-        </option>
-        <option defaultValue={order?.status === "Delivered"} value="Delivered">
-          Delivered
-        </option>
-        <option defaultValue={order?.status === "Pending"} value="Pending">
-          Pending
-        </option>
-        <option
-          defaultValue={order?.status === "Processing"}
-          value="Processing"
-        >
-          Processing
-        </option>
-        <option defaultValue={order?.status === "Cancel"} value="Cancel">
-          Cancel
-        </option>
-      </Select>
-    </>
+    <Select
+      onChange={(e) => handleChangeStatus(uuid, e.target.value)}
+      className="h-8"
+    >
+      <option value="status" defaultValue hidden>
+        {order?.status}
+      </option>
+      <option value="delivered" defaultValue={order?.status === "Delivered"}>
+        Delivered
+      </option>
+      <option value="pending" defaultValue={order?.status === "Pending"}>
+        Pending
+      </option>
+      <option value="processing" defaultValue={order?.status === "Processing"}>
+        Processing
+      </option>
+      <option value="cancel" defaultValue={order?.status === "Cancel"}>
+        Cancel
+      </option>
+    </Select>
   );
 };
 
