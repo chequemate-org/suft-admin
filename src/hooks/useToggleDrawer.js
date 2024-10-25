@@ -5,13 +5,20 @@ const useToggleDrawer = () => {
   const [serviceId, setServiceId] = useState("");
   const [allId, setAllId] = useState([]);
   const [title, setTitle] = useState("");
+  const [staffDetails, setStaffDetails] = useState(null);
   const { toggleDrawer, isDrawerOpen, toggleModal, toggleBulkDrawer } =
     useContext(SidebarContext);
 
-  const handleUpdate = (id) => {
-    setServiceId(id);
+  // const handleUpdate = (uuid) => {
+  //   setServiceId(uuid);
+  //   toggleDrawer();
+  // };
+  const handleUpdate = (uuid, staffData = null) => {
+    setServiceId(uuid);
+    setStaffDetails(staffData);  // Store staff data
     toggleDrawer();
   };
+
 
   const handleUpdateMany = (id) => {
     setAllId(id);
@@ -27,6 +34,7 @@ const useToggleDrawer = () => {
   useEffect(() => {
     if (!isDrawerOpen) {
       setServiceId();
+      setStaffDetails(null)
     }
   }, [isDrawerOpen]);
 
@@ -45,6 +53,8 @@ const useToggleDrawer = () => {
     handleModalOpen,
     handleDeleteMany,
     handleUpdateMany,
+    setStaffDetails,
+    staffDetails,  
   };
 };
 

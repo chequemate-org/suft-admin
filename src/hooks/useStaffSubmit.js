@@ -9,146 +9,90 @@ import { AdminContext } from "@/context/AdminContext";
 import { SidebarContext } from "@/context/SidebarContext";
 import AdminServices from "@/services/AdminServices";
 import { notifyError, notifySuccess } from "@/utils/toast";
-// import useTranslationValue from "./useTranslationValue";
 
-const useStaffSubmit = (id) => {
+const useStaffSubmit = (uuid) => {
   const { state } = useContext(AdminContext);
-  const { adminInfo } = state;
-  const { isDrawerOpen, closeDrawer, setIsUpdate, lang } =
-    useContext(SidebarContext);
+  const { adminInfo } = state || {};
+  const { isDrawerOpen, closeDrawer, setIsUpdate, lang } = useContext(SidebarContext);
+
   const [imageUrl, setImageUrl] = useState("");
-  const [selectedDate, setSelectedDate] = useState(
-    dayjs(new Date()).format("YYYY-MM-DD")
-  );
+  const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [language, setLanguage] = useState(lang || "en");
   const [resData, setResData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const location = useLocation();
-  // const { handlerTextTranslateHandler } = useTranslationValue();
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    clearErrors,
-    formState: { errors },
-  } = useForm();
-
-  const handleRemoveEmptyKey = (obj) => {
-    for (const key in obj) {
-      if (obj[key].trim() === "") {
-        delete obj[key];
-      }
-    }
-    // console.log("obj", obj);
-    return obj;
-  };
+  const { register, handleSubmit, setValue, clearErrors, formState: { errors } } = useForm();
 
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    setLoading(true);
     try {
-      setIsSubmitting(true);
-
-      // const nameTranslates = await handlerTextTranslateHandler(
-      //   data.name,
-      //   language
-      // );
-
       const staffData = {
         name: data.name,
         email: data.email,
         password: data.password,
-        phone: data.phone,
+        phone: data.phoneNumber,
         role: data.role,
-        joiningDate: selectedDate
-          ? selectedDate
-          : dayjs(new Date()).format("YYYY-MM-DD"),
+        joiningDate: selectedDate || dayjs().format("YYYY-MM-DD"),
         image: imageUrl,
         lang: language,
       };
 
-      if (id) {
-        // console.log('id is ',id)
-        const res = await AdminServices.updateStaff(id, staffData);
-        setIsUpdate(true);
-        setIsSubmitting(false);
-        notifySuccess(res.message);
-        closeDrawer();
-      } else {
-        const res = await AdminServices.addStaff(staffData);
-        setIsUpdate(true);
-        setIsSubmitting(false);
-        notifySuccess(res.message);
-        closeDrawer();
-      }
-    } catch (err) {
-      notifyError(err ? err?.response?.data?.message : err?.message);
-      setIsSubmitting(false);
+      const res = uuid ? await AdminServices.updateStaff(uuid, staffData) : await AdminServices.addStaff(staffData);
+      setIsUpdate(true);
+      notifySuccess(res.message);
       closeDrawer();
+    } catch (err) {
+      notifyError(err?.response?.data?.message || err.message);
+    } finally {
+      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   const getStaffData = async () => {
+    if (!uuid || !adminInfo?.email) return;
+    setLoading(true);
     try {
-      const res = await AdminServices.getStaffById(id, {
-        email: adminInfo.email,
-      });
+      const res = await AdminServices.getStaffById(uuid, { email: adminInfo.email });
       if (res) {
         setResData(res);
-        setValue("name", res.name[language ? language : "en"]);
+        setValue("name", res.name[language || "en"]);
         setValue("email", res.email);
-        setValue("password");
-        setValue("phone", res.phone);
+        setValue("password", "");
+        setValue("phoneNumber", res.phoneNumber);
         setValue("role", res.role);
-        setSelectedDate(dayjs(res.joiningData).format("YYYY-MM-DD"));
+        setSelectedDate(dayjs(res.joiningDate).format("YYYY-MM-DD"));
         setImageUrl(res.image);
       }
     } catch (err) {
-      notifyError(err ? err?.response?.data?.message : err?.message);
-    }
-  };
-
-  const handleSelectLanguage = (lang) => {
-    setLanguage(lang);
-
-    if (Object.keys(resData).length > 0) {
-      setValue("name", resData.name[lang ? lang : "en"]);
+      notifyError(err?.response?.data?.message || err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (!isDrawerOpen) {
+      // Reset form values when drawer is closed
       setResData({});
-      setValue("name");
-      setValue("email");
-      setValue("password");
-      setValue("phone");
-      setValue("role");
-      setValue("joiningDate");
+      setValue("name", "");
+      setValue("email", "");
+      setValue("password", "");
+      setValue("phoneNumber", "");
+      setValue("role", "");
+      setValue("joiningDate", "");
       setImageUrl("");
-      clearErrors("name");
-      clearErrors("email");
-      clearErrors("password");
-      clearErrors("phone");
-      clearErrors("role");
-      clearErrors("joiningDate");
-      setImageUrl("");
+      clearErrors();
       setLanguage(lang);
-      setValue("language", language);
       return;
     }
-    if (id) {
-      getStaffData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, setValue, isDrawerOpen, adminInfo.email, clearErrors]);
-
-  useEffect(() => {
-    if (location.pathname === "/edit-profile" && Cookies.get("adminInfo")) {
-      getStaffData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, setValue]);
+  
+    // Fetch staff data when drawer is opened and a UUID is provided
+    if (uuid) getStaffData();
+  }, [uuid, isDrawerOpen, adminInfo?.email, lang]); // Ensure dependencies include UUID and drawer state
+  
 
   return {
     register,
@@ -161,7 +105,8 @@ const useStaffSubmit = (id) => {
     selectedDate,
     setSelectedDate,
     isSubmitting,
-    handleSelectLanguage,
+    loading,
+    setValue, 
   };
 };
 

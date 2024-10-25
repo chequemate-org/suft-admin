@@ -21,8 +21,8 @@ const CustomerServices = {
     return requests.get(`/admin/users/${uuid}`);
   },
 
-  updateCustomer: async (id, body) => {
-    return requests.put(`/admin/users/${id}`, body);
+  updateCustomer: async (uuid, body) => {
+    return requests.put(`/admin/users-update/${uuid}`, body);
   },
 
   deleteCustomer: async (uuid) => {

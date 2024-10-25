@@ -7,13 +7,13 @@ const InputArea = ({
   required,
   name,
   label,
-  type,
+  type = "text", // Default to text type
   autoComplete,
   placeholder,
 }) => {
   return (
     <Input
-      {...(register && register(name, { required: required ? `${label} is required!` : false }))}
+      {...register(name, { required: required ? `${label} is required!` : false })}
       defaultValue={defaultValue}
       type={type}
       placeholder={placeholder}
