@@ -47,7 +47,7 @@ const Login = () => {
                   <InputArea
                     required={true}
                     register={register}
-                    defaultValue="cehoijapropro-8492@yopmail.com"
+                    defaultValue="oreoluwaajayyiruth@gmail.com"
                     label="Email"
                     name="email"
                     type="email"
@@ -60,7 +60,7 @@ const Login = () => {
                   <InputArea
                     required={true}
                     register={register}
-                    defaultValue="zT#7%$mx"
+                    defaultValue="d8Do(zcb"
                     label="Password"
                     name="password"
                     type="password"
