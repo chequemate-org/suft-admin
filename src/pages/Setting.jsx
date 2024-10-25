@@ -7,6 +7,7 @@ import { notifyError, notifySuccess } from "@/utils/toast";
 import { useDispatch } from "react-redux";
 import { removeSetting } from "@/reduxStore/slice/settingSlice";
 import axios from "axios";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 import Error from "@/components/form/others/Error";
 import PageTitle from "@/components/Typography/PageTitle";
@@ -20,7 +21,7 @@ const useSettingSubmit = (isEditForm = false) => {
   const { setIsUpdate } = useContext(SidebarContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingSettings, setExistingSettings] = useState(null);
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false); // State for the delete modal
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [settingId, setSettingId] = useState(null);
 
   const {
@@ -37,10 +38,9 @@ const useSettingSubmit = (isEditForm = false) => {
           const response = await axios.get(
             "https://suft-90bec7a20f24.herokuapp.com/setting/admin/get-setting"
           );
-          const fetchedSettings = response.data.data; // Access the data object directly
+          const fetchedSettings = response.data.data;
           setExistingSettings(fetchedSettings);
 
-          // Populate form with existing settings
           Object.entries(fetchedSettings).forEach(([key, value]) => {
             setValue(key, value);
           });
@@ -78,7 +78,6 @@ const useSettingSubmit = (isEditForm = false) => {
       const response = await axios[method](endpoint, settingData, {
         headers: {
           "Content-Type": "application/json",
-          // Add any additional headers here, such as authentication tokens
         },
       });
 
@@ -164,7 +163,7 @@ const SettingForm = ({ isEditForm }) => {
                     register={register}
                     defaultValue={
                       existingSettings ? existingSettings[field] : ""
-                    } // Default value from existing settings
+                    }
                     label={t(field.charAt(0).toUpperCase() + field.slice(1))}
                     name={field}
                     type="text"
@@ -209,6 +208,160 @@ const SettingForm = ({ isEditForm }) => {
   );
 };
 
+const PasswordChangeForm = () => {
+  const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm();
+
+  const password = watch("password");
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      setIsSubmitting(true);
+      const response = await axios.post(
+        "https://suft-90bec7a20f24.herokuapp.com/admin/admin-change-password",
+        {
+          password: data.password,
+        }
+      );
+
+      notifySuccess("Password changed successfully!");
+      reset();
+    } catch (error) {
+      notifyError(
+        error?.response?.data?.message || "Failed to change password"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
+      <div className="grid grid-cols-12 font-sans">
+        <div className="col-span-12 md:col-span-12 lg:col-span-12 mr-3">
+          <div className="lg:px-6 pt-4 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 flex-grow scrollbar-hide w-full max-h-full pb-0">
+            <div className="grid md:grid-cols-5 items-center sm:grid-cols-10 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+              <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                {t("New Password")}
+              </label>
+              <div className="sm:col-span-3 relative">
+                <InputAreaTwo
+                  register={register}
+                  label="Password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter new password"
+                  className="pr-10" // Add padding to the right
+                  validation={{
+                    required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters",
+                    },
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      message:
+                        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+                    },
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-1 flex items-center text-gray-500"
+                >
+                  {showPassword ? (
+                    <AiFillEyeInvisible className="h-5 w-5" />
+                  ) : (
+                    <AiFillEye className="h-5 w-5" />
+                  )}
+                </button>
+                <Error errorName={errors.password} />
+              </div>
+            </div>
+
+            {/* Confirm Password Field */}
+            <div className="grid md:grid-cols-5 items-center sm:grid-cols-10 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+              <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                {t("Confirm Password")}
+              </label>
+              <div className="sm:col-span-3 relative">
+                <InputAreaTwo
+                  register={register}
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm new password"
+                  validation={{
+                    required: "Please confirm your password",
+                    validate: (value) =>
+                      value === password || "Passwords do not match",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="absolute inset-y-0 right-1 flex items-center text-gray-500"
+                >
+                  {showConfirmPassword ? (
+                    <AiFillEyeInvisible className="h-5 w-5" />
+                  ) : (
+                    <AiFillEye className="h-5 w-5" />
+                  )}
+                </button>
+                <Error errorName={errors.confirmPassword} />
+              </div>
+            </div>
+
+            <div className="flex flex-row-reverse pb-6">
+              <Button
+                disabled={isSubmitting}
+                type="submit"
+                className="h-12 px-8 bg-emerald-500 hover:bg-emerald-600 text-white"
+              >
+                {isSubmitting ? (
+                  <>
+                    <img
+                      src={spinnerLoadingImage}
+                      alt="Loading"
+                      width={20}
+                      height={10}
+                    />
+                    <span className="font-serif ml-2 font-light">
+                      Processing
+                    </span>
+                  </>
+                ) : (
+                  "Change Password"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+};
+
 const Setting = () => {
   const { t } = useTranslation();
 
@@ -226,6 +379,11 @@ const Setting = () => {
             {t("Edit Existing Settings")}
           </h2>
           <SettingForm isEditForm={true} />
+
+          <h2 className="text-2xl font-semibold my-8">
+            {t("Change Password")}
+          </h2>
+          <PasswordChangeForm />
         </div>
       </AnimatedContent>
     </>
