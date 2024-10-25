@@ -11,28 +11,25 @@ import {
   TableContainer,
   TableFooter,
   TableHeader,
-  TableBody,
-  TableRow,
 } from "@windmill/react-ui";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import exportFromJSON from "export-from-json";
-import axios from "axios";
-import { SidebarContext } from "@/context/SidebarContext";
+
+//internal import
 import { notifyError } from "@/utils/toast";
+import useAsync from "@/hooks/useAsync";
+import useFilter from "@/hooks/useFilter";
+import OrderServices from "@/services/OrderServices";
 import NotFound from "@/components/table/NotFound";
 import PageTitle from "@/components/Typography/PageTitle";
+import { SidebarContext } from "@/context/SidebarContext";
+import OrderTable from "@/components/order/OrderTable";
+import TableLoading from "@/components/preloader/TableLoading";
 import spinnerLoadingImage from "@/assets/img/spinner.gif";
-import AnimatedContent from "@/components/common/AnimatedContent";
-import SelectStatus from "@/components/form/selectOption/SelectStatus";
-import OrderServices from "@/services/OrderServices";
-import PrintReceipt from "@/components/form/others/PrintReceipt";
-import { Link } from "react-router-dom";
-import Tooltip from "@/components/tooltip/Tooltip";
-import { FiZoomIn } from "react-icons/fi";
-import Status from "@/components/table/Status";
 import useUtilsFunction from "@/hooks/useUtilsFunction";
+import AnimatedContent from "@/components/common/AnimatedContent";
 
 const Orders = () => {
   const {
@@ -56,31 +53,25 @@ const Orders = () => {
   } = useContext(SidebarContext);
 
   const { t } = useTranslation();
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+
   const [loadingExport, setLoadingExport] = useState(false);
-  const [error, setError] = useState("");
-  const [totalOrders, setTotalOrders] = useState(0);
+
+  const { data, loading, error } = useAsync(() =>
+    OrderServices.getAllOrders({
+      day: time,
+      method: method,
+      status: status,
+      page: currentPage,
+      endDate: endDate,
+      startDate: startDate,
+      limit: resultsPerPage,
+      customerName: searchText,
+    })
+  );
+
   const { currency, getNumber, getNumberTwo } = useUtilsFunction();
 
-  const fetchOrders = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/admin/get-orders?page=${currentPage}`
-      );
-      setOrders(response.data.orders);
-      setTotalOrders(response.data.totalOrders);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setError(error?.response?.data?.message || error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, [currentPage]);
+  const { dataTable, serviceData } = useFilter(data?.orders);
 
   const handleDownloadOrders = async () => {
     try {
@@ -93,23 +84,27 @@ const Orders = () => {
         endDate: endDate,
         download: true,
         startDate: startDate,
-        limit: totalOrders,
+        limit: data?.totalDoc,
         customerName: searchText,
       });
 
-      const exportData = res?.orders?.map((order) => ({
-        _id: order.id,
-        invoice: order.invoiceNo,
-        subTotal: getNumberTwo(order.subTotal),
-        shippingCost: getNumberTwo(order.shippingCost),
-        discount: getNumberTwo(order?.discount),
-        total: getNumberTwo(order.amount),
-        paymentMethod: order.method,
-        status: order.status,
-        user_info: order?.customerName,
-        createdAt: order.orderTime,
-        updatedAt: order.updatedAt,
-      }));
+      // console.log("handleDownloadOrders", res);
+      const exportData = res?.orders?.map((order) => {
+        return {
+          _id: order._id,
+          invoice: order.invoice,
+          subTotal: getNumberTwo(order.subTotal),
+          shippingCost: getNumberTwo(order.shippingCost),
+          discount: getNumberTwo(order?.discount),
+          total: getNumberTwo(order.total),
+          paymentMethod: order.paymentMethod,
+          status: order.status,
+          user_info: order?.user_info?.name,
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+        };
+      });
+      // console.log("exportData", exportData);
 
       exportFromJSON({
         data: exportData,
@@ -119,10 +114,12 @@ const Orders = () => {
       setLoadingExport(false);
     } catch (err) {
       setLoadingExport(false);
+      // console.log("err on orders download", err);
       notifyError(err?.response?.data?.message || err?.message);
     }
   };
 
+  // handle reset field
   const handleResetField = () => {
     setTime("");
     setMethod("");
@@ -132,6 +129,7 @@ const Orders = () => {
     setSearchText("");
     searchRef.current.value = "";
   };
+  // console.log("data in orders page", data);
 
   return (
     <>
@@ -150,6 +148,7 @@ const Orders = () => {
                     placeholder="Search by Customer Name"
                   />
                 </div>
+
                 <div>
                   <Select onChange={(e) => setStatus(e.target.value)}>
                     <option value="Status" defaultValue hidden>
@@ -163,6 +162,7 @@ const Orders = () => {
                     <option value="Cancel">{t("OrderCancel")}</option>
                   </Select>
                 </div>
+
                 <div>
                   <Select onChange={(e) => setTime(e.target.value)}>
                     <option value="Order limits" defaultValue hidden>
@@ -179,6 +179,7 @@ const Orders = () => {
                     <option value="Method" defaultValue hidden>
                       {t("Method")}
                     </option>
+
                     <option value="Cash">{t("Cash")}</option>
                     <option value="Card">{t("Card")}</option>
                     <option value="Credit">{t("Credit")}</option>
@@ -196,7 +197,7 @@ const Orders = () => {
                         alt="Loading"
                         width={20}
                         height={10}
-                      />
+                      />{" "}
                       <span className="font-serif ml-2 font-light">
                         Processing
                       </span>
@@ -204,12 +205,12 @@ const Orders = () => {
                   ) : (
                     <button
                       onClick={handleDownloadOrders}
-                      disabled={orders.length <= 0 || loadingExport}
+                      disabled={data?.orders?.length <= 0 || loadingExport}
                       type="button"
                       className={`${
-                        (orders.length <= 0 || loadingExport) &&
+                        (data?.orders?.length <= 0 || loadingExport) &&
                         "opacity-50 cursor-not-allowed bg-emerald-600"
-                      } flex items-center justify-center text-sm leading-5 h-12 w-full text-center transition-colors duration-150 font-medium px-6 py-2 rounded-md text-white bg-emerald-500 border border-transparent active:bg-emerald-600 hover:bg-emerald-600`}
+                      } flex items-center justify-center text-sm leading-5 h-12 w-full text-center transition-colors duration-150 font-medium px-6 py-2 rounded-md text-white bg-emerald-500 border border-transparent active:bg-emerald-600 hover:bg-emerald-600 `}
                     >
                       Download All Orders
                       <span className="ml-2 text-base">
@@ -219,6 +220,7 @@ const Orders = () => {
                   )}
                 </div>
               </div>
+
               <div className="grid gap-4 lg:gap-6 xl:gap-6 lg:grid-cols-3 xl:grid-cols-3 md:grid-cols-3 sm:grid-cols-1 py-2">
                 <div>
                   <Label>Start Date</Label>
@@ -267,12 +269,33 @@ const Orders = () => {
           </CardBody>
         </Card>
       </AnimatedContent>
+      {data?.methodTotals?.length > 0 && (
+        <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 rounded-t-lg rounded-0 mb-4">
+          <CardBody>
+            <div className="flex gap-1">
+              {data?.methodTotals?.map((el, i) => (
+                <div key={i + 1} className="dark:text-gray-300">
+                  {el?.method && (
+                    <>
+                      <span className="font-medium"> {el.method}</span> :{" "}
+                      <span className="font-semibold mr-2">
+                        {currency}
+                        {getNumber(el.total)}
+                      </span>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardBody>
+        </Card>
+      )}
 
       {loading ? (
-        <span>Loading...</span>
+        <TableLoading row={12} col={7} width={160} height={20} />
       ) : error ? (
         <span className="text-center mx-auto text-red-500">{error}</span>
-      ) : orders.length !== 0 ? (
+      ) : serviceData?.length !== 0 ? (
         <TableContainer className="mb-8 dark:bg-gray-900">
           <Table>
             <TableHeader>
@@ -288,66 +311,20 @@ const Orders = () => {
               </tr>
             </TableHeader>
 
-            <TableBody className="dark:bg-gray-900">
-              {orders.map((order, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <span className="font-semibold uppercase text-xs">
-                      {order.invoiceNo}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{order.orderTime}</span>
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    <span className="text-sm">{order.customerName}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{order.method}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{order.amount}</span>
-                  </TableCell>
-                  <TableCell>
-                    <Status status={order?.status} />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <SelectStatus
-                      id={order.uuid}
-                      order={order}
-                      actions={order.actions}
-                    />
-                  </TableCell>
-                  <TableCell className="text-right flex justify-end">
-                    <div className="flex justify-between items-center">
-                      <PrintReceipt orderId={order.uuid} />
-                      <span className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600">
-                        <Link to={`/order/${order.uuid}`}>
-                          <Tooltip
-                            id="view"
-                            Icon={FiZoomIn}
-                            title={t("ViewInvoice")}
-                            bgColor="#059669"
-                          />
-                        </Link>
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            <OrderTable orders={dataTable} />
           </Table>
+
           <TableFooter>
             <Pagination
-              totalResults={totalOrders}
+              totalResults={data?.totalDoc}
               resultsPerPage={resultsPerPage}
               onChange={handleChangePage}
-              label="Order navigation"
+              label="Table navigation"
             />
           </TableFooter>
         </TableContainer>
       ) : (
-        <NotFound message="No Orders Found" />
+        <NotFound title="Sorry, There are no orders right now." />
       )}
     </>
   );

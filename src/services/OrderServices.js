@@ -1,3 +1,4 @@
+// OrderServices.js
 import requests from "./httpService";
 
 const OrderServices = {
@@ -9,57 +10,43 @@ const OrderServices = {
     page = 1,
     limit = 8,
     day,
-    // source,
     method,
     startDate,
     endDate,
-    // download = "",
   }) => {
     const searchName = customerName !== null ? customerName : "";
     const searchStatus = status !== null ? status : "";
     const searchDay = day !== null ? day : "";
-    // const searchSource = source !== null ? source : "";
     const searchMethod = method !== null ? method : "";
     const startD = startDate !== null ? startDate : "";
     const endD = endDate !== null ? endDate : "";
 
-    return requests.get(
-      `/orders?customerName=${searchName}&status=${searchStatus}&day=${searchDay}&page=${page}&limit=${limit}&startDate=${startD}&endDate=${endD}&method=${searchMethod}`,
-      body,
-      headers
-    );
+    return requests.get(`admin/get-orders`, body, headers);
   },
 
   getAllOrdersTwo: async ({ invoice, body, headers }) => {
     const searchInvoice = invoice !== null ? invoice : "";
-    return requests.get(`/orders/all?invoice=${searchInvoice}`, body, headers);
-  },
-
-  getRecentOrders: async ({
-    page = 1,
-    limit = 8,
-    startDate = "1:00",
-    endDate = "23:59",
-  }) => {
-    return requests.get(
-      `/orders/recent?page=${page}&limit=${limit}&startDate=${startDate}&endDate=${endDate}`
-    );
+    return requests.get(`/admin/get-orders`, body, headers);
   },
 
   getOrderCustomer: async (id, body) => {
-    return requests.get(`/orders/customer/${id}`, body);
+    return requests.get(`/admin/get-order/${id}`, body);
   },
 
   getOrderById: async (id, body) => {
-    return requests.get(`/orders/${id}`, body);
+    return requests.get(`/admin/get-order/${id}`, body);
   },
 
-  updateOrder: async (id, body, headers) => {
-    return requests.put(`/orders/${id}`, body, headers);
+  updateOrder: async (uuid, body, headers) => {
+    return requests.put(
+      `/admin/get-order/action/${uuid}`,
+      { action: body.status },
+      headers
+    );
   },
 
   deleteOrder: async (id) => {
-    return requests.delete(`/orders/${id}`);
+    return requests.delete(`/admin/order/${id}`);
   },
 
   getDashboardOrdersData: async ({
@@ -67,27 +54,23 @@ const OrderServices = {
     limit = 8,
     endDate = "23:59",
   }) => {
-    return requests.get(
-      `/orders/dashboard?page=${page}&limit=${limit}&endDate=${endDate}`
-    );
+    return requests.get(`/admin/order-total-status`);
   },
 
   getDashboardAmount: async () => {
-    return requests.get("/orders/dashboard-amount");
+    return requests.get("/admin/order-total-status");
   },
 
   getDashboardCount: async () => {
-    return requests.get("/orders/dashboard-count");
+    return requests.get("/admin/order-total-status");
   },
 
   getDashboardRecentOrder: async ({ page = 1, limit = 8 }) => {
-    return requests.get(
-      `/orders/dashboard-recent-order?page=${page}&limit=${limit}`
-    );
+    return requests.get(`/admin/get-orders`);
   },
 
   getBestSellerProductChart: async () => {
-    return requests.get("/orders/best-seller/chart");
+    return requests.get("/admin/get-orders");
   },
 };
 
