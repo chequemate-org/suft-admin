@@ -50,7 +50,7 @@ const Header = () => {
   const handleLogOut = () => {
     dispatch({ type: "USER_LOGOUT" });
     Cookies.remove("adminInfo");
-    window.location.replace(`http://localhost:4100/login`);
+    window.location.replace(`https://suft-admin.onrender.com/login`);
   };
 
   const handleNotificationOpen = async () => {
