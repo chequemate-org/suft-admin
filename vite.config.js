@@ -77,10 +77,10 @@ export default defineConfig({
         scope: ".",
         start_url: ".",
         id: ".",
-        short_name: "Dashtar - E-Commerce Website",
-        name: "Dashtar : React eCommerce Admin Dashboard",
+        short_name: "Suft - E-Commerce Website",
+        name: "Suft : eCommerce Admin Dashboard",
         description:
-          "Dashtar : React Grocery & Organic Food Store e-commerce Admin Dashboard",
+          "Suft : Furniture Store e-commerce Admin Dashboard",
         icons: [
           {
             src: "favicon.ico",
