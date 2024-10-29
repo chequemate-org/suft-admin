@@ -74,11 +74,11 @@ const SignUp = () => {
                   placeholder="***************"
                 />
                 <Error errorName={errors.password} /> 
-                <LabelArea label="Staff Role" />
                 */}
 
+                <LabelArea label="Staff Role" />
                 <div className="col-span-8 sm:col-span-4">
-                  <SelectRole register={register} label="Role" name="role" />
+                  <SelectRole register={register} name="role" />
                   <Error errorName={errors.role} />
                 </div>
 
