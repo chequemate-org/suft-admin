@@ -1,114 +1,74 @@
 import {
-  Card,
   Button,
+  Card,
   CardBody,
   Input,
   Pagination,
+  Select,
   Table,
   TableCell,
   TableContainer,
   TableFooter,
   TableHeader,
 } from "@windmill/react-ui";
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import { useContext, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { FiPlus } from "react-icons/fi";
+import axios from "axios";
 
 // Internal imports
-import CustomerTable from "@/components/customer/CustomerTable";
+import useAsync from "@/hooks/useAsync";
+import useFilter from "@/hooks/useFilter";
+import MainDrawer from "@/components/drawer/MainDrawer";
+import StaffDrawer from "@/components/drawer/StaffDrawer";
 import TableLoading from "@/components/preloader/TableLoading";
+import StaffTable from "@/components/staff/StaffTable";
 import NotFound from "@/components/table/NotFound";
 import PageTitle from "@/components/Typography/PageTitle";
+import { AdminContext } from "@/context/AdminContext";
+import { SidebarContext } from "@/context/SidebarContext";
+import AdminServices from "@/services/AdminServices";
 import AnimatedContent from "@/components/common/AnimatedContent";
 
-const Customers = () => {
-  const { t } = useTranslation();
-  const [customerData, setCustomerData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const userRef = useRef(null);
-  const [totalResults, setTotalResults] = useState(0);
-  const [resultsPerPage] = useState(10); // Set the number of results per page
-  const [currentPage, setCurrentPage] = useState(1);
+const Staff = () => {
+  const { state } = useContext(AdminContext);
+  const { adminInfo } = state;
+  const { toggleDrawer, lang } = useContext(SidebarContext);
+  const [data, setData] = useState({ products: [], totalDoc: 0 });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [role, setRole] = useState("");
   const [inputValue, setInputValue] = useState("");
 
-  // Fetch customer data from the API
-  const fetchCustomers = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`,
-        {
-          params: {
-            // Optionally add other query params here
-          },
-        }
-      );
+  const { t } = useTranslation();
 
-      const customerArray = response.data?.data?.data || [];
-      setCustomerData(customerArray);
-      setTotalResults(customerArray.length);
-    } catch (err) {
-      console.error("Error fetching customers:", err);
-      setError("Failed to load customer data");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { loading, error } = useAsync(() =>
+    AdminServices.getAllStaff({ email: adminInfo.email, search: searchTerm, role })
+  );
 
-  useEffect(() => {
-    fetchCustomers(); // Initial fetch
-  }, [currentPage]);
+  const {
+    userRef,
+    totalResults,
+    resultsPerPage,
+    dataTable,
+    serviceData,
+    handleChangePage,
+  } = useFilter(data);
 
-  // Handle search and filtering logic
-  const handleSearch = async (searchType, email) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        "https://suft-90bec7a20f24.herokuapp.com/admin/search-users?",
-        {
-          params: { searchType, email },
-        }
-      );
-
-      const searchResults = response.data?.data || [];
-      setCustomerData(searchResults);
-      setTotalResults(searchResults.length);
-      setError(null); // Clear any previous errors on successful search
-    } catch (err) {
-      console.error("Error fetching search results:", err);
-      setError("No matching customers found");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Parse input and trigger search
-  const handleSubmitUser = (event) => {
-    event.preventDefault();
-    const [searchType, email] = inputValue.split(":");
-
-    if (!searchType || !email) {
-      setError("Please enter a valid format (searchType:email)");
-      return;
-    }
-
-    handleSearch(searchType.trim(), email.trim()); // Use trimmed values
-  };
-
-  // Clear input and reset data
   const handleResetField = () => {
+    setRole("");
     setInputValue("");
-    fetchCustomers(); // Reset to all customers
   };
 
-  const handleChangePage = (page) => {
-    setCurrentPage(page);
+  const handleSubmitUser = (e) => {
+    e.preventDefault();
   };
 
   return (
     <>
-      <PageTitle>{t("CustomersPage")}</PageTitle>
+      <PageTitle>{t("StaffPageTitle")} </PageTitle>
+      <MainDrawer>
+        <StaffDrawer />
+      </MainDrawer>
 
       <AnimatedContent>
         <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
@@ -117,31 +77,57 @@ const Customers = () => {
               onSubmit={handleSubmitUser}
               className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
             >
-              {/* Search Input */}
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
                   ref={userRef}
                   type="search"
                   name="search"
-                  placeholder={t("CustomersPageSearchPlaceholder")}
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder={t("StaffSearchBy")}
                 />
+                <button
+                  type="submit"
+                  className="absolute top-0 right-0 mt-5 mr-1"
+                ></button>
               </div>
 
-              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
-                <Button type="submit" className="bg-emerald-700 w-full h-12">
-                  Filter
-                </Button>
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
+                <Select value={role} onChange={(e) => setRole(e.target.value)}>
+                  <option value="" defaultValue hidden>
+                    {t("StaffRole")}
+                  </option>
+                  <option value="Admin">{t("StaffRoleAdmin")}</option>
+                  <option value="Cashier">{t("SelectCashiers")}</option>
+                  <option value="Super Admin">{t("SelectSuperAdmin")}</option>
+                </Select>
+              </div>
 
-                <Button
-                  layout="outline"
-                  onClick={handleResetField}
-                  type="reset"
-                  className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
-                >
-                  <span className="dark:text-gray-200 text-black">Reset</span>
+              <div className="md:w-56 lg:w-56 xl:w-56 w-full">
+                <Button onClick={toggleDrawer} className="w-full h-12 rounded-md">
+                  <span className="mr-3">
+                    <FiPlus />
+                  </span>
+                  {t("AddStaff")}
                 </Button>
+              </div>
+
+              <div className="md:mt-0 xl:gap-x-4 gap-x-1 md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 mt-2">
+                <div className="w-full mx-1">
+                  <Button type="submit" className="bg-emerald-700 w-full h-12">
+                    {t("Filter")}
+                  </Button>
+                </div>
+
+                <div className="w-full">
+                  <Button
+                    layout="outline"
+                    onClick={handleResetField}
+                    type="reset"
+                    className="md:py-1 dark:bg-gray-700 px-4 py-3 text-sm"
+                  >
+                    <span className="dark:text-gray-200 text-black">Reset</span>
+                  </Button>
+                </div>
               </div>
             </form>
           </CardBody>
@@ -149,24 +135,29 @@ const Customers = () => {
       </AnimatedContent>
 
       {loading ? (
-        <TableLoading row={12} col={6} width={190} height={20} />
+        <TableLoading row={12} col={7} width={163} height={20} />
       ) : error ? (
         <span className="mx-auto text-center text-red-500">{error}</span>
-      ) : customerData.length ? (
-        <TableContainer className="mb-8">
+      ) : serviceData?.length !== 0 ? (
+        <TableContainer className="mb-8 rounded-b-lg">
           <Table>
             <TableHeader>
               <tr>
-                <TableCell>{t("CustomersId")}</TableCell>
-                <TableCell>{t("CustomersJoiningDate")}</TableCell>
-                <TableCell>{t("CustomersName")}</TableCell>
-                <TableCell>{t("CustomersEmail")}</TableCell>
-                <TableCell>{t("CustomersPhone")}</TableCell>
-                <TableCell className="text-right">{t("CustomersActions")}</TableCell>
+                <TableCell>{t("StaffNameTbl")}</TableCell>
+                <TableCell>{t("StaffEmailTbl")}</TableCell>
+                <TableCell>{t("StaffContactTbl")}</TableCell>
+                <TableCell>{t("StaffJoiningDateTbl")}</TableCell>
+                <TableCell>{t("StaffRoleTbl")}</TableCell>
+                <TableCell className="text-center">
+                  {t("PublishedTbl")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {t("StaffActionsTbl")}
+                </TableCell>
               </tr>
             </TableHeader>
-            {/* Passing customerData to CustomerTable with a key prop */}
-            <CustomerTable customers={customerData} />
+
+            <StaffTable staffs={dataTable} lang={lang} />
           </Table>
           <TableFooter>
             <Pagination
@@ -178,10 +169,10 @@ const Customers = () => {
           </TableFooter>
         </TableContainer>
       ) : (
-        <NotFound title="Sorry, There are no customers right now." />
+        <NotFound title="Sorry, There are no staff right now." />
       )}
     </>
   );
 };
 
-export default Customers;
+export default Staff;

@@ -3,7 +3,7 @@ import requests from "./httpService";
 const SettingServices = {
   // global setting all function
   addGlobalSetting: async (body) => {
-    return requests.post("/setting/global/add", body);
+    return requests.post("/setting/admin/add-setting", body);
   },
 
   getGlobalSetting: async () => {

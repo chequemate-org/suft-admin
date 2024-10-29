@@ -1499,9 +1499,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
       try {
         setLoading(true);
         let response;
-        if (uuid) {
+        if (id) {
           response = await axios.put(
-            `https://suft-90bec7a20f24.herokuapp.com/product/admin/update/${uuid}`,
+            `https://suft-90bec7a20f24.herokuapp.com/product/admin/update/${id}`,
             formData
           );
         } else {
@@ -1513,7 +1513,7 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
 
         if (response.status === 200 || response.status === 201) {
           toast.success(
-            uuid
+            id
               ? "Product updated successfully!"
               : "Product added successfully!"
           );

@@ -83,16 +83,20 @@ const StaffTable = ({ lang }) => {
       console.error("Error fetching staff by UUID:", error);
     }
   };
-
   const handleEdit = async (uuid) => {
-    try {
-      const staffData = await fetchStaffByUUID(uuid); // Fetch staff data
-      setStaffDetails(staffData); // Set the fetched staff data
-      handleUpdate(uuid); // Open the drawer
-    } catch (error) {
-      console.error("Error editing staff:", error);
-    }
+    await fetchStaffByUUID(uuid);
+    handleUpdate(uuid); // Open the drawer for editing
   };
+
+  // const handleEdit = async (uuid) => {
+  //   try {
+  //     const staffData = await fetchStaffByUUID(uuid); // Fetch staff data
+  //     // setStaffDetails(staffData); // Set the fetched staff data
+  //     handleUpdate(uuid); // Open the drawer
+  //   } catch (error) {
+  //     console.error("Error editing staff:", error);
+  //   }
+  // };
 
   const handleDeleteClick = (staff) => {
     setSelectedStaffForDelete(staff); // Set the selected coupon (name and uuid)
@@ -112,7 +116,7 @@ const StaffTable = ({ lang }) => {
       <MainDrawer>
         <StaffDrawer
           id={serviceId}
-          staff={staffDetails}
+          staff={selectedStaff}
           fetchStaffs={fetchStaffs}
         />
       </MainDrawer>
@@ -157,7 +161,7 @@ const StaffTable = ({ lang }) => {
               <EditDeleteButton
                 id={staff?.uuid}
                 staff={staff}
-                handleUpdate={() => handleEdit(staff?.uuid)}
+                handleUpdate={() => handleEdit(staff?.uuid, staff.name)}
                 isSubmitting={isSubmitting}
                 handleModalOpen={() => handleDeleteClick(staff)}
                 handleResetPassword={handleResetPassword}
