@@ -19,7 +19,7 @@ import { notifyError, notifySuccess } from "@/utils/toast";
 const SignUp = () => {
   const { t } = useTranslation();
   const [file, setFile] = useState([]);
-  const { onSubmit, register, handleSubmit, errors, loading, setValue } =
+  const { onSubmit, register, handleSubmit, errors, loading } =
     useLoginSubmit();
 
   const handleImageUpload = (acceptedFiles) => {
@@ -38,18 +38,14 @@ const SignUp = () => {
     notifySuccess("Images uploaded successfully!");
   };
 
-  const handleRemoveImage = (file) => {
-    setFile((prevFiles) => prevFiles.filter((img) => img !== file));
+  const handleRemoveImage = (fileToRemove) => {
+    setFile((prevFiles) => prevFiles.filter((img) => img !== fileToRemove));
     notifySuccess("Image removed successfully!");
   };
 
   const mainImageThumbs = file.map((file, index) => (
     <div key={index} className="relative">
-      <img
-        className="w-24 h-24"
-        src={file.preview || URL.createObjectURL(file)}
-        alt={file.name}
-      />
+      <img className="w-24 h-24" src={file.preview} alt={file.name} />
       <button
         type="button"
         className="absolute top-0 right-0 text-red-500"
@@ -60,13 +56,13 @@ const SignUp = () => {
     </div>
   ));
 
-  const { getRootProps: getRootPropsMain, getInputProps: getInputPropsMain } =
-    useDropzone({
-      accept: { "image/*": [".jpeg", ".jpg", ".png", ".webp"] },
-      multiple: true,
-      maxSize: 5000000,
-      onDrop: handleImageUpload,
-    });
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: { "image/*": [".jpeg", ".jpg", ".png", ".webp"] },
+    multiple: true,
+    maxSize: 5000000,
+    onDrop: handleImageUpload,
+  });
+
   return (
     <div className="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
       <div className="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -97,7 +93,7 @@ const SignUp = () => {
               >
                 <LabelArea label="Name" />
                 <InputArea
-                  required={true}
+                  required
                   register={register}
                   label="Name"
                   name="name"
@@ -108,7 +104,7 @@ const SignUp = () => {
 
                 <LabelArea label="Email" />
                 <InputArea
-                  required={true}
+                  required
                   register={register}
                   label="Email"
                   name="email"
@@ -119,7 +115,7 @@ const SignUp = () => {
 
                 <LabelArea label="Phone Number" />
                 <InputArea
-                  required={true}
+                  required
                   register={register}
                   label="Phone Number"
                   name="phoneNumber"
@@ -130,7 +126,7 @@ const SignUp = () => {
 
                 <LabelArea label="Joining Date" />
                 <InputArea
-                  required={true}
+                  required
                   register={register}
                   label="Joining Date"
                   name="joiningDate"
@@ -140,40 +136,34 @@ const SignUp = () => {
                 <Error errorName={errors.joiningDate} />
 
                 <LabelArea label="Staff Role" />
-                <div className="col-span-8 sm:col-span-4">
-                  <SelectRole register={register} name="role" />
-                  <Error errorName={errors.role} />
-                </div>
+                <SelectRole register={register} name="role" />
+                <Error errorName={errors.role} />
 
                 <LabelArea label="Profile Image" />
-                <div className=" w-full">
-                  <div className="sm:col-span-4 col-span-8 w-full">
-                    <div
-                      {...getRootPropsMain()}
-                      className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer w-full bg-white"
-                    >
-                      <input {...getInputPropsMain()} />
-                      <span className="flex justify-center mx-auto">
-                        <FiUploadCloud className="text-emerald-500 text-3xl" />
-                      </span>
-                      <p className="mt-2 text-sm">Drag your image here</p>
-                      <em className="text-xs text-gray-400">
-                        (Only *.jpeg, *.png, and *.webp images accepted, Max:
-                        5MB)
-                      </em>
-                    </div>
-                    <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
-                    {errors.file && (
-                      <span className="mt-2 text-sm text-red-400">
-                        {errors.file}
-                      </span>
-                    )}
+                <div className="w-full">
+                  <div
+                    {...getRootProps()}
+                    className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer w-full bg-white"
+                  >
+                    <input {...getInputProps()} />
+                    <span className="flex justify-center mx-auto">
+                      <FiUploadCloud className="text-emerald-500 text-3xl" />
+                    </span>
+                    <p className="mt-2 text-sm">Drag your image here</p>
+                    <em className="text-xs text-gray-400">
+                      (Only *.jpeg, *.png, and *.webp images accepted, Max: 5MB)
+                    </em>
                   </div>
+                  <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
+                  {errors.image && (
+                    <span className="mt-2 text-sm text-red-400">
+                      {errors.image.message}
+                    </span>
+                  )}
                 </div>
-                <Error errorName={errors.image} />
 
-                <Label className="" check>
-                  <Input type="checkbox" />
+                <Label check>
+                  <Input type="checkbox" required />
                   <span className="ml-2">
                     {t("Iagree")}{" "}
                     <span className="underline">{t("privacyPolicy")}</span>
@@ -184,8 +174,6 @@ const SignUp = () => {
                   disabled={loading}
                   type="submit"
                   className="mt-4 h-12 w-full"
-                  to="/dashboard"
-                  block
                 >
                   {t("CreateAccountTitle")}
                 </Button>
@@ -198,11 +186,11 @@ const SignUp = () => {
                 className="text-sm inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-serif text-center justify-center rounded-md focus:outline-none text-gray-700 bg-gray-100 shadow-sm my-2 md:px-2 lg:px-3 py-4 md:py-3.5 lg:py-4 hover:text-white hover:bg-blue-600 h-11 md:h-12 w-full mr-2"
               >
                 <ImFacebook className="w-4 h-4 mr-2" />{" "}
-                <span className="ml-2"> {t("LoginWithFacebook")} </span>
+                <span className="ml-2">{t("LoginWithFacebook")}</span>
               </button>
               <button
                 disabled
-                className="text-sm inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-serif text-center justify-center rounded-md focus:outline-none text-gray-700 bg-gray-100 shadow-sm my-2  md:px-2 lg:px-3 py-4 md:py-3.5 lg:py-4 hover:text-white hover:bg-red-500 h-11 md:h-12 w-full"
+                className="text-sm inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-serif text-center justify-center rounded-md focus:outline-none text-gray-700 bg-gray-100 shadow-sm my-2 md:px-2 lg:px-3 py-4 md:py-3.5 lg:py-4 hover:text-white hover:bg-red-500 h-11 md:h-12 w-full"
               >
                 <ImGoogle className="w-4 h-4 mr-2" />{" "}
                 <span className="ml-2">{t("LoginWithGoogle")}</span>
