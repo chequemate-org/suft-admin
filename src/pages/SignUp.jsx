@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Input, Label, Button } from "@windmill/react-ui";
 import { ImFacebook, ImGoogle } from "react-icons/im";
 import { useTranslation } from "react-i18next";
 
-//internal import
+// Internal imports
 import Error from "@/components/form/others/Error";
 import InputArea from "@/components/form/input/InputArea";
 import LabelArea from "@/components/form/selectOption/LabelArea";
@@ -12,12 +12,61 @@ import SelectRole from "@/components/form/selectOption/SelectRole";
 import useLoginSubmit from "@/hooks/useLoginSubmit";
 import ImageLight from "@/assets/img/create-account-office.jpeg";
 import ImageDark from "@/assets/img/create-account-office-dark.jpeg";
+import { useDropzone } from "react-dropzone";
+import { FiUploadCloud, FiXCircle } from "react-icons/fi";
+import { notifyError, notifySuccess } from "@/utils/toast";
 
 const SignUp = () => {
   const { t } = useTranslation();
-  const { onSubmit, register, handleSubmit, errors, loading } =
+  const [file, setFile] = useState([]);
+  const { onSubmit, register, handleSubmit, errors, loading, setValue } =
     useLoginSubmit();
 
+  const handleImageUpload = (acceptedFiles) => {
+    const oversizedFiles = acceptedFiles.filter((file) => file.size > 5000000);
+    if (oversizedFiles.length > 0) {
+      notifyError("Some files are larger than 5MB and cannot be uploaded.");
+      return;
+    }
+
+    setFile((prevFiles) => [
+      ...prevFiles,
+      ...acceptedFiles.map((file) =>
+        Object.assign(file, { preview: URL.createObjectURL(file) })
+      ),
+    ]);
+    notifySuccess("Images uploaded successfully!");
+  };
+
+  const handleRemoveImage = (file) => {
+    setFile((prevFiles) => prevFiles.filter((img) => img !== file));
+    notifySuccess("Image removed successfully!");
+  };
+
+  const mainImageThumbs = file.map((file, index) => (
+    <div key={index} className="relative">
+      <img
+        className="w-24 h-24"
+        src={file.preview || URL.createObjectURL(file)}
+        alt={file.name}
+      />
+      <button
+        type="button"
+        className="absolute top-0 right-0 text-red-500"
+        onClick={() => handleRemoveImage(file)}
+      >
+        <FiXCircle />
+      </button>
+    </div>
+  ));
+
+  const { getRootProps: getRootPropsMain, getInputProps: getInputPropsMain } =
+    useDropzone({
+      accept: { "image/*": [".jpeg", ".jpg", ".png", ".webp"] },
+      multiple: true,
+      maxSize: 5000000,
+      onDrop: handleImageUpload,
+    });
   return (
     <div className="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
       <div className="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -41,7 +90,11 @@ const SignUp = () => {
               <h1 className="mb-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                 {t("CreateAccount")}
               </h1>
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form
+                onSubmit={handleSubmit((data) =>
+                  onSubmit({ ...data, image: file[0] })
+                )}
+              >
                 <LabelArea label="Name" />
                 <InputArea
                   required={true}
@@ -52,6 +105,7 @@ const SignUp = () => {
                   placeholder="Admin"
                 />
                 <Error errorName={errors.name} />
+
                 <LabelArea label="Email" />
                 <InputArea
                   required={true}
@@ -63,18 +117,27 @@ const SignUp = () => {
                 />
                 <Error errorName={errors.email} />
 
-                {/* <LabelArea label="Password" />
+                <LabelArea label="Phone Number" />
                 <InputArea
                   required={true}
                   register={register}
-                  label="Password"
-                  name="password"
-                  type="password"
-                  autocomplete="current-password"
-                  placeholder="***************"
+                  label="Phone Number"
+                  name="phoneNumber"
+                  type="text"
+                  placeholder="08104048887"
                 />
-                <Error errorName={errors.password} /> 
-                */}
+                <Error errorName={errors.phoneNumber} />
+
+                <LabelArea label="Joining Date" />
+                <InputArea
+                  required={true}
+                  register={register}
+                  label="Joining Date"
+                  name="joiningDate"
+                  type="date"
+                  placeholder="12/10/2024"
+                />
+                <Error errorName={errors.joiningDate} />
 
                 <LabelArea label="Staff Role" />
                 <div className="col-span-8 sm:col-span-4">
@@ -82,7 +145,34 @@ const SignUp = () => {
                   <Error errorName={errors.role} />
                 </div>
 
-                <Label className="mt-6" check>
+                <LabelArea label="Profile Image" />
+                <div className=" w-full">
+                  <div className="sm:col-span-4 col-span-8 w-full">
+                    <div
+                      {...getRootPropsMain()}
+                      className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer w-full bg-white"
+                    >
+                      <input {...getInputPropsMain()} />
+                      <span className="flex justify-center mx-auto">
+                        <FiUploadCloud className="text-emerald-500 text-3xl" />
+                      </span>
+                      <p className="mt-2 text-sm">Drag your image here</p>
+                      <em className="text-xs text-gray-400">
+                        (Only *.jpeg, *.png, and *.webp images accepted, Max:
+                        5MB)
+                      </em>
+                    </div>
+                    <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
+                    {errors.file && (
+                      <span className="mt-2 text-sm text-red-400">
+                        {errors.file}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Error errorName={errors.image} />
+
+                <Label className="" check>
                   <Input type="checkbox" />
                   <span className="ml-2">
                     {t("Iagree")}{" "}

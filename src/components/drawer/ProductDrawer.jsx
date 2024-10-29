@@ -1257,7 +1257,6 @@ import useProductSubmit from "@/hooks/useProductSubmit";
 import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleForCombination";
 import ActiveButton from "@/components/form/button/ActiveButton";
 
-
 const ProductDrawer = ({ id, product, title, uuid }) => {
   const { t } = useTranslation();
   const {
@@ -1327,21 +1326,19 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
     setProcessOption(checked);
   };
 
-  
-  
   const handleImageUpload = (acceptedFiles, setImages) => {
     const oversizedFiles = acceptedFiles.filter((file) => file.size > 5000000);
     if (oversizedFiles.length > 0) {
       toast.error("Some files are larger than 5MB and cannot be uploaded.");
       return;
     }
-  
+
     setUploadingImages(true);
-  
+
     setImages((prevImages) => {
       // Ensure prevImages is an array
       const validPrevImages = Array.isArray(prevImages) ? prevImages : [];
-      
+
       return [
         ...validPrevImages,
         ...acceptedFiles.map((file) =>
@@ -1349,11 +1346,10 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
         ),
       ];
     });
-  
+
     setUploadingImages(false);
     toast.success("Image uploaded successfully!");
-};
-
+  };
 
   const { getRootProps: getRootPropsMain, getInputProps: getInputPropsMain } =
     useDropzone({
@@ -1393,7 +1389,6 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
     </div>
   ));
 
-  
   const extraImageThumbs = (extraImages || []).map((file, index) => (
     <div key={index} className="relative">
       <img className="w-24 h-24" src={file.preview} alt={file.name} />
@@ -1406,7 +1401,6 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
       </button>
     </div>
   ));
-  
 
   const handleColorSelection = (e) => {
     const selectedColor = colorOptions.find((c) => c.name === e.target.value);
@@ -1454,19 +1448,19 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
     if (!name) newErrors.name = "Product name is required.";
     if (!description) newErrors.description = "Description is required.";
     if (!price) newErrors.price = "Price is required.";
-    if (!size || size.length === 0) newErrors.size = "Size is required."; 
-    if (!color || color.length === 0) newErrors.color = "Color is required."; 
+    if (!size || size.length === 0) newErrors.size = "Size is required.";
+    if (!color || color.length === 0) newErrors.color = "Color is required.";
     if (!details) newErrors.details = "Details are required.";
     if (!imageUrl || imageUrl.length === 0)
-      newErrors.imageUrl = "Image is required."; 
+      newErrors.imageUrl = "Image is required.";
     if (!extraImages || extraImages.length === 0)
-      newErrors.extraImages = "Extra images are required."; 
+      newErrors.extraImages = "Extra images are required.";
     if (!stockLevel) newErrors.stockLevel = "Stock level is required.";
     if (!isAvailable)
       newErrors.isAvailable = "Availability status is required.";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; 
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleProductSubmit = async (e) => {
@@ -1517,7 +1511,7 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
               ? "Product updated successfully!"
               : "Product added successfully!"
           );
-          resetForm(); 
+          resetForm();
         } else {
           toast.error("Server error: " + response.data.message);
         }
@@ -1528,7 +1522,7 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
         );
         toast.error("Failed to submit the product!");
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     }
   };
@@ -1628,7 +1622,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
               className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
             {errors.name && (
-              <span className="mt-2 text-sm text-red-400">Name is required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                Name is required.
+              </span>
             )}
           </div>
         </div>
@@ -1644,7 +1640,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
               rows="4"
             />
             {errors.description && (
-              <span className="mt-2 text-sm text-red-400">Description are required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                Description are required.
+              </span>
             )}
           </div>
         </div>
@@ -1668,7 +1666,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
             </div>
             <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
             {errors.imageUrl && (
-              <span className="mt-2 text-sm text-red-400">image is required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                image is required.
+              </span>
             )}
           </div>
         </div>
@@ -1692,7 +1692,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
             </div>
             <div className="flex flex-wrap mt-4">{extraImageThumbs}</div>
             {errors.extraImages && (
-              <span className="mt-2 text-sm text-red-400">extra image is required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                extra image is required.
+              </span>
             )}
           </div>
         </div>
@@ -1708,7 +1710,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
               className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
             {errors.price && (
-              <span className="mt-2 text-sm text-red-400">Price is required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                Price is required.
+              </span>
             )}
           </div>
         </div>
@@ -1744,7 +1748,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
                 ))}
             </div>
             {errors.size && (
-              <span className="mt-2 text-sm text-red-400">size is required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                size is required.
+              </span>
             )}
           </div>
         </div>
@@ -1786,7 +1792,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
                 ))}
             </div>
             {errors.color && (
-              <span className="mt-2 text-sm text-red-400">color is required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                color is required.
+              </span>
             )}
           </div>
         </div>
@@ -1801,7 +1809,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
               className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
             />
             {errors.stockLevel && (
-              <span className="mt-2 text-sm text-red-400">Stock Level is required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                Stock Level is required.
+              </span>
             )}
           </div>
         </div>
@@ -1817,7 +1827,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
               rows="4"
             />
             {errors.details && (
-              <span className="mt-2 text-sm text-red-400">Details are required.</span>
+              <span className="mt-2 text-sm text-red-400">
+                Details are required.
+              </span>
             )}
           </div>
         </div>
@@ -1884,6 +1896,5 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
     </>
   );
 };
-
 
 export default ProductDrawer;
