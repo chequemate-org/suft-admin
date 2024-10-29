@@ -73,9 +73,10 @@ const SignUp = () => {
                   autocomplete="current-password"
                   placeholder="***************"
                 />
-                <Error errorName={errors.password} /> */}
-
+                <Error errorName={errors.password} /> 
                 <LabelArea label="Staff Role" />
+                */}
+
                 <div className="col-span-8 sm:col-span-4">
                   <SelectRole register={register} label="Role" name="role" />
                   <Error errorName={errors.role} />
