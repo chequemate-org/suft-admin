@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 import { AdminContext } from "@/context/AdminContext";
 import AdminServices from "@/services/AdminServices";
 import { notifyError, notifySuccess } from "@/utils/toast";
@@ -11,6 +11,7 @@ import { removeSetting } from "@/reduxStore/slice/settingSlice";
 const useLoginSubmit = () => {
   const reduxDispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
   const { dispatch } = useContext(AdminContext);
   const history = useHistory();
   const location = useLocation();
@@ -26,10 +27,12 @@ const useLoginSubmit = () => {
     const cookieTimeOut = 0.5;
 
     try {
-      // Handle login
       if (location.pathname === "/login") {
         reduxDispatch(removeSetting("globalSetting"));
-        const res = await AdminServices.loginAdmin({ email: data.email, password: data.password });
+        const res = await AdminServices.loginAdmin({
+          email: data.email,
+          password: data.password,
+        });
         notifySuccess("Login Success!");
         dispatch({ type: "USER_LOGIN", payload: res });
         Cookies.set("adminInfo", JSON.stringify(res), {
@@ -40,7 +43,6 @@ const useLoginSubmit = () => {
         history.push("/dashboard");
       }
 
-      // Handle signup
       else if (location.pathname === "/signup") {
         const formData = new FormData();
         formData.append("name", data.name);
@@ -49,8 +51,8 @@ const useLoginSubmit = () => {
         formData.append("joiningDate", data.joiningDate);
         formData.append("role", data.role);
 
-        if (data.image && data.image instanceof File) {
-          formData.append("file", data.image);
+        if (file) {
+          formData.append("image", file);
         }
 
         const res = await AdminServices.registerAdmin(formData);
@@ -66,7 +68,7 @@ const useLoginSubmit = () => {
 
       // Handle forgot password
       else if (location.pathname === "/forgot-password") {
-        await AdminServices.forgetPassword({ email: data.email }); // Send the email for password reset
+        await AdminServices.forgetPassword({ email: data.email });
         notifySuccess("Password recovery email sent!");
       }
     } catch (err) {
@@ -76,12 +78,17 @@ const useLoginSubmit = () => {
     }
   };
 
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
   return {
     onSubmit: handleSubmit(onSubmit),
     handleSubmit,
     register,
     errors,
     loading,
+    handleFileChange,
   };
 };
 
