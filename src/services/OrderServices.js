@@ -58,7 +58,7 @@ const OrderServices = {
   },
 
   getDashboardAmount: async () => {
-    return requests.get("/admin/order-total-status");
+    return requests.get("/admin/order-amount");
   },
 
   getDashboardCount: async () => {
