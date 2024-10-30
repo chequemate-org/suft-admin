@@ -1,16 +1,16 @@
+// SelectStatus.js
 import React, { useContext } from "react";
 import { Select } from "@windmill/react-ui";
 
-// Internal imports
 import OrderServices from "@/services/OrderServices";
 import { notifySuccess, notifyError } from "@/utils/toast";
 import { SidebarContext } from "@/context/SidebarContext";
 
-const SelectStatus = ({ uuid, order }) => {
+const SelectStatus = ({ id, order }) => {
   const { setIsUpdate } = useContext(SidebarContext);
 
-  const handleChangeStatus = (uuid, status) => {
-    OrderServices.updateOrder(uuid, { status })
+  const handleChangeStatus = (id, status) => {
+    OrderServices.updateOrder(id, { status })
       .then((res) => {
         notifySuccess(res.message);
         setIsUpdate(true);
@@ -19,10 +19,7 @@ const SelectStatus = ({ uuid, order }) => {
   };
 
   return (
-    <Select
-      onChange={(e) => handleChangeStatus(uuid, e.target.value)}
-      className="h-8"
-    >
+    <Select onChange={(e) => handleChangeStatus(id, e.target.value)} className="h-8">
       <option value="status" defaultValue hidden>
         {order?.status}
       </option>

@@ -32,7 +32,7 @@ import { Link } from "react-router-dom";
 import Tooltip from "@/components/tooltip/Tooltip";
 import { FiZoomIn } from "react-icons/fi";
 import Status from "@/components/table/Status";
-import useUtilsFunction from "@/hooks/useUtilsFunction";
+// import useUtilsFunction from "@/hooks/useUtilsFunction";
 
 const Orders = () => {
   const {
@@ -61,16 +61,27 @@ const Orders = () => {
   const [loadingExport, setLoadingExport] = useState(false);
   const [error, setError] = useState("");
   const [totalOrders, setTotalOrders] = useState(0);
-  const { currency, getNumber, getNumberTwo } = useUtilsFunction();
+  // const { currency, getNumber, getNumberTwo } = useUtilsFunction();
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (params = {}) => {
     setLoading(true);
     try {
+      const defaultParams = {
+        page: currentPage,
+        customerName: searchText,
+        status,
+        orderLimit: resultsPerPage,
+        startDate,
+        endDate,
+        method,
+      };
+      const mergedParams = { ...defaultParams, ...params };
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/admin/get-orders?page=${currentPage}`
+        `https://suft-90bec7a20f24.herokuapp.com/admin/get-orders`,
+        { params: mergedParams }
       );
       setOrders(response.data.orders);
-      setTotalOrders(response.data.totalOrders);
+      setTotalOrders(response.data.meta.totalItems);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -81,6 +92,25 @@ const Orders = () => {
   useEffect(() => {
     fetchOrders();
   }, [currentPage]);
+
+  const handleFilterChange = async () => {
+    try {
+      const filters = {
+        customerName: searchText,
+        status,
+        page: currentPage,
+        orderLimit: resultsPerPage,
+        startDate,
+        endDate,
+        method,
+      };
+      const response = await OrderServices.filterOrders(filters);
+      setOrders(response.data.orders);
+      setTotalOrders(response.data.meta.totalItems);
+    } catch (error) {
+      setError(error?.response?.data?.message || error.message);
+    }
+  };
 
   const handleDownloadOrders = async () => {
     try {
@@ -100,10 +130,8 @@ const Orders = () => {
       const exportData = res?.orders?.map((order) => ({
         _id: order.id,
         invoice: order.invoiceNo,
-        subTotal: getNumberTwo(order.subTotal),
-        shippingCost: getNumberTwo(order.shippingCost),
-        discount: getNumberTwo(order?.discount),
-        total: getNumberTwo(order.amount),
+        orderTime: order.orderTime,
+        total: order.amount,
         paymentMethod: order.method,
         status: order.status,
         user_info: order?.customerName,
@@ -140,8 +168,13 @@ const Orders = () => {
       <AnimatedContent>
         <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
           <CardBody>
-            <form onSubmit={handleSubmitForAll}>
-              <div className="grid gap-4 lg:gap-4 xl:gap-6 md:gap-2 md:grid-cols-5 py-2">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFilterChange();
+              }}
+            >
+              <div className="grid gap-4 lg:gap-4 xl:gap-6 md:gap-2 md:grid-cols-4 py-2">
                 <div>
                   <Input
                     ref={searchRef}
@@ -172,16 +205,6 @@ const Orders = () => {
                     <option value="7">{t("DaysOrders7")}</option>
                     <option value="15">{t("DaysOrders15")}</option>
                     <option value="30">{t("DaysOrders30")}</option>
-                  </Select>
-                </div>
-                <div>
-                  <Select onChange={(e) => setMethod(e.target.value)}>
-                    <option value="Method" defaultValue hidden>
-                      {t("Method")}
-                    </option>
-                    <option value="Cash">{t("Cash")}</option>
-                    <option value="Card">{t("Card")}</option>
-                    <option value="Credit">{t("Credit")}</option>
                   </Select>
                 </div>
                 <div>
