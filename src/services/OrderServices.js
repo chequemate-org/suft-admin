@@ -10,8 +10,12 @@ const OrderServices = {
   filterOrders: async (filters) => {
     const queryParams = new URLSearchParams();
     for (const [key, value] of Object.entries(filters)) {
-      if (value !== "") {
-        queryParams.append(key, value);
+      if (value !== "" && value !== null) {
+        if (key === "startDate" || key === "endDate") {
+          queryParams.append(key, new Date(value).toISOString().slice(0, 10));
+        } else {
+          queryParams.append(key, value);
+        }
       }
     }
     return requests.get(`/admin/order-filtering?${queryParams.toString()}`);
