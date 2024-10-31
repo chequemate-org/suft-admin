@@ -304,7 +304,6 @@ import axios from "axios";
 const StaffDrawer = ({ id, staff, fetchStaffs }) => {
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const [file, setFile] = useState([]);
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [joiningDate, setJoiningDate] = useState(dayjs().format("YYYY-MM-DD"));
@@ -314,7 +313,6 @@ const StaffDrawer = ({ id, staff, fetchStaffs }) => {
 
   useEffect(() => {
     if (id && staff) {
-      setFile(staff.data.file || []);
       setName(staff.data.name);
       setEmail(staff.data.email);
       setPhoneNumber(staff.data.phoneNumber);
@@ -329,7 +327,6 @@ const StaffDrawer = ({ id, staff, fetchStaffs }) => {
     const newErrors = {};
     
     if (!name) newErrors.name = "Name is required.";
-    if (!file) newErrors.file = "image is required.";
     if (!email) newErrors.email = "Email is required.";
     if (!joiningDate) newErrors.joiningDate = "Date is required.";
     if (!phoneNumber) newErrors.phoneNumber = "Phone Number is required.";
@@ -339,56 +336,11 @@ const StaffDrawer = ({ id, staff, fetchStaffs }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (!validateForm()) return;
-
-  //   const formData = new FormData();
-  //   formData.append("name", name);
-  //   formData.append("email", email);
-  //   formData.append("joiningDate", joiningDate);
-  //   formData.append("phoneNumber", phoneNumber);
-  //   formData.append("role", role);
-
-  //   file.forEach((file) => {
-  //     if (file instanceof File) formData.append("file", file);
-  //   });
-
-  //   try {
-  //     setLoading(true);
-  //     let response;
-  //     if (id) {
-  //       response = await axios.put(
-  //         `https://suft-90bec7a20f24.herokuapp.com/admin/staff-update/${id}`,
-  //         formData
-  //       );
-  //     } else {
-  //       response = await axios.post(
-  //         "https://suft-90bec7a20f24.herokuapp.com/admin/create-user",
-  //         formData
-  //       );
-  //     }
-
-  //     if (response.status === 200 || response.status === 201) {
-  //       toast.success(id ? "Staff updated successfully!" : "Staff added successfully!");
-  //       resetForm();
-  //       fetchStaffs();
-  //     } else {
-  //       toast.error("Server error: " + response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting the form:", error.response ? error.response.data : error.message);
-  //     toast.error("Failed to submit the form!");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       const staffData = {
         name,
-        file,
         email,
         joiningDate,
         phoneNumber,
@@ -443,56 +395,16 @@ const StaffDrawer = ({ id, staff, fetchStaffs }) => {
     }
   };
 
-
   const resetForm = () => {
     setName("");
     setEmail("");
     setPhoneNumber("");
     setJoiningDate("");
     setRole("");
-    setFile([]);
     setErrors({});
   };
 
-  const handleImageUpload = (acceptedFiles) => {
-    const oversizedFiles = acceptedFiles.filter((file) => file.size > 5000000);
-    if (oversizedFiles.length > 0) {
-      toast.error("Some files are larger than 5MB and cannot be uploaded.");
-      return;
-    }
-
-    setFile((prevFiles) => [
-      ...prevFiles,
-      ...acceptedFiles.map((file) => Object.assign(file, { preview: URL.createObjectURL(file) })),
-    ]);
-    toast.success("Images uploaded successfully!");
-  };
-
-  const handleRemoveImage = (file) => {
-    setFile((prevFiles) => prevFiles.filter((img) => img !== file));
-    toast.success("Image removed successfully!");
-  };
-
-  const mainImageThumbs = file.map((file, index) => (
-    <div key={index} className="relative">
-      <img className="w-24 h-24" src={file.preview || URL.createObjectURL(file)} alt={file.name} />
-      <button
-        type="button"
-        className="absolute top-0 right-0 text-red-500"
-        onClick={() => handleRemoveImage(file)}
-      >
-        <FiXCircle />
-      </button>
-    </div>
-  ));
-
-  const { getRootProps: getRootPropsMain, getInputProps: getInputPropsMain } = useDropzone({
-    accept: { "image/*": [".jpeg", ".jpg", ".png", ".webp"] },
-    multiple: true,
-    maxSize: 5000000,
-    onDrop: handleImageUpload,
-  });
-
+  
   return (
     <div>
       <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-6 border-b border-gray-100">
@@ -502,24 +414,6 @@ const StaffDrawer = ({ id, staff, fetchStaffs }) => {
         />
       </div>
       <form onSubmit={handleSubmit} className="p-6 rounded-lg">
-        {/* Image Upload */}
-        <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
-          <LabelArea label="Staff Image" />
-          <div className="sm:col-span-4 col-span-8">
-            <div {...getRootPropsMain()} className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
-              <input {...getInputPropsMain()} />
-              <span className="flex justify-center mx-auto">
-                <FiUploadCloud className="text-emerald-500 text-3xl" />
-              </span>
-              <p className="mt-2 text-sm">Drag your image here</p>
-              <em className="text-xs text-gray-400">(Only *.jpeg, *.png, and *.webp images accepted, Max: 5MB)</em>
-            </div>
-            <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
-            {errors.file && <span className="mt-2 text-sm text-red-400">{errors.file}</span>}
-          </div>
-        </div>
-
-        {/* Other Fields */}
         {[ 
           // { label: "file", value: file, onChange: setFile, error: errors.file },
           { label: "Name", value: name, onChange: setName, error: errors.name },

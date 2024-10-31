@@ -82,7 +82,7 @@ const Staff = () => {
                   ref={userRef}
                   type="search"
                   name="search"
-                  value={inputValue}s
+                  value={inputValue}
                   placeholder={t("StaffSearchBy")}
                 />
                 <button
