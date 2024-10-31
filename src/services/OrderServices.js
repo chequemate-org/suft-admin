@@ -2,26 +2,23 @@
 import requests from "./httpService";
 
 const OrderServices = {
-  getAllOrders: async ({
-    body,
-    headers,
-    customerName,
-    status,
-    page = 1,
-    limit = 8,
-    day,
-    method,
-    startDate,
-    endDate,
-  }) => {
-    const searchName = customerName !== null ? customerName : "";
-    const searchStatus = status !== null ? status : "";
-    const searchDay = day !== null ? day : "";
-    const searchMethod = method !== null ? method : "";
-    const startD = startDate !== null ? startDate : "";
-    const endD = endDate !== null ? endDate : "";
+  getAllOrders: async ({ page, limit = 8, ...filters }) => {
+    const queryParams = new URLSearchParams({ page, limit, ...filters });
+    return requests.get(`admin/get-orders?${queryParams}`);
+  },
 
-    return requests.get(`admin/get-orders`, body, headers);
+  filterOrders: async (filters) => {
+    const queryParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== "" && value !== null) {
+        if (key === "startDate" || key === "endDate") {
+          queryParams.append(key, new Date(value).toISOString().slice(0, 10));
+        } else {
+          queryParams.append(key, value);
+        }
+      }
+    }
+    return requests.get(`/admin/order-filtering?${queryParams.toString()}`);
   },
 
   getAllOrdersTwo: async ({ invoice, body, headers }) => {
@@ -58,7 +55,7 @@ const OrderServices = {
   },
 
   getDashboardAmount: async () => {
-    return requests.get("/admin/order-total-status");
+    return requests.get("/admin/order-amount");
   },
 
   getDashboardCount: async () => {

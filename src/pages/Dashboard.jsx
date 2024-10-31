@@ -251,10 +251,7 @@ const Dashboard = () => {
             title="Today Order"
             title2="TodayOrder"
             Icon={ImStack}
-            cash={todayCashPayment || 0}
-            card={todayCardPayment || 0}
-            credit={todayCreditPayment || 0}
-            price={todayOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.todayOrders || 0}
             className="text-white dark:text-emerald-100 bg-teal-600"
             loading={loadingOrderAmount}
           />
@@ -264,29 +261,28 @@ const Dashboard = () => {
             title="Yesterday Order"
             title2="YesterdayOrder"
             Icon={ImStack}
-            cash={yesterdayCashPayment || 0}
-            card={yesterdayCardPayment || 0}
-            credit={yesterdayCreditPayment || 0}
-            price={yesterdayOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.yesterdayOrders || 0}
             className="text-white dark:text-orange-100 bg-orange-400"
             loading={loadingOrderAmount}
           />
 
           <CardItemTwo
             mode={mode}
+            title="This Month"
             title2="ThisMonth"
             Icon={FiShoppingCart}
-            price={dashboardOrderAmount?.thisMonthlyOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.thisMonthOrders || 0}
             className="text-white dark:text-emerald-100 bg-blue-500"
             loading={loadingOrderAmount}
           />
 
           <CardItemTwo
             mode={mode}
+            title="Last Month"
             title2="LastMonth"
             Icon={ImCreditCard}
             loading={loadingOrderAmount}
-            price={dashboardOrderAmount?.lastMonthOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.lastMonthOrders || 0}
             className="text-white dark:text-teal-100 bg-cyan-600"
           />
 
@@ -294,7 +290,7 @@ const Dashboard = () => {
             mode={mode}
             title2="AllTimeSales"
             Icon={ImCreditCard}
-            price={dashboardOrderAmount?.totalAmount || 0}
+            price={dashboardOrderAmount?.amounts?.allTimeOrders || 0}
             className="text-white dark:text-emerald-100 bg-emerald-600"
             loading={loadingOrderAmount}
           />
@@ -302,7 +298,7 @@ const Dashboard = () => {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <CardItem
-            title="Total Order"
+            title={t("TotalOrder")}
             Icon={FiShoppingCart}
             loading={loadingOrderCount}
             quantity={totalOrder || 0}
@@ -312,8 +308,8 @@ const Dashboard = () => {
             title={t("OrderPending")}
             Icon={FiRefreshCw}
             loading={loadingOrderCount}
-            quantity={dashboardOrderCount?.totals?.pending || 0}
-            amount={dashboardOrderCount?.totalPendingOrder?.total || 0}
+            quantity={dashboardOrderCount?.totals?.pending}
+            amount={dashboardOrderCount?.totalPendingOrder?.total}
             className="text-blue-600 dark:text-blue-100 bg-blue-100 dark:bg-blue-500"
           />
           <CardItem
@@ -350,45 +346,6 @@ const Dashboard = () => {
           </ChartCard>
         </div>
       </AnimatedContent>
-
-      {/* <PageTitle>{t("RecentOrder")}</PageTitle> */}
-
-      {/* <Loading loading={loading} /> */}
-      
-      {/* {loadingRecentOrder ? (
-        <TableLoading row={5} col={4} />
-      ) : error ? (
-        <span className="text-center mx-auto text-red-500">{error}</span>
-      ) : serviceData?.length !== 0 ? (
-        <TableContainer className="mb-8">
-          <Table>
-            <TableHeader>
-              <tr>
-                <TableCell>{t("InvoiceNo")}</TableCell>
-                <TableCell>{t("TimeTbl")}</TableCell>
-                <TableCell>{t("CustomerName")} </TableCell>
-                <TableCell> {t("MethodTbl")} </TableCell>
-                <TableCell> {t("AmountTbl")} </TableCell>
-                <TableCell>{t("OderStatusTbl")}</TableCell>
-                <TableCell>{t("ActionTbl")}</TableCell>
-                <TableCell className="text-right">{t("InvoiceTbl")}</TableCell>
-              </tr>
-            </TableHeader>
-
-            <OrderTable orders={dataTable} />
-          </Table>
-          <TableFooter>
-            <Pagination
-              totalResults={dashboardRecentOrder?.totalOrder}
-              resultsPerPage={8}
-              onChange={handleChangePage}
-              label="Table navigation"
-            />
-          </TableFooter>
-        </TableContainer>
-      ) : (
-        <NotFound title="Sorry, There are no orders right now." />
-      )} */}
     </>
   );
 };
