@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@windmill/react-ui";
-import { ImFacebook, ImGoogle } from "react-icons/im";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 
 // Internal imports
@@ -16,6 +16,11 @@ import CMButton from "@/components/form/button/CMButton";
 const Login = () => {
   const { t } = useTranslation();
   const { onSubmit, register, errors, loading } = useLoginSubmit();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
@@ -71,7 +76,6 @@ const Login = () => {
                 <InputArea
                   required={true}
                   register={register}
-                  defaultValue="oreoluwaajayyiruth@gmail.com"
                   label="Email"
                   name="email"
                   type="email"
@@ -81,16 +85,29 @@ const Login = () => {
                 <Error errorName={errors.email} />
                 <div className="mt-6"></div>
                 <LabelArea label="Password" />
-                <InputArea
-                  required={true}
-                  register={register}
-                  defaultValue="d8Do(zcb"
-                  label="Password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="***************"
-                />
+                <div className="relative">
+                  <InputArea
+                    required={true}
+                    register={register}
+                    label="Password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="***************"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <FiEyeOff className="w-5 h-5" />
+                    ) : (
+                      <FiEye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
                 <Error errorName={errors.password} />
 
                 {loading ? (

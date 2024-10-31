@@ -275,10 +275,6 @@ const Products = () => {
               </div>
 
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
-                <SelectCategory setCategory={setCategory} lang={lang} />
-              </div>
-
-              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Select onChange={(e) => setSortedField(e.target.value)}>
                   <option value="All" defaultValue hidden>
                     {t("Price")}
@@ -337,15 +333,11 @@ const Products = () => {
                     />
                   </TableCell>
                   <TableCell>{t("ProductNameTbl")}</TableCell>
-                  <TableCell>{t("CategoryTbl")}</TableCell>
                   <TableCell>{t("PriceTbl")}</TableCell>
                   <TableCell>Sale Price</TableCell>
                   <TableCell>{t("StockTbl")}</TableCell>
                   <TableCell>{t("StatusTbl")}</TableCell>
                   <TableCell className="text-center">{t("DetailsTbl")}</TableCell>
-                  <TableCell className="text-center">
-                    {t("PublishedTbl")}
-                  </TableCell>
                   <TableCell className="text-right">{t("ActionsTbl")}</TableCell>
                 </tr>
               </TableHeader>

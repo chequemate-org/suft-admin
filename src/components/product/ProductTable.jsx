@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Avatar,
@@ -52,10 +52,8 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
   const handleClick = (e) => {
     const { id, checked } = e.target;
-    setIsCheck(prev => 
-      checked 
-        ? [...prev, id]
-        : prev.filter(item => item !== id)
+    setIsCheck((prev) =>
+      checked ? [...prev, id] : prev.filter((item) => item !== id)
     );
   };
 
@@ -65,7 +63,11 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
       {isCheck?.length < 2 && (
         <MainDrawer>
-          <ProductDrawer currency={currency} id={serviceId} product={fetchedProducts}  />
+          <ProductDrawer
+            currency={currency}
+            id={serviceId}
+            product={fetchedProducts}
+          />
         </MainDrawer>
       )}
 
@@ -92,7 +94,9 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                   />
                 ) : (
                   <Avatar
-                    src={'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg'}
+                    src={
+                      "https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg"
+                    }
                     alt="product"
                   />
                 )}
@@ -106,12 +110,6 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                   </h2>
                 </div>
               </div>
-            </TableCell>
-
-            <TableCell>
-              <span className="text-sm">
-                {product?.categories?.join(', ') || 'N/A'}
-              </span>
             </TableCell>
 
             <TableCell>
@@ -151,15 +149,13 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 />
               </Link>
             </TableCell>
-            <TableCell className="text-center">
-              <ShowHideButton id={product.id} status={product.isAvailable} />
-            </TableCell>
+
             <TableCell>
               <EditDeleteButton
                 id={product.uuid}
                 product={product}
                 isCheck={isCheck}
-                handleUpdate={() => handleEdit(product.uuid)} 
+                handleUpdate={() => handleEdit(product.uuid)}
                 handleModalOpen={handleModalOpen}
                 title={product?.name}
               />
@@ -174,7 +170,10 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
               <div className="p-4">
                 <h2 className="text-lg font-bold">{fetchedProducts.name}</h2>
                 <p>{fetchedProducts.description}</p>
-                <p className="font-semibold">{currency}{fetchedProducts.price}</p>
+                <p className="font-semibold">
+                  {currency}
+                  {fetchedProducts.price}
+                </p>
                 {/* Add any additional product details you want to display here */}
               </div>
             </TableCell>

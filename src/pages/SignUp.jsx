@@ -1,47 +1,50 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Input, Label, Button } from "@windmill/react-ui";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import axios from "axios";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-// Internal imports
-// import Error from "@/components/form/others/Error";
-// import InputArea from "@/components/form/input/InputArea";
 import LabelArea from "@/components/form/selectOption/LabelArea";
 import SelectRole from "@/components/form/selectOption/SelectRole";
-import useLoginSubmit from "@/hooks/useLoginSubmit";
-import ImageLight from "@/assets/img/create-account-office.jpeg";
-import ImageDark from "@/assets/img/create-account-office-dark.jpeg";
 import { useDropzone } from "react-dropzone";
 import { FiUploadCloud, FiXCircle } from "react-icons/fi";
 import { notifyError, notifySuccess } from "@/utils/toast";
+import ImageLight from "@/assets/img/create-account-office.jpeg";
+import ImageDark from "@/assets/img/create-account-office-dark.jpeg";
 
 const SignUp = () => {
   const { t } = useTranslation();
-  // const { onSubmit, register } = useLoginSubmit();
+  const history = useHistory();
   const [name, setName] = useState("");
-  const [file, setFile] = useState([]);
+  const [staffImage, setStaffImage] = useState([]);
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [joiningDate, setJoiningDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [role, setRole] = useState("");
-  const [checkbox, setCheckbox] = useState("");
+  const [checkbox, setCheckbox] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
-
     if (!name) newErrors.name = "Name is required.";
-    if (!file || file.length === 0) newErrors.file = "Image is required.";
-    if (!email) newErrors.email = "Email is required.";
+    if (!staffImage || staffImage.length === 0)
+      newErrors.staffImage = "Image is required.";
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    if (!email) {
+      newErrors.email = "Email is required.";
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Invalid email format.";
+    }
     if (!joiningDate) newErrors.joiningDate = "Date is required.";
-    if (!phoneNumber) newErrors.phoneNumber = "Phone Number is required.";
+    const existingPhoneNumbers = ["1234567890", "0987654321"];
+    if (!phoneNumber) {
+      newErrors.phoneNumber = "Phone Number is required.";
+    } else if (existingPhoneNumbers.includes(phoneNumber)) {
+      newErrors.phoneNumber = "This phone number already exists.";
+    }
     if (!role) newErrors.role = "Role is required.";
-    if (!checkbox) newErrors.checkbox = "Terms is required.";
+    if (!checkbox) newErrors.checkbox = "Terms are required.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -50,51 +53,68 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (validateForm()) {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("joiningDate", joiningDate);
+      formData.append("phoneNumber", phoneNumber);
+      formData.append("role", role);
+      staffImage.forEach((fileItem) => {
+        if (fileItem instanceof File) formData.append("staffImage", fileItem);
+      });
 
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("joiningDate", joiningDate);
-    formData.append("phoneNumber", phoneNumber);
-    formData.append("role", role);
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          "https://suft-90bec7a20f24.herokuapp.com/admin/create-admin",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-    file.forEach((fileItem) => {
-      if (fileItem instanceof File) formData.append("file", fileItem);
-    });
+        // Check if the response indicates success
+        if (
+          response.data?.success ||
+          (response.data?.message &&
+            response.data.message.includes("Admin created successfully"))
+        ) {
+          notifySuccess("Admin created successfully!");
 
-    try {
-      setLoading(true);
+          resetForm();
 
-      const response = await axios.post(
-        "https://suft-90bec7a20f24.herokuapp.com/admin/create-admin",
-        formData
-      );
-
-      if (response.status === 200) {
-        toast.success("User created successfully!");
-        resetForm();
-      } else {
-        toast.error("Server error: " + response.data.message);
+          setTimeout(() => {
+            history.push("/login");
+          }, 1000);
+        } else {
+          notifyError("Failed to create admin account. Please try again.");
+        }
+      } catch (error) {
+        console.error("Signup error:", error);
+        notifyError(
+          error.response?.data?.message ||
+            "Failed to create account. Please try again."
+        );
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error(
-        "Error submitting the form:",
-        error.response ? error.response.data : error.message
-      );
-      toast.error("Failed to submit the form!");
-    } finally {
-      setLoading(false);
+    } else {
+      notifyError("Please fill in all required fields correctly.");
     }
   };
+
   const resetForm = () => {
     setName("");
     setEmail("");
     setPhoneNumber("");
-    setJoiningDate("");
+    setJoiningDate(dayjs().format("YYYY-MM-DD"));
     setRole("");
-    setFile([]);
+    setStaffImage([]);
     setErrors({});
+    setCheckbox(false);
   };
 
   const handleImageUpload = (acceptedFiles) => {
@@ -104,7 +124,7 @@ const SignUp = () => {
       return;
     }
 
-    setFile((prevFiles) => [
+    setStaffImage((prevFiles) => [
       ...prevFiles,
       ...acceptedFiles.map((file) =>
         Object.assign(file, { preview: URL.createObjectURL(file) })
@@ -114,11 +134,13 @@ const SignUp = () => {
   };
 
   const handleRemoveImage = (fileToRemove) => {
-    setFile((prevFiles) => prevFiles.filter((img) => img !== fileToRemove));
+    setStaffImage((prevFiles) =>
+      prevFiles.filter((img) => img !== fileToRemove)
+    );
     notifySuccess("Image removed successfully!");
   };
 
-  const mainImageThumbs = file.map((file, index) => (
+  const mainImageThumbs = staffImage.map((file, index) => (
     <div key={index} className="relative">
       <img className="w-24 h-24" src={file.preview} alt={file.name} />
       <button
@@ -189,6 +211,73 @@ const SignUp = () => {
                 {t("CreateAccount")}
               </h1>
               <form onSubmit={handleSubmit}>
+                <LabelArea label="Name" />
+                <Input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Admin"
+                  className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+                />
+                {errors.name && (
+                  <span className="mt-2 text-sm text-red-400">
+                    {errors.name}
+                  </span>
+                )}
+
+                <LabelArea label="Email" />
+                <Input
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="john@doe.com"
+                  className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+                />
+                {errors.email && (
+                  <span className="mt-2 text-sm text-red-400">
+                    {errors.email}
+                  </span>
+                )}
+
+                <LabelArea label="Phone Number" />
+                <Input
+                  type="text"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="080*****"
+                  className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+                />
+                {errors.phoneNumber && (
+                  <span className="mt-2 text-sm text-red-400">
+                    {errors.phoneNumber}
+                  </span>
+                )}
+
+                <LabelArea label="Joining Date" />
+                <Input
+                  type="date"
+                  value={joiningDate}
+                  onChange={(e) => setJoiningDate(e.target.value)}
+                  className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+                />
+                {errors.joiningDate && (
+                  <span className="mt-2 text-sm text-red-400">
+                    {errors.joiningDate}
+                  </span>
+                )}
+
+                <LabelArea label="Staff Role" />
+                <SelectRole
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                />
+                {errors.role && (
+                  <span className="mt-2 text-sm text-red-400">
+                    {errors.role}
+                  </span>
+                )}
+
+                <LabelArea label="Profile Image" />
                 <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-2 w-full">
                   <div className="col-span-6">
                     <div
@@ -206,144 +295,45 @@ const SignUp = () => {
                       </em>
                     </div>
                     <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
-                    {errors.file && (
+                    {errors.staffImage && (
                       <span className="mt-2 text-sm text-red-400">
-                        {errors.file}
+                        {errors.staffImage}
                       </span>
                     )}
                   </div>
                 </div>
-                <LabelArea label="Name" />
-                <div className="grid grid-cols-6 gap-3 mb-2 w-full">
-                  <div className="col-span-6">
-                    <div className="">
-                      <Input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Admin"
-                        className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
-                      />
-                      {errors.name && (
-                        <span className="mt-2 text-sm text-red-400">
-                          Name is required.
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <LabelArea label="Email" />
-                <div className="grid grid-cols-6 gap-3 mb-2 w-full">
-                  <div className="col-span-6">
-                    <div className="">
-                      <Input
-                        type="text"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="john@doe.com"
-                        className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
-                      />
-                      {errors.email && (
-                        <span className="mt-2 text-sm text-red-400">
-                          Email is required.
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <LabelArea label="Phone Number" />
-                <div className="grid grid-cols-6 gap-3 mb-2 w-full">
-                  <div className="col-span-6">
-                    <div className="">
-                      <Input
-                        type="text"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="080*****"
-                        className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
-                      />
-                      {errors.phoneNumber && (
-                        <span className="mt-2 text-sm text-red-400">
-                          Phone Number is required.
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <LabelArea label="Joining Date" />
-                <div className="grid grid-cols-6 gap-3 mb-2 w-full">
-                  <div className="col-span-6">
-                    <div className="">
-                      <Input
-                        type="date"
-                        value={joiningDate}
-                        onChange={(e) => setJoiningDate(e.target.value)}
-                        placeholder="02-09-2019"
-                        className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
-                      />
-                      {errors.email && (
-                        <span className="mt-2 text-sm text-red-400">
-                          Phone Number is required.
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <LabelArea label="staff Role" />
-                <div className="grid grid-cols-6 gap-3 mb-2 w-full">
-                  <div className="col-span-6">
-                    <SelectRole
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                    />
-                    {errors.role && (
-                      <span className="mt-2 text-sm text-red-400">
-                        {errors.role}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center" check>
-                  <div>
+                <div className="flex items-center">
+                  <Label className="flex items-center">
                     <Input
                       type="checkbox"
+                      className="mr-2"
                       checked={checkbox}
-                      onChange={(e) => setCheckbox(e.target.checked)}
+                      onChange={() => setCheckbox(!checkbox)}
                     />
-                  </div>
-                  <div>
-                    <span className="ml-2 text-[14px]">
-                      {t("Iagree")}{" "}
-                      <span className="underline ">{t("privacyPolicy")}</span>
-                    </span>
-                  </div>
+                    {t("I accept the terms and conditions")}
+                  </Label>
                 </div>
-                {errors.role && (
+                {errors.checkbox && (
                   <span className="mt-2 text-sm text-red-400">
                     {errors.checkbox}
                   </span>
                 )}
 
                 <Button
-                  disabled={loading}
                   type="submit"
-                  className="mt-4 h-12 w-full"
-                  to="/dashboard"
-                  block
+                  className="mt-4 w-full"
+                  disabled={loading}
                 >
-                  {t("CreateAccountTitle")}
+                  {loading ? "Creating..." : "Create Account"}
                 </Button>
               </form>
-
-              <hr className="my-10" />
-
-              <p className="mt-4">
+              <p className="mt-4 text-sm">
+                {t("Already have an account?")}{" "}
                 <Link
-                  className="text-sm font-medium text-emerald-500 dark:text-emerald-400 hover:underline"
                   to="/login"
+                  className="font-semibold text-emerald-500 hover:underline"
                 >
-                  {t("AlreadyAccount")}
+                  {t("Log in")}
                 </Link>
               </p>
             </div>
