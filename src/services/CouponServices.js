@@ -19,8 +19,12 @@ const CouponServices = {
     return requests.get('/coupon/');
   },
   // searchCoupons : async (searchTerm)=>{
-  //   return requests.get('/coupon/admin-filter/coupon?', searchTerm);
+  //   return requests.post('/coupon/admin-filter/coupon?', searchTerm);
   // },
+  searchCoupons: async (searchQuery) => {
+    return requests.post(`/coupon/admin-filter/coupon?search=${encodeURIComponent(searchQuery)}`);
+},
+
   getCouponById: async (id) => {
     // return requests.get(`/coupon/${id}`);
   },

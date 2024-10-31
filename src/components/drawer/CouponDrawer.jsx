@@ -7,9 +7,8 @@ import DrawerButton from "@/components/form/button/DrawerButton";
 import SwitchToggle from "@/components/form/switch/SwitchToggle";
 import Title from "@/components/form/others/Title";
 import { useTranslation } from "react-i18next";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import InputValue from "@/components/form/input/InputValue";
 
 const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
   const { t } = useTranslation();
@@ -196,22 +195,22 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
             
           </div>
 
-          <div className="grid grid-cols-6 gap-3 mb-6">
-            <LabelArea label="Expiry Date" />
-            <div className="sm:col-span-4 col-span-8">
-              <Input
-                type="date"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
-              />
-              {errors.expiryDate && (
-                <span className="mt-2 text-sm text-red-400">Discount is required.</span>
-              )}
-            </div>
+            <div className="grid grid-cols-6 gap-3 mb-6">
+                <LabelArea label="Expiry Date" />
+                <div className="sm:col-span-4 col-span-8">
+                <Input
+                    type="date"
+                    value={expiryDate}
+                    onChange={(e) => setExpiryDate(e.target.value)}
+                    className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+                />
+                {errors.expiryDate && (
+                    <span className="mt-2 text-sm text-red-400">Expiry Date is required.</span>
+                )}
+                </div>
 
           
-          </div>
+            </div>
 
           <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-[10rem]">
             <LabelArea label={t("Published")} />

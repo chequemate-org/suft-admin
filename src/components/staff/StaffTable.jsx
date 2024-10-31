@@ -126,6 +126,11 @@ const StaffTable = ({ lang }) => {
           <TableRow key={staff?.uuid}>
             <TableCell>
               <div className="flex items-center">
+              <Avatar
+                  className="hidden mr-3 md:block bg-gray-50"
+                  src={staff.image}
+                  alt="staff"
+                />
                 
                 <div>
                   <h2 className="text-sm font-medium">{staff?.name || "N/A"}</h2> {/* Safeguard for name */}

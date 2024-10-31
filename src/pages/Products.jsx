@@ -101,6 +101,7 @@ const Products = () => {
     };
     fetchProducts();
   }, [currentPage, limitData, category, searchText, sortedField]);
+  
   const fetchProduct = async (uuid) => {
     try {
       const response = await fetch(

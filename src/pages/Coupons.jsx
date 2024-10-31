@@ -1,4 +1,3 @@
-
 import {
   Button,
   Card,
@@ -11,11 +10,12 @@ import {
   TableFooter,
   TableHeader,
 } from "@windmill/react-ui";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { FiEdit, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import axios from "axios"; // Add axios import
 
-//internal import
+// Internal imports
 import { SidebarContext } from "@/context/SidebarContext";
 import CouponServices from "@/services/CouponServices";
 import useAsync from "@/hooks/useAsync";
@@ -37,61 +37,57 @@ const Coupons = () => {
   const { t } = useTranslation();
   const { toggleDrawer, lang } = useContext(SidebarContext);
   const { data, loading, error } = useAsync(CouponServices.getAllCoupons);
-  const [searchQuery, setSearchQuery] = useState("");
-  // console.log('data',data)
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
+  const [filteredCoupons, setFilteredCoupons] = useState(data || []); // Initialize with empty array
 
-  const { allId, serviceId, handleDeleteMany, handleUpdateMany } =
-    useToggleDrawer();
+  const { allId, serviceId, handleDeleteMany, handleUpdateMany } = useToggleDrawer();
 
   const {
     filename,
     isDisabled,
     couponRef,
-    dataTable,
     serviceData,
     totalResults,
     resultsPerPage,
     handleChangePage,
     handleSelectFile,
-    setSearchCoupon,
     handleSubmitCoupon,
     handleUploadMultiple,
     handleRemoveSelectFile,
   } = useFilter(data);
 
+
+  useEffect(() => {
+    if (data) {
+      setFilteredCoupons(data); // Set all coupons as default view
+    }
+  }, [data]); 
+  
+  const handleSearchCoupons = async (e) => {
+    e.preventDefault();
+    if (!searchQuery) {
+      setFilteredCoupons(data); // Reset to the original data if no search query
+      return;
+    }
+  
+    try {
+      const response = await axios.post(
+       `https://suft-90bec7a20f24.herokuapp.com/coupon/admin-filter/coupon?search=${searchQuery}`
+      );
+      setFilteredCoupons(response.data); // Update the filtered coupons state
+    } catch (err) {
+      console.error("Search error:", err);
+      setFilteredCoupons([]); // Reset filtered coupons on error
+    }
+  };
+  
   const handleSelectAll = () => {
     setIsCheckAll(!isCheckAll);
     setIsCheck(data?.map((li) => li._id));
     if (isCheckAll) {
       setIsCheck([]);
-    }
-  };
-
-  // handle reset field function
-  // const handleResetField = () => {
-  //   setSearchCoupon("");
-  //   couponRef.current.value = "";
-  // };
-  
-  const handleResetField = () => {
-    setSearchTerm("");
-    setSearchCoupon("");
-    couponRef.current.value = "";
-    refetch(); // Refetch all coupons when resetting
-  };
-  const handleSearchCoupons = async (e) => {
-    e.preventDefault();
-    if (searchTerm.trim() === "") {
-      refetch(); // If search term is empty, fetch all coupons
-      return;
-    }
-    try {
-      const result = await CouponServices.searchCoupons(searchTerm);
-      setFilteredCoupons(result);
-    } catch (err) {
-      console.error(err);
     }
   };
 
@@ -104,7 +100,6 @@ const Coupons = () => {
         title="Selected Coupon"
       />
       <BulkActionDrawer ids={allId} title="Coupons" />
-
       <MainDrawer>
         <CouponDrawer id={serviceId} />
       </MainDrawer>
@@ -151,7 +146,6 @@ const Coupons = () => {
                     <span className="mr-2">
                       <FiTrash2 />
                     </span>
-
                     {t("Delete")}
                   </Button>
                 </div>
@@ -174,16 +168,14 @@ const Coupons = () => {
 
         <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
           <CardBody>
-            <form
-            onSubmit={handleSearchCoupons}
-              // onSubmit={handleSubmitCoupon}
-              className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
-            >
+            <form onSubmit={handleSearchCoupons} className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3">
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
                   ref={couponRef}
                   type="search"
                   placeholder={t("SearchCoupon")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
@@ -196,8 +188,11 @@ const Coupons = () => {
                 <div className="w-full mx-1">
                   <Button
                     layout="outline"
-                    onClick={handleResetField}
                     type="reset"
+                    onClick={() => {
+                      setSearchQuery(""); // Reset search query
+                      setFilteredCoupons(data); // Reset to original data
+                    }}
                     className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >
                     <span className="dark:text-gray-200 text-black">Reset</span>
@@ -210,11 +205,10 @@ const Coupons = () => {
       </AnimatedContent>
 
       {loading ? (
-        // <Loading loading={loading} />
         <TableLoading row={12} col={8} width={140} height={20} />
       ) : error ? (
         <span className="mx-auto text-center text-red-500">{error}</span>
-      ) : serviceData?.length !== 0 ? (
+      ) : filteredCoupons?.length !== 0 ? (
         <TableContainer className="mb-8">
           <Table>
             <TableHeader>
@@ -231,12 +225,10 @@ const Coupons = () => {
                 <TableCell>{t("CoupTblCampaignsName")}</TableCell>
                 <TableCell>{t("CoupTblCode")}</TableCell>
                 <TableCell>{t("Discount")}</TableCell>
-
                 <TableCell className="text-center">
                   {t("catPublishedTbl")}
                 </TableCell>
                 <TableCell>{t("CoupTblEndDate")}</TableCell>
-                {/* <TableCell>{t("CoupTblExpiryDate")}</TableCell> */}
                 <TableCell>{t("CoupTblStatus")}</TableCell>
                 <TableCell className="text-right">
                   {t("CoupTblActions")}
@@ -246,7 +238,7 @@ const Coupons = () => {
             <CouponTable
               lang={lang}
               isCheck={isCheck}
-              coupons={dataTable}
+              coupons={filteredCoupons} // Use filtered coupons
               setIsCheck={setIsCheck}
             />
           </Table>
@@ -260,7 +252,7 @@ const Coupons = () => {
           </TableFooter>
         </TableContainer>
       ) : (
-        <NotFound title="Sorry, There are no coupons right now." />
+        <NotFound title="No coupon found" />
       )}
     </>
   );
