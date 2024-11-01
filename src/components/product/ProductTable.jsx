@@ -71,7 +71,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
             <TableCell>
               <CheckBox
                 type="checkbox"
-                name={product?.name || "NoNameAvailable"}
+                name={product?.name || "Bean Bag"}
                 id={product.id}
                 handleClick={handleClick}
                 isChecked={isCheck?.includes(product.id)}
@@ -100,7 +100,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                       product?.name?.length > 30 ? "wrap-long-title" : ""
                     }`}
                   >
-                    {product?.name || "NoNameAvailable"}
+                    {product?.name || "Bean Bag"}
                   </h2>
                   <span className="text-xs text-gray-500">
                     SKU: {product?.sku || "N/A"}
@@ -111,15 +111,8 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
             <TableCell>
               <span className="text-sm font-semibold">
-                {currency}
+                NGN 
                 {getNumberTwo(product?.price) || "0.00"}
-              </span>
-            </TableCell>
-
-            <TableCell>
-              <span className="text-sm font-semibold">
-                {currency}
-                {getNumberTwo(product?.salePrice || product?.price || 0)}
               </span>
             </TableCell>
 
@@ -156,7 +149,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 isCheck={isCheck}
                 handleUpdate={() => handleEdit(product.uuid)}
                 handleModalOpen={handleModalOpen}
-                title={product?.name || "NoNameAvailable"}
+                title={product?.name || "Bean Bag"}
               />
             </TableCell>
           </TableRow>
@@ -167,7 +160,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
             <TableCell colSpan="10">
               <div className="p-4">
                 <h2 className="text-lg font-bold">
-                  {fetchedProducts.name || "NoNameAvailable"}
+                  {fetchedProducts.name || "Bean Bag"}
                 </h2>
                 <p>{fetchedProducts.description || "NoDescriptionAvailable"}</p>
                 <p className="font-semibold">
