@@ -145,7 +145,7 @@ const SettingForm = ({ isEditForm }) => {
           <div className="lg:px-6 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 scrollbar-hide flex-grow w-full max-h-full pt-4 pb-0">
             {[
               "currency",
-              "taxRate",
+              "vatRate",
               "shippingRate",
               "banner",
               "email",

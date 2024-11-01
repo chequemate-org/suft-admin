@@ -129,6 +129,7 @@
   "EXCLVAT": "EXCL VAT",
   "PRICEINCLVAT": "PRICE INCL VAT",
   "TaxRate": "Tax Rate",
+  "VatRate": "Vat Rate",
   "TaxName": "Tax Name",
   "AddTaxesBtn": "Add Tax",
   "DefaultCategory": "Default Category",

@@ -119,72 +119,6 @@ const Dashboard = () => {
     setSalesReport(salesReport);
 
     const todayPaymentMethodData = [];
-    const yesterDayPaymentMethodData = [];
-
-    // today order payment method
-    dashboardOrderAmount?.ordersData?.filter((item, value) => {
-      if (dayjs(item.updatedAt).isToday()) {
-        if (item.paymentMethod === "Cash") {
-          let cashMethod = {
-            paymentMethod: "Cash",
-            total: item.total,
-          };
-          todayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Credit") {
-          const cashMethod = {
-            paymentMethod: "Credit",
-            total: item.total,
-          };
-
-          todayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Card") {
-          const cashMethod = {
-            paymentMethod: "Card",
-            total: item.total,
-          };
-
-          todayPaymentMethodData.push(cashMethod);
-        }
-      }
-
-      return item;
-    });
-    // yesterday order payment method
-    dashboardOrderAmount?.ordersData?.filter((item, value) => {
-      if (dayjs(item.updatedAt).set(-1, "day").isYesterday()) {
-        if (item.paymentMethod === "Cash") {
-          let cashMethod = {
-            paymentMethod: "Cash",
-            total: item.total,
-          };
-          yesterDayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Credit") {
-          const cashMethod = {
-            paymentMethod: "Credit",
-            total: item?.total,
-          };
-
-          yesterDayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Card") {
-          const cashMethod = {
-            paymentMethod: "Card",
-            total: item?.total,
-          };
-
-          yesterDayPaymentMethodData.push(cashMethod);
-        }
-      }
-
-      return item;
-    });
 
     const todayCsCdCit = Object.values(
       todayPaymentMethodData.reduce((r, { paymentMethod, total }) => {
@@ -208,29 +142,6 @@ const Dashboard = () => {
       (el) => el.paymentMethod === "Credit"
     );
     setTodayCreditPayment(today_credit_payment?.total);
-
-    const yesterDayCsCdCit = Object.values(
-      yesterDayPaymentMethodData.reduce((r, { paymentMethod, total }) => {
-        if (!r[paymentMethod]) {
-          r[paymentMethod] = { paymentMethod, total: 0 };
-        }
-        r[paymentMethod].total += total;
-
-        return r;
-      }, {})
-    );
-    const yesterday_cash_payment = yesterDayCsCdCit.find(
-      (el) => el.paymentMethod === "Cash"
-    );
-    setYesterdayCashPayment(yesterday_cash_payment?.total);
-    const yesterday_card_payment = yesterDayCsCdCit.find(
-      (el) => el.paymentMethod === "Card"
-    );
-    setYesterdayCardPayment(yesterday_card_payment?.total);
-    const yesterday_credit_payment = yesterDayCsCdCit.find(
-      (el) => el.paymentMethod === "Credit"
-    );
-    setYesterdayCreditPayment(yesterday_credit_payment?.total);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboardOrderAmount]);
