@@ -445,14 +445,19 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
 
         <div className="grid grid-cols-6 gap-3 mb-6">
           <LabelArea label="Product Price" />
-          <div className="sm:col-span-4 col-span-8">
+          <div className="sm:col-span-4 col-span-8 relative">
+            <div className="absolute left-0 flex items-center py-3 pl-3 pointer-events-none">
+              <span className="text-gray-500 text-[15px]">#</span>
+            </div>
+
             <input
               type="number"
               value={price}
-              placeholder={"product price"}
+              placeholder="Enter the price"
               onChange={(e) => setPrice(e.target.value)}
-              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
+              className="focus:bg-white w-full h-12 pl-8 p-2 mt-1 bg-gray-100 border rounded-md outline-none"
             />
+
             {errors.price && (
               <span className="mt-2 text-sm text-red-400">
                 Price is required.
@@ -463,7 +468,7 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
 
         <div className="grid grid-cols-6 gap-3 mb-6">
           <LabelArea label="Product Size" />
-          <div className="sm:col-span-4 col-span-8">
+          <div className="sm:col-span-4 uppercase col-span-8">
             <ReactTagInput
               tags={size}
               placeholder="Type and press enter for sizes (e.g., S, M, L, XL)"
@@ -480,9 +485,9 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
 
         <div className="grid grid-cols-6 gap-3 mb-6">
           <LabelArea label="Product Color" />
-          <div className="sm:col-span-4 col-span-8">
+          <div className="sm:col-span-4 capitalize col-span-8">
             <ReactTagInput
-              tags={color.map((c) => c.name)} // Display only color names
+              tags={color.map((c) => c.name)}
               placeholder="Type color and hex (e.g., Red (#FF0000)) and press enter"
               onChange={handleColorTags}
               className="focus:bg-white"
