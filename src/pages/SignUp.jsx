@@ -67,7 +67,7 @@ const SignUp = () => {
       try {
         setLoading(true);
         const response = await axios.post(
-          "https://suft-90bec7a20f24.herokuapp.com/admin/create-admin",
+          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/create-admin`,
           formData,
           {
             headers: {
