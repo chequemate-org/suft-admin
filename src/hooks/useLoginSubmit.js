@@ -33,7 +33,7 @@ const useLoginSubmit = () => {
           email: data.email,
           password: data.password,
         });
-        notifySuccess("Login Success!");
+        notifySuccess("Login Successful!");
         dispatch({ type: "USER_LOGIN", payload: res });
         localStorage.setItem("adminToken", res.token);
         
