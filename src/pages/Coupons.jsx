@@ -13,7 +13,7 @@ import {
 import { useContext, useState, useEffect } from "react";
 import { FiEdit, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
-import axios from "axios"; // Add axios import
+import axios from "axios";
 
 // Internal imports
 import { SidebarContext } from "@/context/SidebarContext";
@@ -37,12 +37,13 @@ const Coupons = () => {
   const { t } = useTranslation();
   const { toggleDrawer, lang } = useContext(SidebarContext);
   const { data, loading, error } = useAsync(CouponServices.getAllCoupons);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [searchQuery, setSearchQuery] = useState("");
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
-  const [filteredCoupons, setFilteredCoupons] = useState(data || []); // Initialize with empty array
+  const [filteredCoupons, setFilteredCoupons] = useState(data || []);
 
-  const { allId, serviceId, handleDeleteMany, handleUpdateMany } = useToggleDrawer();
+  const { allId, serviceId, handleDeleteMany, handleUpdateMany } =
+    useToggleDrawer();
 
   const {
     filename,
@@ -58,31 +59,32 @@ const Coupons = () => {
     handleRemoveSelectFile,
   } = useFilter(data);
 
-
   useEffect(() => {
     if (data) {
-      setFilteredCoupons(data); // Set all coupons as default view
+      setFilteredCoupons(data);
     }
-  }, [data]); 
-  
+  }, [data]);
+
   const handleSearchCoupons = async (e) => {
     e.preventDefault();
     if (!searchQuery) {
-      setFilteredCoupons(data); // Reset to the original data if no search query
+      setFilteredCoupons(data);
       return;
     }
-  
+
     try {
       const response = await axios.post(
-       `https://suft-90bec7a20f24.herokuapp.com/coupon/admin-filter/coupon?search=${searchQuery}`
+        `${
+          import.meta.env.VITE_APP_API_BASE_URL
+        }/coupon/admin-filter/coupon?search=${searchQuery}`
       );
-      setFilteredCoupons(response.data); // Update the filtered coupons state
+      setFilteredCoupons(response.data);
     } catch (err) {
       console.error("Search error:", err);
-      setFilteredCoupons([]); // Reset filtered coupons on error
+      setFilteredCoupons([]);
     }
   };
-  
+
   const handleSelectAll = () => {
     setIsCheckAll(!isCheckAll);
     setIsCheck(data?.map((li) => li._id));
@@ -168,7 +170,10 @@ const Coupons = () => {
 
         <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
           <CardBody>
-            <form onSubmit={handleSearchCoupons} className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3">
+            <form
+              onSubmit={handleSearchCoupons}
+              className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
+            >
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
                   ref={couponRef}
@@ -190,8 +195,8 @@ const Coupons = () => {
                     layout="outline"
                     type="reset"
                     onClick={() => {
-                      setSearchQuery(""); // Reset search query
-                      setFilteredCoupons(data); // Reset to original data
+                      setSearchQuery("");
+                      setFilteredCoupons(data);
                     }}
                     className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >
@@ -238,7 +243,7 @@ const Coupons = () => {
             <CouponTable
               lang={lang}
               isCheck={isCheck}
-              coupons={filteredCoupons} // Use filtered coupons
+              coupons={filteredCoupons}
               setIsCheck={setIsCheck}
             />
           </Table>

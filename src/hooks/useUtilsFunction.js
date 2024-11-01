@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import SettingServices from "@/services/SettingServices";
 import { useDispatch, useSelector } from "react-redux";
-import { addSetting, removeSetting } from "@/reduxStore/slice/settingSlice";
-import { useContext, useEffect, useState } from "react";
+import { addSetting } from "@/reduxStore/slice/settingSlice";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { SidebarContext } from "@/context/SidebarContext";
 
 const useUtilsFunction = () => {
@@ -34,49 +34,56 @@ const useUtilsFunction = () => {
     return Number(parseFloat(value || 0).toFixed(2));
   };
 
-  // Updated getNumberTwo function with thousand separators
   const getNumberTwo = (value = 0) => {
     try {
-      // Convert input to number
-      const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
-      
-      // Get decimal places from global settings or default to 2
+      const numValue =
+        typeof value === "string" ? parseFloat(value) : Number(value);
+
       const decimalPlaces = globalSetting?.floating_number || 2;
-      
-      // Use Intl.NumberFormat for consistent formatting
-      return new Intl.NumberFormat('en-NG', {
+
+      return new Intl.NumberFormat("en-NG", {
         minimumFractionDigits: decimalPlaces,
         maximumFractionDigits: decimalPlaces,
-        useGrouping: true // Enables thousand separators
+        useGrouping: true,
       }).format(numValue || 0);
-      
     } catch (error) {
-      console.error('Error formatting number:', error);
+      console.error("Error formatting number:", error);
       return "0.00";
     }
   };
 
+  const formatCurrency = (amount) => {
+    if (!amount) return "NGN 0.00";
+
+    const numericValue = parseFloat(amount.replace(/[^\d.-]/g, ""));
+    if (isNaN(numericValue)) return "NGN 0.00";
+
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(numericValue);
+
+    return `NGN ${formattedAmount}`;
+  };
+
   const showingTranslateValue = (data) => {
-    return data !== undefined && Object?.keys(data).includes(lang)
-      ? data[lang]
-      : data?.en;
+    return data?.[lang] || data?.en || "";
   };
 
-  const showingImage = (data) => {
-    return data !== undefined && data;
-  };
+  const showingImage = (data) => data || "";
 
-  const showingUrl = (data) => {
-    return data !== undefined ? data : "!#";
-  };
+  const showingUrl = (data) => data || "!#";
 
-  const currency = globalSetting?.default_currency || "$";
+  const currency = useMemo(
+    () => globalSetting?.default_currency || "NGN",
+    [globalSetting]
+  );
 
   useEffect(() => {
     const fetchGlobalSetting = async () => {
       try {
         setLoading(true);
-        console.log("globalSetting setting not available");
+        console.log("Fetching global setting");
         const res = await SettingServices.getGlobalSetting();
         const globalSettingData = {
           ...res,
@@ -84,11 +91,10 @@ const useUtilsFunction = () => {
         };
 
         dispatch(addSetting(globalSettingData));
-
         setLoading(false);
       } catch (err) {
         setError(err.message);
-        console.log("Error on getting storeCustomizationSetting setting", err);
+        console.log("Error fetching global settings", err);
       }
     };
 
@@ -103,6 +109,7 @@ const useUtilsFunction = () => {
     currency,
     getNumber,
     getNumberTwo,
+    formatCurrency,
     showTimeFormat,
     showDateFormat,
     showingImage,

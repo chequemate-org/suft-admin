@@ -36,7 +36,7 @@ const useSettingSubmit = (isEditForm = false) => {
       const fetchExistingSettings = async () => {
         try {
           const response = await axios.get(
-            "https://suft-90bec7a20f24.herokuapp.com/setting/admin/get-setting"
+            `${import.meta.env.VITE_APP_API_BASE_URL}/setting/admin/get-setting`
           );
           const fetchedSettings = response.data.data;
           setExistingSettings(fetchedSettings);
@@ -70,8 +70,10 @@ const useSettingSubmit = (isEditForm = false) => {
       console.log("Prepared setting data:", settingData);
 
       const endpoint = isEditForm
-        ? "https://suft-90bec7a20f24.herokuapp.com/setting/admin/update-setting"
-        : "https://suft-90bec7a20f24.herokuapp.com/setting/admin/add-setting";
+        ? `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/setting/admin/update-setting`
+        : `${import.meta.env.VITE_APP_API_BASE_URL}/setting/admin/add-setting`;
 
       const method = isEditForm ? "put" : "post";
 
@@ -100,7 +102,7 @@ const useSettingSubmit = (isEditForm = false) => {
   const handleDeleteSetting = async () => {
     try {
       const response = await axios.delete(
-        "https://suft-90bec7a20f24.herokuapp.com/setting/admin/delete-setting",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/setting/admin/delete-setting`,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -236,7 +238,7 @@ const PasswordChangeForm = () => {
     try {
       setIsSubmitting(true);
       const response = await axios.post(
-        "https://suft-90bec7a20f24.herokuapp.com/admin/admin-change-password",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/admin-change-password`,
         {
           password: data.password,
         }
@@ -391,5 +393,3 @@ const Setting = () => {
 };
 
 export default Setting;
-
-

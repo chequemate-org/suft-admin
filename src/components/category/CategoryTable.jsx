@@ -26,13 +26,12 @@ const CategoryTable = ({
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null); // New state for selected category
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Fetch categories from the API
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "https://suft-90bec7a20f24.herokuapp.com/category/admin-all"
+        `${import.meta.env.VITE_APP_API_BASE_URL}/category/admin-all`
       );
       if (Array.isArray(response.data.data)) {
         setCategories(response.data.data);
@@ -58,7 +57,7 @@ const CategoryTable = ({
     handleModalOpen(); // Open the modal
   };
 
-  // Handle actual category deletion
+
   // const handleDelete = async (uuid) => {
   //   try {
   //     const response = await axios.delete(
@@ -147,7 +146,10 @@ const CategoryTable = ({
 
             <TableCell className=" text-sm font-medium">
               {category.children && category.children.length > 0 ? (
-                <Link to={`/categories/${category.id}`} className="text-blue-700">
+                <Link
+                  to={`/categories/${category.id}`}
+                  className="text-blue-700"
+                >
                   {category.name}
                   <>
                     {showChild && (
@@ -196,7 +198,7 @@ const CategoryTable = ({
                 isCheck={isCheck}
                 children={category?.children}
                 handleUpdate={handleUpdate}
-                handleModalOpen={() => handleDeleteClick(category)} 
+                handleModalOpen={() => handleDeleteClick(category)}
                 title={category.name}
               />
             </TableCell>

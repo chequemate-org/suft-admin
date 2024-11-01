@@ -241,12 +241,14 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
         let response;
         if (id) {
           response = await axios.put(
-            `https://suft-90bec7a20f24.herokuapp.com/product/admin/update/${id}`,
+            `${
+              import.meta.env.VITE_APP_API_BASE_URL
+            }/product/admin/update/${id}`,
             formData
           );
         } else {
           response = await axios.post(
-            "https://suft-90bec7a20f24.herokuapp.com/product/admin/create",
+            `${import.meta.env.VITE_APP_API_BASE_URL}/product/create`,
             formData
           );
         }

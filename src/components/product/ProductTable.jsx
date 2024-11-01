@@ -28,7 +28,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
   const fetchProductByUUID = async (uuid) => {
     try {
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/single/${uuid}`
       );
       if (response.data) {
         setFetchedProducts(response.data);
@@ -111,7 +111,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
             <TableCell>
               <span className="text-sm font-semibold">
-                NGN 
+                NGN
                 {getNumberTwo(product?.price) || "0.00"}
               </span>
             </TableCell>

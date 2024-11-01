@@ -1,4 +1,4 @@
-import axios from "axios"; 
+import axios from "axios";
 import {
   Avatar,
   Badge,
@@ -33,12 +33,12 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
   const fetchCoupons = async () => {
     try {
       const response = await axios.get(
-        "https://suft-90bec7a20f24.herokuapp.com/coupon/admin-all-coupons"
+        `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-all-coupons`
       );
       console.log("Fetched coupons:", response.data);
 
       if (Array.isArray(response.data.data)) {
-        setCoupons(response.data.data); // Set coupons to state
+        setCoupons(response.data.data);
       } else {
         console.error("Coupons data is not an array:", response.data);
         setCoupons([]);
@@ -49,14 +49,13 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
     }
   };
 
-  // Fetch coupon by UUID
   const fetchCouponByUUID = async (uuid) => {
     try {
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/coupon/admin-coupon/${uuid}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-coupon/${uuid}`
       );
       if (response.data) {
-        setSelectedCoupon(response.data); // Set coupon to state for drawer
+        setSelectedCoupon(response.data);
         console.log("Fetched coupon for editing by UUID:", response.data);
       }
     } catch (error) {
@@ -64,18 +63,16 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
     }
   };
 
-  // Handle the edit button click
   const handleEdit = async (uuid) => {
     await fetchCouponByUUID(uuid);
-    handleUpdate(uuid); // Open the drawer for editing
+    handleUpdate(uuid);
   };
 
   const handleDeleteClick = (coupon) => {
-    setSelectedCouponForDelete(coupon); // Set the selected coupon (name and uuid)
-    handleModalOpen(); // Open the delete modal
+    setSelectedCouponForDelete(coupon);
+    handleModalOpen();
   };
 
-  // Handle checkbox selection
   const handleClick = (e) => {
     const { id, checked } = e.target;
     if (checked) {
@@ -85,12 +82,10 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
     }
   };
 
-  // Fetch coupons on component mount
   useEffect(() => {
     fetchCoupons();
   }, []);
 
-  // Update coupon data with formatted date
   useEffect(() => {
     const result = coupons.map((coupon) => {
       const updatedDate = new Date(coupon?.updatedAt).toLocaleString("en-US", {
@@ -106,22 +101,20 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
 
   return (
     <>
-        {selectedCouponForDelete && (
-          <DeleteModal
-            id={selectedCouponForDelete.uuid}
-            title={selectedCouponForDelete.name} // Include coupon name in the title
-            onDelete={() => handleDelete(selectedCouponForDelete.uuid)} // Handle actual deletion
-          />
-        )}
-        <MainDrawer>
-            <CouponDrawer
-              id={serviceId}
-              coupon={selectedCoupon}
-              fetchCoupons={fetchCoupons}
-            />
-          
-        </MainDrawer>
-    
+      {selectedCouponForDelete && (
+        <DeleteModal
+          id={selectedCouponForDelete.uuid}
+          title={selectedCouponForDelete.name}
+          onDelete={() => handleDelete(selectedCouponForDelete.uuid)}
+        />
+      )}
+      <MainDrawer>
+        <CouponDrawer
+          id={serviceId}
+          coupon={selectedCoupon}
+          fetchCoupons={fetchCoupons}
+        />
+      </MainDrawer>
 
       <TableBody>
         {updatedCoupons?.map((coupon, i) => (
@@ -151,9 +144,7 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
                   />
                 )}
                 <div>
-                  <span className="text-sm">
-                    {coupon.name}
-                  </span>
+                  <span className="text-sm">{coupon.name}</span>
                 </div>
               </div>
             </TableCell>
@@ -163,9 +154,7 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
             </TableCell>
 
             <TableCell>
-              <span className="text-sm font-semibold">
-                {coupon.discount}
-              </span>
+              <span className="text-sm font-semibold">{coupon.discount}</span>
             </TableCell>
 
             <TableCell className="text-center">
@@ -175,8 +164,6 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
             <TableCell>
               <span className="text-sm">{coupon.expiryDate}</span>
             </TableCell>
-
-            
 
             <TableCell className="align-middle">
               {dayjs().isAfter(dayjs(coupon.expiryDate)) ? (
@@ -190,8 +177,8 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
               <EditDeleteButton
                 id={coupon.uuid}
                 isCheck={isCheck}
-                handleUpdate={() => handleEdit(coupon.uuid, coupon.name)} 
-                handleModalOpen={() => handleDeleteClick(coupon)} 
+                handleUpdate={() => handleEdit(coupon.uuid, coupon.name)}
+                handleModalOpen={() => handleDeleteClick(coupon)}
                 title={showingTranslateValue(coupon.name)}
               />
             </TableCell>
