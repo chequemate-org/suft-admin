@@ -35,6 +35,8 @@ const useLoginSubmit = () => {
         });
         notifySuccess("Login Success!");
         dispatch({ type: "USER_LOGIN", payload: res });
+        localStorage.setItem("adminToken", res.token);
+        
         Cookies.set("adminInfo", JSON.stringify(res), {
           expires: cookieTimeOut,
           sameSite: "None",
