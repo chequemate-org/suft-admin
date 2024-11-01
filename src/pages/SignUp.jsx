@@ -76,21 +76,20 @@ const SignUp = () => {
           }
         );
 
-        // Check if the response indicates success
-        if (
-          response.data?.success ||
-          (response.data?.message &&
-            response.data.message.includes("Admin created successfully"))
-        ) {
-          notifySuccess("Admin created successfully!");
-
+        if (response.data?.success || response.data?.status_code === 201) {
           resetForm();
 
           setTimeout(() => {
+            notifySuccess(
+              response.data.message || "Admin created successfully!"
+            );
             history.push("/login");
           }, 1000);
         } else {
-          notifyError("Failed to create admin account. Please try again.");
+          notifyError(
+            response.data?.message ||
+              "Failed to create admin account. Please try again."
+          );
         }
       } catch (error) {
         console.error("Signup error:", error);
