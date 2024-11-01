@@ -1,4 +1,3 @@
-
 import {
   Button,
   Card,
@@ -64,7 +63,7 @@ const Category = () => {
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
   const [showChild, setShowChild] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // State to track the search term
+  const [searchTerm, setSearchTerm] = useState(""); // State to track the search term
   const [results, setResults] = useState([]); // State to hold the API results
 
   const handleSelectAll = () => {
@@ -84,11 +83,12 @@ const Category = () => {
   const handleSearch = async () => {
     try {
       setLoading(true);
-      setError(null); // Reset error before making request
-
-      // Make API call using axios
+      setError(null);
+      
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/category/admin-search?name=${searchTerm}`
+        `${
+          import.meta.env.VITE_APP_API_BASE_URL
+        }/category/admin-search?name=${searchTerm}`
       );
 
       // Set results with the fetched data
@@ -96,7 +96,7 @@ const Category = () => {
       setLoading(false);
     } catch (err) {
       console.error(err);
-      setError('Error fetching data. Please try again.');
+      setError("Error fetching data. Please try again.");
       setLoading(false);
     }
   };
@@ -163,7 +163,10 @@ const Category = () => {
                   </Button>
                 </div>
                 <div className="md:w-48 lg:w-48 xl:w-48 w-full">
-                  <Button onClick={toggleDrawer} className="w-full h-12 rounded-md">
+                  <Button
+                    onClick={toggleDrawer}
+                    className="w-full h-12 rounded-md"
+                  >
                     <span className="mr-2">
                       <FiPlus />
                     </span>
@@ -237,7 +240,7 @@ const Category = () => {
                     isChecked={isCheckAll}
                   />
                 </TableCell>
-                
+
                 <TableCell>{t("catIdTbl")}</TableCell>
                 <TableCell>{t("catIconTbl")}</TableCell>
                 <TableCell>{t("CatTbName")}</TableCell>

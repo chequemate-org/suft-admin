@@ -148,9 +148,9 @@ const Staff = () => {
                 <TableCell>{t("StaffContactTbl")}</TableCell>
                 <TableCell>{t("StaffJoiningDateTbl")}</TableCell>
                 <TableCell>{t("StaffRoleTbl")}</TableCell>
-                <TableCell className="text-center">
+                {/* <TableCell className="text-center">
                   {t("PublishedTbl")}
-                </TableCell>
+                </TableCell> */}
                 <TableCell className="text-right">
                   {t("StaffActionsTbl")}
                 </TableCell>

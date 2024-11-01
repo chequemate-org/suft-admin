@@ -1,29 +1,36 @@
-import requests from './httpService';
-import axios from 'axios';
+import requests from "./httpService";
+import axios from "axios";
 
 const CouponServices = {
   getAllCoupons: async () => {
-    const response = await axios.get('https://suft-90bec7a20f24.herokuapp.com/coupon/admin-all-coupons');
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-all-coupons`
+    );
     return response.data;
   },
   submitCoupon: (categoryCoupon) => {
-    return axios.post("https://suft-90bec7a20f24.herokuapp.com/category/admin-search", categoryCoupon);
+    return axios.post(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/category/admin-search`,
+      categoryCoupon
+    );
   },
   addCoupon: async (body) => {
-    return requests.post('/coupon/admin-create', body);
+    return requests.post("/coupon/admin-create", body);
   },
   addAllCoupon: async (body) => {
-    return requests.post('/coupon/add/all', body);
+    return requests.post("/coupon/add/all", body);
   },
   getAllCoupons: async () => {
-    return requests.get('/coupon/');
+    return requests.get("/coupon/");
   },
   // searchCoupons : async (searchTerm)=>{
   //   return requests.post('/coupon/admin-filter/coupon?', searchTerm);
   // },
   searchCoupons: async (searchQuery) => {
-    return requests.post(`/coupon/admin-filter/coupon?search=${encodeURIComponent(searchQuery)}`);
-},
+    return requests.post(
+      `/coupon/admin-filter/coupon?search=${encodeURIComponent(searchQuery)}`
+    );
+  },
 
   getCouponById: async (id) => {
     // return requests.get(`/coupon/${id}`);
@@ -32,7 +39,7 @@ const CouponServices = {
     return requests.put(`/coupon/${id}`, body);
   },
   updateManyCoupons: async (body) => {
-    return requests.patch('/coupon/update/many', body);
+    return requests.patch("/coupon/update/many", body);
   },
   updateStatus: async (id, body) => {
     return requests.put(`/coupon/status/${id}`, body);

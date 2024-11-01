@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const useProductSubmit = (id) => {
   // State variables for form fields
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [sku, setSku] = useState('');
-  const [price, setPrice] = useState('');
-  const [stockLevel, setStockLevel] = useState('');
-  const [slug, setSlug] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [sku, setSku] = useState("");
+  const [price, setPrice] = useState("");
+  const [stockLevel, setStockLevel] = useState("");
+  const [slug, setSlug] = useState("");
   const [tags, setTags] = useState([]);
   const [imageUrl, setImageUrl] = useState(null);
   const [extraImage, setExtraImage] = useState(null);
@@ -17,7 +17,11 @@ const useProductSubmit = (id) => {
   const [sizes, setSizes] = useState([]);
   const [isCombination, setIsCombination] = useState(false); // Combination toggle
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   // Handle Image Upload
   const handleImageUpload = async (event) => {
@@ -26,10 +30,15 @@ const useProductSubmit = (id) => {
     formData.append("file", file);
 
     try {
-      const response = await fetch(`https://suft-90bec7a20f24.herokuapp.com/product/admin/upload-images/${id}`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_APP_API_BASE_URL
+        }/product/admin/upload-images/${id}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const data = await response.json();
       if (response.ok) {
         setImageUrl(data.url);
@@ -60,13 +69,13 @@ const useProductSubmit = (id) => {
     };
 
     try {
-      const response = await fetch("https://suft-90bec7a20f24.herokuapp.com/product/admin/create", {
-        method: "POST",
-        // headers: {
-        //   "Content-Type": "application/json",
-        // },
-        body: JSON.stringify(productData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/admin/create`,
+        {
+          method: "POST",
+          body: JSON.stringify(productData),
+        }
+      );
 
       if (response.ok) {
         toast.success("Product submitted successfully!");

@@ -28,30 +28,24 @@ const Customers = () => {
   const [error, setError] = useState(null);
   const userRef = useRef(null);
   const [totalResults, setTotalResults] = useState(0);
-  const [resultsPerPage] = useState(10); // Set the number of results per page
+  const [resultsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch customer data from the API
   useEffect(() => {
     const fetchCustomers = async () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`,
-          {
-            params: {
-              // Add any necessary params here if needed
-            },
-          }
+          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`
         );
 
-        console.log('API Response:', response); // Logging the full response
+        console.log("API Response:", response);
 
         const customerArray = response.data?.data?.data || [];
         setCustomerData(customerArray);
         setTotalResults(customerArray.length);
       } catch (err) {
-        console.error('Error fetching customers:', err); // Logging errors
+        console.error("Error fetching customers:", err);
         setError("Failed to load customer data");
       } finally {
         setLoading(false);
@@ -61,20 +55,16 @@ const Customers = () => {
     fetchCustomers();
   }, [currentPage]);
 
-  // Handle search and filtering logic
   const handleSubmitUser = (event) => {
     event.preventDefault();
-    // Implement search or filtering logic if needed
   };
 
   const handleResetField = () => {
     if (userRef.current) userRef.current.value = "";
-    // Reset any other filters if needed
   };
 
   const handleChangePage = (page) => {
     setCurrentPage(page);
-    // Implement pagination logic if needed
   };
 
   return (
@@ -130,10 +120,11 @@ const Customers = () => {
                 <TableCell>{t("CustomersName")}</TableCell>
                 <TableCell>{t("CustomersEmail")}</TableCell>
                 <TableCell>{t("CustomersPhone")}</TableCell>
-                <TableCell className="text-right">{t("CustomersActions")}</TableCell>
+                <TableCell className="text-right">
+                  {t("CustomersActions")}
+                </TableCell>
               </tr>
             </TableHeader>
-            {/* Passing customerData to CustomerTable with a key prop */}
             <CustomerTable customers={customerData} />
           </Table>
           <TableFooter>

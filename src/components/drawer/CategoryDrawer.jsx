@@ -14,27 +14,28 @@ import LabelArea from "@/components/form/selectOption/LabelArea";
 
 const CategoryDrawer = ({ id }) => {
   const { t } = useTranslation();
-  const {
-    register,
-    handleSelectLanguage,
-  } = useCategorySubmit(id);
-  
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const { register, handleSelectLanguage } = useCategorySubmit(id);
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [isPublished, setIsPublished] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchCategoryById = async (uuid) => {
       try {
-        const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/category/admin-get/${uuid}`);
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/category/admin-get/${uuid}`,
+        );
         const category = response.data.data;
 
         if (category) {
-          setName(category.name || '');
-          setDescription(category.description || '');
-          setImageUrl(category.iconUrl || '');
+          setName(category.name || "");
+          setDescription(category.description || "");
+          setImageUrl(category.iconUrl || "");
           setIsPublished(category.isPublished || true);
         } else {
           console.error("Category not found");
@@ -69,7 +70,9 @@ const CategoryDrawer = ({ id }) => {
       if (id) {
         // Update category if id (uuid) exists
         response = await axios.put(
-          `https://suft-90bec7a20f24.herokuapp.com/category/admin-update/${id}`,
+          `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/category/admin-update/${id}`,
           categoryData,
           {
             headers: {
@@ -86,7 +89,9 @@ const CategoryDrawer = ({ id }) => {
       } else {
         // Create a new category if no id
         response = await axios.post(
-          "https://suft-90bec7a20f24.herokuapp.com/category/admin-add",
+          `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/category/admin-add`,
           categoryData,
           {
             headers: {
@@ -114,16 +119,16 @@ const CategoryDrawer = ({ id }) => {
 
   // Reset the form fields
   const resetForm = () => {
-    setName('');
-    setDescription('');
-    setImageUrl('');
+    setName("");
+    setDescription("");
+    setImageUrl("");
     setIsPublished(true);
-    setError('');
+    setError("");
   };
 
   return (
     <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-2 border-b border-gray-100">
-     <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-2 border-b border-gray-100">
+      <div className="bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 relative w-full p-2 border-b border-gray-100">
         {id ? (
           <Title
             register={register}
@@ -144,7 +149,7 @@ const CategoryDrawer = ({ id }) => {
         <div className="scrollbar-hide flex-grow w-full max-h-full p-6 pb-40">
           {/* Name Field */}
           <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
-          <LabelArea label={t("Name")} />
+            <LabelArea label={t("Name")} />
             <div className="col-span-4">
               <Input
                 required={true}

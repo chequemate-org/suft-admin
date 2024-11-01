@@ -25,7 +25,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "https://suft-90bec7a20f24.herokuapp.com/admin/admin-reset-password",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/admin-reset-password`,
         {
           method: "POST",
           headers: {
