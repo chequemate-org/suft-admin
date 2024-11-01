@@ -50,7 +50,13 @@ const Header = () => {
   const handleLogOut = () => {
     dispatch({ type: "USER_LOGOUT" });
     Cookies.remove("adminInfo");
-    window.location.replace(`https://suft-admin.onrender.com/login`);
+
+    const redirectURL =
+      window.location.hostname === "localhost"
+        ? "http://localhost:4100/login"
+        : "https://suft-admin.onrender.com/login";
+
+    window.location.replace(redirectURL);
   };
 
   const handleNotificationOpen = async () => {
@@ -351,10 +357,7 @@ const Header = () => {
                       className="focus:outline-none w-full text-left"
                     >
                       <span className="flex items-center text-sm">
-                        <FiLogOut
-                          className="w-4 h-4 mr-3"
-                          aria-hidden="true"
-                        />
+                        <FiLogOut className="w-4 h-4 mr-3" aria-hidden="true" />
                         <span>{t("Log out")}</span>
                       </span>
                     </button>
