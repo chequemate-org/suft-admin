@@ -10,19 +10,21 @@ const ProductServices = {
       `/products?page=${page}&limit=${limit}&category=${searchCategory}&title=${searchTitle}&price=${searchPrice}`
     );
   },
-  
-  getProductById: async (id) => {
-    
-    // try {
-    //   console.log("Fetching product with ID:", id);
-    //   const response = await requests.get(`/product/single/${id}`);
-    //   console.log("Single Product API response:", response.data);
-    //   return response.data;
-    // } catch (error) {
-    //   console.error("Error fetching single product by ID:", error);
-    //   throw error;
-    // }
+
+  getProductById: async (id, currency = "NGN") => {
+    try {
+      console.log("Fetching product with ID:", id);
+      const response = await requests.get(`/product/single/${id}`, {
+        params: { currency: currency },
+      });
+      console.log("Single Product API response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching single product by ID:", error);
+      throw error;
+    }
   },
+  
   addProduct: async (body) => {
     return requests.post(`/product/admin/create/`, body);
   },

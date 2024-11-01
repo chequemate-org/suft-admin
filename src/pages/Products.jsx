@@ -66,7 +66,7 @@ const Products = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "https://suft-90bec7a20f24.herokuapp.com/product/",
+          `${import.meta.env.VITE_APP_API_BASE_URL}/product`,
           {
             params: {
               page: currentPage,
@@ -74,6 +74,7 @@ const Products = () => {
               category: category,
               title: searchText,
               price: sortedField,
+              currency: "NGN",
             },
           }
         );
@@ -90,11 +91,11 @@ const Products = () => {
     };
     fetchProducts();
   }, [currentPage, limitData, category, searchText, sortedField]);
-  
+
   const fetchProduct = async (uuid) => {
     try {
       const response = await fetch(
-        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/single/${uuid}`
       );
       const data = await response.json();
       console.log(data);
@@ -107,20 +108,24 @@ const Products = () => {
       console.error("Error fetching product:", error);
     }
   };
-  
+
   const ProductSearch = async () => {
     try {
-      const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/product/filter?", {
-        params: {
-          page: currentPage,
-          min: minPrice,
-          max: maxPrice,
-          color: color,
-          size: size,
-          search: searchText,
-          sortBy: sortedField,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/filter`,
+        {
+          params: {
+            page: currentPage,
+            min: minPrice,
+            max: maxPrice,
+            color: color,
+            size: size,
+            search: searchText,
+            sortBy: sortedField,
+            currency: "NGN",
+          },
+        }
+      );
       setData({
         products: response.data.data,
         totalDoc: response.data.totalDocs,
@@ -178,7 +183,7 @@ const Products = () => {
       <DeleteModal ids={allId} setIsCheck={setIsCheck} title={title} />
       <BulkActionDrawer ids={allId} title="Products" />
       <MainDrawer>
-        <ProductDrawer id={serviceId} product={fetchedProduct}  />
+        <ProductDrawer id={serviceId} product={fetchedProduct} />
       </MainDrawer>
       <AnimatedContent>
         <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
@@ -285,7 +290,7 @@ const Products = () => {
               </div>
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
                 <div className="w-full mx-1">
-                  <Button type="submit"  className="bg-emerald-700 w-full h-12">
+                  <Button type="submit" className="bg-emerald-700 w-full h-12">
                     Filter
                   </Button>
                 </div>
@@ -320,11 +325,14 @@ const Products = () => {
                   </TableCell>
                   <TableCell>{t("ProductNameTbl")}</TableCell>
                   <TableCell>{t("PriceTbl")}</TableCell>
-                  <TableCell>Sale Price</TableCell>
                   <TableCell>{t("StockTbl")}</TableCell>
                   <TableCell>{t("StatusTbl")}</TableCell>
-                  <TableCell className="text-center">{t("DetailsTbl")}</TableCell>
-                  <TableCell className="text-right">{t("ActionsTbl")}</TableCell>
+                  <TableCell className="text-center">
+                    {t("DetailsTbl")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {t("ActionsTbl")}
+                  </TableCell>
                 </tr>
               </TableHeader>
 

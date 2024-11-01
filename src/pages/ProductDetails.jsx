@@ -33,7 +33,8 @@ const ProductDetails = () => {
   const [variantTitle, setVariantTitle] = useState([]);
   const { lang } = useContext(SidebarContext);
 
-  const { data = {}, loading } = useAsync(() => ProductServices.getProductById(id));
+  const { data = {}, loading } = useAsync(() => ProductServices.getProductById(id, "NGN"));
+
 
   const { currency, showingTranslateValue, getNumberTwo } = useUtilsFunction();
 
@@ -59,11 +60,11 @@ const ProductDetails = () => {
         <Loading loading={loading} />
       ) : (
         <div className="inline-block overflow-y-auto h-full align-middle transition-all transform">
-          <div className="flex flex-col lg:flex-row md:flex-row w-full overflow-hidden">
+          <div className="flex flex-col lg:flex-row md:flex-row gap-10 w-full overflow-hidden">
             {/* Product Image Section */}
-            <div className="flex-shrink-0 flex items-center justify-center h-auto">
+            <div className="flex-shrink-0 flex items-center justify-center w-1/2 h-auto">
               {data.imageUrl && data.imageUrl.length > 0 ? (
-                <img src={data.imageUrl[0]} alt="product" className="h-64 w-64" />
+                <img src={data.imageUrl[0]} alt="product" className="h-full w-full" />
               ) : (
                 <img
                   src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
@@ -75,29 +76,29 @@ const ProductDetails = () => {
               {/* Product Details */}
               <div className="mb-5">
                 <h2 className="text-heading text-lg md:text-xl lg:text-2xl font-semibold font-serif dark:text-gray-400">
-                  {showingTranslateValue(data.name) || t("NoNameAvailable")}
+                  {(data.name) || t("Bean bag")}
                 </h2>
                 <p className="uppercase font-serif font-medium text-gray-500 dark:text-gray-400 text-sm">
                   {t("Sku")}:{" "}
                   <span className="font-bold text-gray-500 dark:text-gray-500">
-                    {data.uuid || t("N/A")}
+                    {data.sku || t("N/A")}
                   </span>
                 </p>
               </div>
               <div className="font-serif product-price font-bold dark:text-gray-400">
                 <span className="inline-block text-2xl">
-                  {currency}
+                  NGN
                   {getNumberTwo(data.price) || "0.00"}
                 </span>
               </div>
               <div className="mb-3">
                 {data.stockLevel <= 0 ? (
                   <Badge type="danger">
-                    <span className="font-bold">{t("StockOut")}</span>
+                    <span className="font-bold uppercase">{t("unavailable")}</span>
                   </Badge>
                 ) : (
                   <Badge type="success">
-                    <span className="font-bold">{t("InStock")}</span>
+                    <span className="font-bold uppercase">{t("available")}</span>
                   </Badge>
                 )}
                 <span className="text-sm text-gray-500 dark:text-gray-400 font-medium pl-4">
@@ -105,9 +106,8 @@ const ProductDetails = () => {
                 </span>
               </div>
               <p className="text-sm leading-6 text-gray-500 dark:text-gray-400 md:leading-7">
-                {showingTranslateValue(data.description) || t("NoDescriptionAvailable")}
+                {(data.description) || t("NoDescriptionAvailable")}
               </p>
-              {/* Color Information */}
               {data.color && data.color.length > 0 && (
                 <div className="flex flex-col mt-4">
                   <p className="font-serif font-semibold py-1 text-gray-500 text-sm">
@@ -156,7 +156,7 @@ const ProductDetails = () => {
         </div>
       )}
       {/* Variant List Table */}
-      {data.isAvailable && variantTitle.length > 0 && !loading && (
+      {/* {data.isAvailable > 0 && !loading && (
         <>
           <PageTitle>{t("ProductVariantList")}</PageTitle>
           <TableContainer className="mb-8 rounded-b-lg">
@@ -190,7 +190,7 @@ const ProductDetails = () => {
             </TableFooter>
           </TableContainer>
         </>
-      )}
+      )} */}
     </>
   );
 };
