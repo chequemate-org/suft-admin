@@ -17,8 +17,7 @@ const useUtilsFunction = () => {
     (value) => value.name === "globalSetting"
   );
 
-  // console.log("globalSetting", globalSetting);
-  //for date and time format
+  // Original functions remain the same
   const showTimeFormat = (data, timeFormat) => {
     return dayjs(data).format(timeFormat);
   };
@@ -31,17 +30,32 @@ const useUtilsFunction = () => {
     return dayjs(data).format(`${globalSetting?.default_date_format}  h:mm A`);
   };
 
-  //for formatting number
-
   const getNumber = (value = 0) => {
     return Number(parseFloat(value || 0).toFixed(2));
   };
 
+  // Updated getNumberTwo function with thousand separators
   const getNumberTwo = (value = 0) => {
-    return parseFloat(value || 0).toFixed(globalSetting?.floating_number || 2);
+    try {
+      // Convert input to number
+      const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
+      
+      // Get decimal places from global settings or default to 2
+      const decimalPlaces = globalSetting?.floating_number || 2;
+      
+      // Use Intl.NumberFormat for consistent formatting
+      return new Intl.NumberFormat('en-NG', {
+        minimumFractionDigits: decimalPlaces,
+        maximumFractionDigits: decimalPlaces,
+        useGrouping: true // Enables thousand separators
+      }).format(numValue || 0);
+      
+    } catch (error) {
+      console.error('Error formatting number:', error);
+      return "0.00";
+    }
   };
 
-  //for translation
   const showingTranslateValue = (data) => {
     return data !== undefined && Object?.keys(data).includes(lang)
       ? data[lang]
@@ -59,7 +73,6 @@ const useUtilsFunction = () => {
   const currency = globalSetting?.default_currency || "$";
 
   useEffect(() => {
-    // console.log("globalSetting", globalSetting);
     const fetchGlobalSetting = async () => {
       try {
         setLoading(true);

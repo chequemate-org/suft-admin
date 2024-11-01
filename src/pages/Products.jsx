@@ -15,8 +15,6 @@ import {
 import { Select } from "@windmill/react-ui";
 import { useTranslation } from "react-i18next";
 import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
-
-// Internal imports
 import useToggleDrawer from "@/hooks/useToggleDrawer";
 import UploadMany from "@/components/common/UploadMany";
 import NotFound from "@/components/table/NotFound";
@@ -42,27 +40,18 @@ const Products = () => {
     lang,
     currentPage,
     handleChangePage,
-    // searchText,
     category,
     setCategory,
     searchRef,
     handleSubmitForAll,
-    // sortedField,
-    // setSortedField,
     handleClick,
     limitData,
   } = useContext(SidebarContext);
 
-  // State for products, loading, and error
-  // const [data, setData] = useState({
-  //   products: [],
-  //   totalDoc: 0,
-  // });
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const [allProducts, setAllProducts] = useState([]);
   const [fetchedProduct, setFetchedProduct] = useState(null);
   const [data, setData] = useState({ products: [], totalDoc: 0 });
   const [minPrice, setMinPrice] = useState("");
@@ -91,7 +80,7 @@ const Products = () => {
         console.log("API Response:", response.data);
         setData({
           products: response.data.data,
-          totalDoc: response.data.totalDocs, // Ensure you're getting the total number of documents here.
+          totalDoc: response.data.totalDocs,
         });
         setLoading(false);
       } catch (err) {
@@ -118,7 +107,6 @@ const Products = () => {
       console.error("Error fetching product:", error);
     }
   };
-  // Select all and handle selections
   
   const ProductSearch = async () => {
     try {
@@ -146,13 +134,11 @@ const Products = () => {
     ProductSearch();
   }, [currentPage, minPrice, maxPrice, color, size, searchText, sortedField]);
 
-  // Handle search form submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    ProductSearch(); // Trigger fetch with updated parameters
+    ProductSearch();
   };
 
-  // Reset the filters
   const ResetField = () => {
     setMinPrice("");
     setMaxPrice("");
@@ -342,7 +328,6 @@ const Products = () => {
                 </tr>
               </TableHeader>
 
-              {/* Product Table Data */}
               {loading ? (
                 <TableLoading row={10} />
               ) : data.products?.length ? (
