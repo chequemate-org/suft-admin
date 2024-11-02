@@ -88,18 +88,18 @@ const sidebar = [
     routes: [
       {
         name: "ViewStore",
-        path: "http://localhost:3000",
+        path: "https://getsuft.com",
         outside: "store",
       },
 
-      {
-        path: "/store/customization",
-        name: "StoreCustomization",
-      },
-      {
-        path: "/store/store-settings",
-        name: "StoreSettings",
-      },
+      // {
+      //   path: "/store/customization",
+      //   name: "StoreCustomization",
+      // },
+      // {
+      //   path: "/store/store-settings",
+      //   name: "StoreSettings",
+      // },
     ],
   },
 

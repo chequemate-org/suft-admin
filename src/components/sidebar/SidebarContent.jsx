@@ -7,9 +7,6 @@ import { IoLogOutOutline } from "react-icons/io5";
 
 //internal import
 import sidebar from "@/routes/sidebar";
-// import SidebarSubMenu from "SidebarSubMenu";
-import logoDark from "@/assets/img/logo/logo-dark.png";
-import logoLight from "@/assets/img/logo/logo-light.png";
 import { AdminContext } from "@/context/AdminContext";
 import SidebarSubMenu from "@/components/sidebar/SidebarSubMenu";
 
@@ -21,9 +18,14 @@ const SidebarContent = () => {
   const handleLogOut = () => {
     dispatch({ type: "USER_LOGOUT" });
     Cookies.remove("adminInfo");
-    window.location.replace(`https://getsuft.com/admin/login`);
+  
+    const redirectURL = window.location.hostname === "localhost"
+      ? "http://localhost:4100/login"
+      : "https://getsuft.com/admin/login";
+  
+    window.location.replace(redirectURL);
   };
-
+  
   return (
     <div className="py-4 text-gray-500 dark:text-gray-400">
       <a className=" text-gray-900 dark:text-gray-200" href="/dashboard">
