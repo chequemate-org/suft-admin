@@ -226,8 +226,8 @@ const Coupons = () => {
                 <Input
                   // ref={couponRef}
                   type="search"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
+                  // value={searchText}
+                  // onChange={(e) => setSearchText(e.target.value)}
                   placeholder={t("SearchCoupon")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -243,7 +243,7 @@ const Coupons = () => {
                 <div className="w-full mx-1">
                   <Button
                     layout="outline"
-                    onClick={ResetField}
+                    // onClick={ResetField}
                     type="reset"
                     onClick={() => {
                       setSearchQuery("");

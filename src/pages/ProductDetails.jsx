@@ -10,7 +10,6 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
-import axios from "axios";
 
 // Internal imports
 import useAsync from "@/hooks/useAsync";
@@ -93,7 +92,7 @@ const ProductDetails = () => {
                 </span>
               </div>
               <div className="mb-3">
-                {productData.stockLevel <= 0 ? (
+                {data.stockLevel <= 0 ? (
                   <Badge type="danger">
                     <span className="font-bold uppercase">{t("unavailable")}</span>
                   </Badge>
@@ -147,7 +146,7 @@ const ProductDetails = () => {
               <div className="mt-6">
                 <button
                   onClick={() => handleUpdate(id)}
-                  className="focus:outline-none bg-emerald-500 active:bg-emerald-600 hover:bg-emerald-600 px-5 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-transparent rounded-md cursor-pointer"
+                  className="focus:outline-none bg-emerald-500 active:bg-emerald-600 hover:bg-emerald-600  px-5 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-transparent rounded-md cursor-pointer"
                 >
                   {t("EditProduct")}
                 </button>
