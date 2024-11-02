@@ -11,11 +11,10 @@ import {
   TableHeader,
 } from "@windmill/react-ui";
 import { useContext, useState, useEffect } from "react";
-import { useContext, useState, useEffect } from "react";
 import { FiEdit, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import axios from "axios";
+
 
 // Internal imports
 import { SidebarContext } from "@/context/SidebarContext";
