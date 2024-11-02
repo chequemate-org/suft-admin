@@ -28,33 +28,27 @@ const Customers = () => {
   const [error, setError] = useState(null);
   const userRef = useRef(null);
   const [totalResults, setTotalResults] = useState(0);
-  const [resultsPerPage] = useState(10); 
+  const [resultsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [email, setEmail] = useState("");
   const [data, setData] = useState({ products: [], totalDoc: 0 });
 
-  // Fetch customer data from the API
   useEffect(() => {
     const fetchCustomers = async () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`,
-          {
-            params: {
-              // Add any necessary params here if needed
-            },
-          }
+          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`
         );
 
-        console.log('API Response:', response); // Logging the full response
+        console.log("API Response:", response);
 
         const customerArray = response.data?.data?.data || [];
         setCustomerData(customerArray);
         setTotalResults(customerArray.length);
       } catch (err) {
-        console.error('Error fetching customers:', err); // Logging errors
+        console.error("Error fetching customers:", err);
         setError("Failed to load customer data");
       } finally {
         setLoading(false);
@@ -64,64 +58,17 @@ const Customers = () => {
     fetchCustomers();
   }, [currentPage]);
 
-  // Handle search and filtering logic
   const handleSubmitUser = (event) => {
     event.preventDefault();
-    // Implement search or filtering logic if needed
   };
 
   const handleResetField = () => {
     if (userRef.current) userRef.current.value = "";
-    // Reset any other filters if needed
   };
 
   const handleChangePage = (page) => {
     setCurrentPage(page);
-    // Implement pagination logic if needed
   };
-
-  const ProductSearch = async () => {
-    try {
-      const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/admin/search-users?searchType=user&email", {
-        params: {
-          searchType: search,
-          email: email,
-          
-        },
-      });
-      setData({
-        products: response.data.data,
-        totalDoc: response.data.totalDocs,
-      });
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
-  };
-
-  useEffect(() => {
-    ProductSearch();
-  }, [search, email]);
-
-  // Handle search form submission
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    ProductSearch(); // Trigger fetch with updated parameters
-  };
-
-  // Reset the filters
-  const ResetField = () => {
-    setSearch("");
-    setEmail("");
-    ProductSearch();
-  };
-  const handleSelectAll = () => {
-    setIsCheckAll(!isCheckAll);
-    setIsCheck(data.products.map((li) => li.id));
-    if (isCheckAll) {
-      setIsCheck([]);
-    }
-  };
-
 
   return (
     <>
@@ -178,10 +125,11 @@ const Customers = () => {
                 <TableCell>{t("CustomersName")}</TableCell>
                 <TableCell>{t("CustomersEmail")}</TableCell>
                 <TableCell>{t("CustomersPhone")}</TableCell>
-                <TableCell className="text-right">{t("CustomersActions")}</TableCell>
+                <TableCell className="text-right">
+                  {t("CustomersActions")}
+                </TableCell>
               </tr>
             </TableHeader>
-            {/* Passing customerData to CustomerTable with a key prop */}
             <CustomerTable customers={customerData} />
           </Table>
           <TableFooter>

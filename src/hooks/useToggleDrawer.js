@@ -13,8 +13,8 @@ const useToggleDrawer = () => {
   //   setServiceId(uuid);
   //   toggleDrawer();
   // };
-  const handleUpdate = (uuid, staffData = null) => {
-    setServiceId(uuid);
+  const handleUpdate = (id, staffData = null) => {
+    setServiceId(id);
     setStaffDetails(staffData);  // Store staff data
     toggleDrawer();
   };

@@ -8,6 +8,8 @@ import { useDispatch } from "react-redux";
 import { removeSetting } from "@/reduxStore/slice/settingSlice";
 import axios from "axios";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import Error from "@/components/form/others/Error";
 import PageTitle from "@/components/Typography/PageTitle";
@@ -22,7 +24,6 @@ const useSettingSubmit = (isEditForm = false) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingSettings, setExistingSettings] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [settingId, setSettingId] = useState(null);
 
   const {
     register,
@@ -36,7 +37,7 @@ const useSettingSubmit = (isEditForm = false) => {
       const fetchExistingSettings = async () => {
         try {
           const response = await axios.get(
-            "https://suft-90bec7a20f24.herokuapp.com/setting/admin/get-setting"
+            `${import.meta.env.VITE_APP_API_BASE_URL}/setting/admin/get-setting`
           );
           const fetchedSettings = response.data.data;
           setExistingSettings(fetchedSettings);
@@ -70,8 +71,10 @@ const useSettingSubmit = (isEditForm = false) => {
       console.log("Prepared setting data:", settingData);
 
       const endpoint = isEditForm
-        ? "https://suft-90bec7a20f24.herokuapp.com/setting/admin/update-setting"
-        : "https://suft-90bec7a20f24.herokuapp.com/setting/admin/add-setting";
+        ? `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/setting/admin/update-setting`
+        : `${import.meta.env.VITE_APP_API_BASE_URL}/setting/admin/add-setting`;
 
       const method = isEditForm ? "put" : "post";
 
@@ -100,7 +103,7 @@ const useSettingSubmit = (isEditForm = false) => {
   const handleDeleteSetting = async () => {
     try {
       const response = await axios.delete(
-        "https://suft-90bec7a20f24.herokuapp.com/setting/admin/delete-setting",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/setting/admin/delete-setting`,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -141,11 +144,11 @@ const SettingForm = ({ isEditForm }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-12 font-sans">
-        <div className="col-span-12 md:col-span-12 lg:col-span-12 mr-3">
-          <div className="lg:px-6 pt-4 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 flex-grow scrollbar-hide w-full max-h-full pb-0">
+        <div className="md:col-span-12 lg:col-span-12 col-span-12 mr-3">
+          <div className="lg:px-6 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 scrollbar-hide flex-grow w-full max-h-full pt-4 pb-0">
             {[
               "currency",
-              "taxRate",
+              "vatRate",
               "shippingRate",
               "banner",
               "email",
@@ -153,9 +156,9 @@ const SettingForm = ({ isEditForm }) => {
             ].map((field) => (
               <div
                 key={field}
-                className="grid md:grid-cols-5 items-center sm:grid-cols-10 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6"
+                className="md:grid-cols-5 sm:grid-cols-10 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6"
               >
-                <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                   {t(field.charAt(0).toUpperCase() + field.slice(1))}
                 </label>
                 <div className="sm:col-span-3">
@@ -190,7 +193,7 @@ const SettingForm = ({ isEditForm }) => {
                       width={20}
                       height={10}
                     />
-                    <span className="font-serif ml-2 font-light">
+                    <span className="ml-2 font-serif font-light">
                       Processing
                     </span>
                   </>
@@ -211,8 +214,25 @@ const SettingForm = ({ isEditForm }) => {
 const PasswordChangeForm = () => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const validationSchema = yup.object().shape({
+    currentPassword: yup.string().required("Current password is required"),
+    newPassword: yup
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      )
+      .required("New password is required"),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("newPassword"), null], "Passwords must match")
+      .required("Please confirm your new password"),
+  });
 
   const {
     register,
@@ -220,12 +240,18 @@ const PasswordChangeForm = () => {
     formState: { errors },
     reset,
     watch,
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
 
-  const password = watch("password");
+  const newPassword = watch("newPassword");
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const toggleCurrentPasswordVisibility = () => {
+    setShowCurrentPassword(!showCurrentPassword);
+  };
+
+  const toggleNewPasswordVisibility = () => {
+    setShowNewPassword(!showNewPassword);
   };
 
   const toggleConfirmPasswordVisibility = () => {
@@ -235,19 +261,39 @@ const PasswordChangeForm = () => {
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
+
+      const token = localStorage.getItem("adminToken");
+
+      if (!token) {
+        notifyError("No authentication token found. Please log in again.");
+        return;
+      }
+
       const response = await axios.post(
-        "https://suft-90bec7a20f24.herokuapp.com/admin/admin-change-password",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/admin-change-password`,
         {
-          password: data.password,
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
-
+      console.log("response:", response);
       notifySuccess("Password changed successfully!");
       reset();
     } catch (error) {
-      notifyError(
-        error?.response?.data?.message || "Failed to change password"
-      );
+      const message =
+        error?.response?.data?.message || "Failed to change password";
+      notifyError(message);
+      // if (error.response?.status === 401) {
+      //   notifyError("Unauthorised");
+      // } else {
+      //   notifyError(message);
+      // }
     } finally {
       setIsSubmitting(false);
     }
@@ -256,52 +302,73 @@ const PasswordChangeForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
       <div className="grid grid-cols-12 font-sans">
-        <div className="col-span-12 md:col-span-12 lg:col-span-12 mr-3">
-          <div className="lg:px-6 pt-4 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 flex-grow scrollbar-hide w-full max-h-full pb-0">
-            <div className="grid md:grid-cols-5 items-center sm:grid-cols-10 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-              <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+        <div className="md:col-span-12 lg:col-span-12 col-span-12 mr-3">
+          <div className="lg:px-6 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 scrollbar-hide flex-grow w-full max-h-full pt-4 pb-0">
+            {/* Current Password Field */}
+            <div className="md:grid-cols-5 sm:grid-cols-10 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+              <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
+                {t("Current Password")}
+              </label>
+              <div className="sm:col-span-3 relative">
+                <InputAreaTwo
+                  register={register}
+                  label="Current Password"
+                  name="currentPassword"
+                  type={showCurrentPassword ? "text" : "password"}
+                  placeholder="Enter current password"
+                  validation={{
+                    required: "Current password is required",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={toggleCurrentPasswordVisibility}
+                  className="right-1 absolute inset-y-0 flex items-center text-gray-500"
+                >
+                  {showCurrentPassword ? (
+                    <AiFillEyeInvisible className="w-5 h-5" />
+                  ) : (
+                    <AiFillEye className="w-5 h-5" />
+                  )}
+                </button>
+                <Error errorName={errors.currentPassword} />
+              </div>
+            </div>
+
+            {/* New Password Field */}
+            <div className="md:grid-cols-5 sm:grid-cols-10 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+              <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                 {t("New Password")}
               </label>
               <div className="sm:col-span-3 relative">
                 <InputAreaTwo
                   register={register}
-                  label="Password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
+                  label="New Password"
+                  name="newPassword"
+                  type={showNewPassword ? "text" : "password"}
                   placeholder="Enter new password"
-                  className="pr-10" // Add padding to the right
                   validation={{
-                    required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Password must be at least 8 characters",
-                    },
-                    pattern: {
-                      value:
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                      message:
-                        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
-                    },
+                    required: "New password is required",
                   }}
                 />
                 <button
                   type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute inset-y-0 right-1 flex items-center text-gray-500"
+                  onClick={toggleNewPasswordVisibility}
+                  className="right-1 absolute inset-y-0 flex items-center text-gray-500"
                 >
-                  {showPassword ? (
-                    <AiFillEyeInvisible className="h-5 w-5" />
+                  {showNewPassword ? (
+                    <AiFillEyeInvisible className="w-5 h-5" />
                   ) : (
-                    <AiFillEye className="h-5 w-5" />
+                    <AiFillEye className="w-5 h-5" />
                   )}
                 </button>
-                <Error errorName={errors.password} />
+                <Error errorName={errors.newPassword} />
               </div>
             </div>
 
             {/* Confirm Password Field */}
-            <div className="grid md:grid-cols-5 items-center sm:grid-cols-10 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-              <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+            <div className="md:grid-cols-5 sm:grid-cols-10 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+              <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                 {t("Confirm Password")}
               </label>
               <div className="sm:col-span-3 relative">
@@ -312,20 +379,18 @@ const PasswordChangeForm = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm new password"
                   validation={{
-                    required: "Please confirm your password",
-                    validate: (value) =>
-                      value === password || "Passwords do not match",
+                    required: "Please confirm your new password",
                   }}
                 />
                 <button
                   type="button"
                   onClick={toggleConfirmPasswordVisibility}
-                  className="absolute inset-y-0 right-1 flex items-center text-gray-500"
+                  className="right-1 absolute inset-y-0 flex items-center text-gray-500"
                 >
                   {showConfirmPassword ? (
-                    <AiFillEyeInvisible className="h-5 w-5" />
+                    <AiFillEyeInvisible className="w-5 h-5" />
                   ) : (
-                    <AiFillEye className="h-5 w-5" />
+                    <AiFillEye className="w-5 h-5" />
                   )}
                 </button>
                 <Error errorName={errors.confirmPassword} />
@@ -336,7 +401,7 @@ const PasswordChangeForm = () => {
               <Button
                 disabled={isSubmitting}
                 type="submit"
-                className="h-12 px-8 bg-emerald-500 hover:bg-emerald-600 text-white"
+                className="bg-emerald-500 hover:bg-emerald-600 h-12 px-8 text-white"
               >
                 {isSubmitting ? (
                   <>
@@ -344,9 +409,9 @@ const PasswordChangeForm = () => {
                       src={spinnerLoadingImage}
                       alt="Loading"
                       width={20}
-                      height={10}
+                      height={20}
                     />
-                    <span className="font-serif ml-2 font-light">
+                    <span className="ml-2 font-serif font-light">
                       Processing
                     </span>
                   </>
@@ -369,18 +434,18 @@ const Setting = () => {
     <>
       <PageTitle>{t("Setting")}</PageTitle>
       <AnimatedContent>
-        <div className="sm:container md:p-6 p-4 w-full mx-auto bg-white dark:bg-gray-800 dark:text-gray-200 rounded-lg">
-          <h2 className="text-2xl font-semibold mb-4">
+        <div className="sm:container md:p-6 dark:bg-gray-800 dark:text-gray-200 w-full p-4 mx-auto bg-white rounded-lg">
+          <h2 className="mb-4 text-2xl font-semibold">
             {t("Add New Settings")}
           </h2>
           <SettingForm isEditForm={false} />
 
-          <h2 className="text-2xl font-semibold my-8">
+          <h2 className="my-8 text-2xl font-semibold">
             {t("Edit Existing Settings")}
           </h2>
           <SettingForm isEditForm={true} />
 
-          <h2 className="text-2xl font-semibold my-8">
+          <h2 className="my-8 text-2xl font-semibold">
             {t("Change Password")}
           </h2>
           <PasswordChangeForm />

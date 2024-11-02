@@ -119,72 +119,6 @@ const Dashboard = () => {
     setSalesReport(salesReport);
 
     const todayPaymentMethodData = [];
-    const yesterDayPaymentMethodData = [];
-
-    // today order payment method
-    dashboardOrderAmount?.ordersData?.filter((item, value) => {
-      if (dayjs(item.updatedAt).isToday()) {
-        if (item.paymentMethod === "Cash") {
-          let cashMethod = {
-            paymentMethod: "Cash",
-            total: item.total,
-          };
-          todayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Credit") {
-          const cashMethod = {
-            paymentMethod: "Credit",
-            total: item.total,
-          };
-
-          todayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Card") {
-          const cashMethod = {
-            paymentMethod: "Card",
-            total: item.total,
-          };
-
-          todayPaymentMethodData.push(cashMethod);
-        }
-      }
-
-      return item;
-    });
-    // yesterday order payment method
-    dashboardOrderAmount?.ordersData?.filter((item, value) => {
-      if (dayjs(item.updatedAt).set(-1, "day").isYesterday()) {
-        if (item.paymentMethod === "Cash") {
-          let cashMethod = {
-            paymentMethod: "Cash",
-            total: item.total,
-          };
-          yesterDayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Credit") {
-          const cashMethod = {
-            paymentMethod: "Credit",
-            total: item?.total,
-          };
-
-          yesterDayPaymentMethodData.push(cashMethod);
-        }
-
-        if (item.paymentMethod === "Card") {
-          const cashMethod = {
-            paymentMethod: "Card",
-            total: item?.total,
-          };
-
-          yesterDayPaymentMethodData.push(cashMethod);
-        }
-      }
-
-      return item;
-    });
 
     const todayCsCdCit = Object.values(
       todayPaymentMethodData.reduce((r, { paymentMethod, total }) => {
@@ -209,29 +143,6 @@ const Dashboard = () => {
     );
     setTodayCreditPayment(today_credit_payment?.total);
 
-    const yesterDayCsCdCit = Object.values(
-      yesterDayPaymentMethodData.reduce((r, { paymentMethod, total }) => {
-        if (!r[paymentMethod]) {
-          r[paymentMethod] = { paymentMethod, total: 0 };
-        }
-        r[paymentMethod].total += total;
-
-        return r;
-      }, {})
-    );
-    const yesterday_cash_payment = yesterDayCsCdCit.find(
-      (el) => el.paymentMethod === "Cash"
-    );
-    setYesterdayCashPayment(yesterday_cash_payment?.total);
-    const yesterday_card_payment = yesterDayCsCdCit.find(
-      (el) => el.paymentMethod === "Card"
-    );
-    setYesterdayCardPayment(yesterday_card_payment?.total);
-    const yesterday_credit_payment = yesterDayCsCdCit.find(
-      (el) => el.paymentMethod === "Credit"
-    );
-    setYesterdayCreditPayment(yesterday_credit_payment?.total);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboardOrderAmount]);
 
@@ -251,10 +162,7 @@ const Dashboard = () => {
             title="Today Order"
             title2="TodayOrder"
             Icon={ImStack}
-            cash={todayCashPayment || 0}
-            card={todayCardPayment || 0}
-            credit={todayCreditPayment || 0}
-            price={todayOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.todayOrders || 0}
             className="text-white dark:text-emerald-100 bg-teal-600"
             loading={loadingOrderAmount}
           />
@@ -264,29 +172,28 @@ const Dashboard = () => {
             title="Yesterday Order"
             title2="YesterdayOrder"
             Icon={ImStack}
-            cash={yesterdayCashPayment || 0}
-            card={yesterdayCardPayment || 0}
-            credit={yesterdayCreditPayment || 0}
-            price={yesterdayOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.yesterdayOrders || 0}
             className="text-white dark:text-orange-100 bg-orange-400"
             loading={loadingOrderAmount}
           />
 
           <CardItemTwo
             mode={mode}
+            title="This Month"
             title2="ThisMonth"
             Icon={FiShoppingCart}
-            price={dashboardOrderAmount?.thisMonthlyOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.thisMonthOrders || 0}
             className="text-white dark:text-emerald-100 bg-blue-500"
             loading={loadingOrderAmount}
           />
 
           <CardItemTwo
             mode={mode}
+            title="Last Month"
             title2="LastMonth"
             Icon={ImCreditCard}
             loading={loadingOrderAmount}
-            price={dashboardOrderAmount?.lastMonthOrderAmount || 0}
+            price={dashboardOrderAmount?.amounts?.lastMonthOrders || 0}
             className="text-white dark:text-teal-100 bg-cyan-600"
           />
 
@@ -294,7 +201,7 @@ const Dashboard = () => {
             mode={mode}
             title2="AllTimeSales"
             Icon={ImCreditCard}
-            price={dashboardOrderAmount?.totalAmount || 0}
+            price={dashboardOrderAmount?.amounts?.allTimeOrders || 0}
             className="text-white dark:text-emerald-100 bg-emerald-600"
             loading={loadingOrderAmount}
           />
@@ -302,7 +209,7 @@ const Dashboard = () => {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <CardItem
-            title="Total Order"
+            title={t("TotalOrder")}
             Icon={FiShoppingCart}
             loading={loadingOrderCount}
             quantity={totalOrder || 0}
@@ -312,8 +219,8 @@ const Dashboard = () => {
             title={t("OrderPending")}
             Icon={FiRefreshCw}
             loading={loadingOrderCount}
-            quantity={dashboardOrderCount?.totals?.pending || 0}
-            amount={dashboardOrderCount?.totalPendingOrder?.total || 0}
+            quantity={dashboardOrderCount?.totals?.pending}
+            amount={dashboardOrderCount?.totalPendingOrder?.total}
             className="text-blue-600 dark:text-blue-100 bg-blue-100 dark:bg-blue-500"
           />
           <CardItem
@@ -350,45 +257,6 @@ const Dashboard = () => {
           </ChartCard>
         </div>
       </AnimatedContent>
-
-      {/* <PageTitle>{t("RecentOrder")}</PageTitle> */}
-
-      {/* <Loading loading={loading} /> */}
-      
-      {/* {loadingRecentOrder ? (
-        <TableLoading row={5} col={4} />
-      ) : error ? (
-        <span className="text-center mx-auto text-red-500">{error}</span>
-      ) : serviceData?.length !== 0 ? (
-        <TableContainer className="mb-8">
-          <Table>
-            <TableHeader>
-              <tr>
-                <TableCell>{t("InvoiceNo")}</TableCell>
-                <TableCell>{t("TimeTbl")}</TableCell>
-                <TableCell>{t("CustomerName")} </TableCell>
-                <TableCell> {t("MethodTbl")} </TableCell>
-                <TableCell> {t("AmountTbl")} </TableCell>
-                <TableCell>{t("OderStatusTbl")}</TableCell>
-                <TableCell>{t("ActionTbl")}</TableCell>
-                <TableCell className="text-right">{t("InvoiceTbl")}</TableCell>
-              </tr>
-            </TableHeader>
-
-            <OrderTable orders={dataTable} />
-          </Table>
-          <TableFooter>
-            <Pagination
-              totalResults={dashboardRecentOrder?.totalOrder}
-              resultsPerPage={8}
-              onChange={handleChangePage}
-              label="Table navigation"
-            />
-          </TableFooter>
-        </TableContainer>
-      ) : (
-        <NotFound title="Sorry, There are no orders right now." />
-      )} */}
     </>
   );
 };

@@ -23,18 +23,18 @@ const Setting = () => {
     <>
       <PageTitle>{t("Setting")}</PageTitle>
       <AnimatedContent>
-        <div className="sm:container md:p-6 p-4 w-full mx-auto bg-white  dark:bg-gray-800 dark:text-gray-200 rounded-lg">
+        <div className="sm:container md:p-6 dark:bg-gray-800 dark:text-gray-200 w-full p-4 mx-auto bg-white rounded-lg">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-12 font-sans">
-              <div className="col-span-12 md:col-span-12 lg:col-span-12 mr-3">
-                <div className="lg:px-6 pt-4 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 flex-grow scrollbar-hide w-full max-h-full pb-0">
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm text-gray-600 font-semibold dark:text-gray-400 mb-1 sm:col-span-2">
+              <div className="md:col-span-12 lg:col-span-12 col-span-12 mr-3">
+                <div className="lg:px-6 lg:pl-40 lg:pr-40 md:pl-5 md:pr-5 scrollbar-hide flex-grow w-full max-h-full pt-4 pb-0">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("DefaultCurrency")}
                     </label>
 
                     <div className="sm:col-span-3">
-                      <div className="col-span-8 sm:col-span-4">
+                      <div className="sm:col-span-4 col-span-8">
                         <SelectCurrency
                           register={register}
                           label="Currency"
@@ -43,8 +43,8 @@ const Setting = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("NumberOfImagesPerProduct")}
                     </label>
                     <div className="sm:col-span-3">
@@ -60,8 +60,8 @@ const Setting = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("TimeZone")}
                     </label>
 
@@ -75,8 +75,8 @@ const Setting = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("DefaultDateFormat")}
                     </label>
 
@@ -97,8 +97,8 @@ const Setting = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-5 sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6 relative">
-                    <label className="block text-sm text-gray-600 font-semibold dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 relative grid gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("ReceiptSize")}
                     </label>
                     <div className="sm:col-span-3">
@@ -112,8 +112,8 @@ const Setting = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("ShopName")}
                     </label>
                     <div className="sm:col-span-3">
@@ -128,8 +128,8 @@ const Setting = () => {
                       <Error errorName={errors.shop_name} />
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("InvoiceCompanyName")}
                     </label>
                     <div className="sm:col-span-3">
@@ -144,8 +144,8 @@ const Setting = () => {
                       <Error errorName={errors.company_name} />
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {/* {t("FooterAddress")} */}
                       {t("VatNumber")}
                     </label>
@@ -160,8 +160,8 @@ const Setting = () => {
                       <Error errorName={errors.vat_number} />
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("AddressLine")}
                     </label>
                     <div className="sm:col-span-3">
@@ -177,8 +177,8 @@ const Setting = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("PostCode")}
                     </label>
                     <div className="sm:col-span-3">
@@ -193,8 +193,8 @@ const Setting = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("GlobalContactNumber")}
                     </label>
                     <div className=" sm:col-span-3">
@@ -210,8 +210,8 @@ const Setting = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("FooterEmail")}
                     </label>
                     <div className=" sm:col-span-3">
@@ -226,8 +226,8 @@ const Setting = () => {
                       <Error errorName={errors.email} />
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-5 items-center sm:grid-cols-12 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:col-span-2">
+                  <div className="md:grid-cols-5 sm:grid-cols-12 md:gap-5 xl:gap-6 lg:gap-6 grid items-center gap-3 mb-6">
+                    <label className="dark:text-gray-400 sm:col-span-2 block mb-1 text-sm font-semibold text-gray-600">
                       {t("WebSite")}
                     </label>
                     <div className=" sm:col-span-3">
@@ -250,7 +250,7 @@ const Setting = () => {
                           width={20}
                           height={10}
                         />{" "}
-                        <span className="font-serif ml-2 font-light">
+                        <span className="ml-2 font-serif font-light">
                           Processing
                         </span>
                       </Button>

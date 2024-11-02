@@ -46,25 +46,10 @@ const CardItemTwo = ({
                       )}
                     </p>
                     <p className="text-2xl font-bold leading-none text-gray-50 dark:text-gray-50">
-                      {/* ${Math.round(price)} */}
-                      {currency}
+                      NGN
                       {getNumberTwo(price)}
                     </p>
                   </div>
-                  {/* <div className="flex text-center text-xs font-normal text-gray-50 dark:text-gray-100">
-                    <div className="px-1 mt-3">
-                      {t("Cash")} : {currency}
-                      {getNumberTwo(cash)}
-                    </div>
-                    <div className="px-1 mt-3">
-                      {t("Card")} : {currency}
-                      {getNumberTwo(card)}
-                    </div>
-                    <div className="px-1 mt-3">
-                      {t("Credit")} : {currency}
-                      {getNumberTwo(credit)}
-                    </div>
-                  </div> */}
                 </div>
               </CardBody>
             </Card>
@@ -83,8 +68,7 @@ const CardItemTwo = ({
                     {t(`${title2}`)}
                   </p>
                   <p className="text-2xl font-bold leading-none text-gray-50 dark:text-gray-50">
-                    {/* ${Math.round(price)} */}
-                    {currency}
+                    NGN
                     {getNumberTwo(price)}
                   </p>
                 </div>

@@ -15,8 +15,9 @@ import axios from "axios";
 import useProductSubmit from "@/hooks/useProductSubmit";
 import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleForCombination";
 import ActiveButton from "@/components/form/button/ActiveButton";
+import ReactTagInput from "@pathofdev/react-tag-input";
 
-const ProductDrawer = ({ id, product, title}) => {
+const ProductDrawer = ({ id, product, title, uuid }) => {
   const { t } = useTranslation();
   const {
     register,
@@ -45,16 +46,22 @@ const ProductDrawer = ({ id, product, title}) => {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [processOption, setProcessOption] = useState(false);
 
-  const colorOptions = [
-    { name: "Mandy", hex: "#C2405C" },
-    { name: "Magenta", hex: "#FF00FF" },
-    { name: "Grey", hex: "#808080" },
-    { name: "black", hex: "#0000" },
-    { name: "white", hex: "#FFFFF" },
-  ];
-
   const handleProcess = (checked) => {
     setProcessOption(checked);
+  };
+  const handleColorTags = (newTags) => {
+    const formattedColors = newTags.map((tag) => {
+      // Match color name with optional hex code in format "name (#hex)"
+      const match = tag.match(/^(.+?)(?:\s*\((#[A-Fa-f0-9]{6})\))?$/);
+      if (match) {
+        return {
+          name: match[1].trim(), // Just the color name
+          hex: match[2] || "#000000", // Default hex if not provided
+        };
+      }
+      return { name: tag, hex: "#000000" }; // Default if no hex format
+    });
+    setColor(formattedColors);
   };
 
   const handleImageUpload = (acceptedFiles, setImages) => {
@@ -133,29 +140,6 @@ const ProductDrawer = ({ id, product, title}) => {
     </div>
   ));
 
-  const handleColorSelection = (e) => {
-    const selectedColor = colorOptions.find((c) => c.name === e.target.value);
-
-    if (selectedColor && !color.find((c) => c.name === selectedColor.name)) {
-      setColor((prevColors) => [...prevColors, selectedColor]);
-    }
-  };
-
-  const removeColor = (colorName) => {
-    setColor((prevColors) => prevColors.filter((c) => c.name !== colorName));
-  };
-
-  const handleSizeSelection = (e) => {
-    const selectedSize = e.target.value;
-    if (selectedSize && !size.includes(selectedSize)) {
-      setSize([...size, selectedSize]);
-    }
-  };
-
-  const removeSize = (sizeToRemove) => {
-    setSize(size.filter((s) => s !== sizeToRemove));
-  };
-
   useEffect(() => {
     if (id && product) {
       setName(product.data.name);
@@ -226,12 +210,14 @@ const ProductDrawer = ({ id, product, title}) => {
         let response;
         if (id) {
           response = await axios.put(
-            `https://suft-90bec7a20f24.herokuapp.com/product/admin/update/${id}`,
+            `${
+              import.meta.env.VITE_APP_API_BASE_URL
+            }/product/admin/update/${id}`,
             formData
           );
         } else {
           response = await axios.post(
-            "https://suft-90bec7a20f24.herokuapp.com/product/admin/create",
+            `${import.meta.env.VITE_APP_API_BASE_URL}/product/create`,
             formData
           );
         }
@@ -432,16 +418,17 @@ const ProductDrawer = ({ id, product, title}) => {
           <LabelArea label="Product Price" />
           <div className="sm:col-span-4 relative col-span-8">
             <div className="absolute left-0 flex items-center py-3 pl-3 pointer-events-none">
-              <span className="text-gray-500 text-[15px]">&#8358;</span>
+              <span className="text-gray-500 text-[15px]">#</span>
             </div>
+
             <input
               type="number"
               value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              placeholder="product price (NGN)"
-              className="focus:bg-white block w-full h-12 px-10 py-2 bg-gray-100 border border-gray-200 rounded-md outline-none"
+              placeholder="Enter the price"
+              onChange={(e) => setPrice(e.target.value)}
+              className="focus:bg-white w-full h-12 p-2 pl-8 mt-1 bg-gray-100 border rounded-md outline-none"
             />
-            <div className="left-2 absolute inset-y-0 flex items-center h-12 border-l border-gray-300 pointer-events-none"></div>
+
             {errors.price && (
               <span className="mt-2 text-sm text-red-400">
                 Price is required.
@@ -451,82 +438,34 @@ const ProductDrawer = ({ id, product, title}) => {
         </div>
 
         <div className="grid grid-cols-6 gap-3 mb-6">
-          <LabelArea label={"Product Size"} />
-          <div className="sm:col-span-4 col-span-8">
-            <select
-              onChange={handleSizeSelection}
-              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
-            >
-              <option value="" hidden>
-                Select a Size
-              </option>
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-            </select>
-            <div className="flex mt-2">
-              {Array.isArray(size) &&
-                size.map((s, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center p-2 mr-2 text-white bg-[#059669] rounded-full"
-                  >
-                    {s}
-                    <FiXCircle
-                      onClick={() => removeSize(s)}
-                      className="ml-2 cursor-pointer"
-                    />
-                  </div>
-                ))}
-            </div>
+          <LabelArea label="Product Size" />
+          <div className="sm:col-span-4 col-span-8 uppercase">
+            <ReactTagInput
+              tags={size}
+              placeholder="Type and press enter for sizes (e.g., S, M, L, XL)"
+              onChange={(newTags) => setSize(newTags)}
+              className="focus:bg-white"
+            />
             {errors.size && (
               <span className="mt-2 text-sm text-red-400">
-                size is required.
+                Size is required.
               </span>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-6 gap-3 mb-6">
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Product Color
-            </label>
-          </div>
-          <div className="sm:col-span-4 col-span-8">
-            <select
-              onChange={handleColorSelection}
-              className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
-            >
-              <option value="" hidden>
-                Select a Color
-              </option>
-              {colorOptions.map((c, idx) => (
-                <option key={idx} value={c.name}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            <div className="flex mt-2">
-              {Array.isArray(color) &&
-                color.map((c, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center p-2 mr-4 text-white bg-[#059669] rounded-full"
-                  >
-                    {c.name} ({c.hex})
-                    <FiXCircle
-                      onClick={() => removeColor(c.name)}
-                      className="ml-2 cursor-pointer"
-                    />
-                  </div>
-                ))}
-            </div>
+          <LabelArea label="Product Color" />
+          <div className="sm:col-span-4 col-span-8 capitalize">
+            <ReactTagInput
+              tags={color.map((c) => c.name)}
+              placeholder="Type color and hex (e.g., Red (#FF0000)) and press enter"
+              onChange={handleColorTags}
+              className="focus:bg-white"
+            />
             {errors.color && (
               <span className="mt-2 text-sm text-red-400">
-                color is required.
+                Color is required.
               </span>
             )}
           </div>

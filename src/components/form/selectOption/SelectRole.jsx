@@ -1,15 +1,14 @@
 import React from "react";
 import { Select } from "@windmill/react-ui";
 
-const SelectRole = ({ register, name, label }) => {
+const SelectRole = ({ name, label, value, onChange }) => {
   return (
     <div className="flex flex-col">
       {label && <label htmlFor={name} className="mb-1">{label}</label>}
       <Select
         name={name}
-        {...register(name, {
-          required: `${label} is required!`,
-        })}
+        value={value}
+        onChange={onChange}
       >
         <option value="" defaultValue hidden>
           {label || "Select Role"}

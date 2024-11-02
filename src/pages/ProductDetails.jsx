@@ -33,10 +33,10 @@ const ProductDetails = () => {
   const { attribue } = useProductSubmit(id);
   const [variantTitle, setVariantTitle] = useState([]);
   const { lang } = useContext(SidebarContext);
-  const [productData, setProductData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const { data = {} } = useAsync(() => ProductServices.getProductById(id));
+  const { data = {}, loading } = useAsync(() => ProductServices.getProductById(id, "NGN"));
+
+
   const { currency, showingTranslateValue, getNumberTwo } = useUtilsFunction();
 
   // Handle cases where data might not have variants
@@ -44,26 +44,11 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (!loading && data.size) {
-      const res = Object.keys(data.color);
+      const res = Object.keys(data.color || {});
       const varTitle = attribue?.filter((att) => res.includes(att._id));
       setVariantTitle(varTitle);
     }
   }, [attribue, data.color, loading, lang]);
-
-  useEffect(() => {
-    const fetchProductData = async () => {
-      try {
-        const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/product/single/${id}`);
-        setProductData(response.data);
-      } catch (error) {
-        console.error("Error fetching product data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) fetchProductData();
-  }, [id]);
 
   return (
     <>
@@ -76,10 +61,11 @@ const ProductDetails = () => {
         <Loading loading={loading} />
       ) : (
         <div className="inline-block h-full overflow-y-auto align-middle transition-all transform">
-          <div className="lg:flex-row md:flex-row flex flex-col w-full overflow-hidden">
-            <div className="flex items-center justify-center flex-shrink-0 h-auto">
-              {productData.imageUrl && productData.imageUrl.length > 0 ? (
-                <img src={data.imageUrl[0]} alt="product" className="w-64 h-64" />
+          <div className="lg:flex-row md:flex-row flex flex-col w-full gap-10 overflow-hidden">
+            {/* Product Image Section */}
+            <div className="flex items-center justify-center flex-shrink-0 w-1/2 h-auto">
+              {data.imageUrl && data.imageUrl.length > 0 ? (
+                <img src={data.imageUrl[0]} alt="product" className="w-full h-full" />
               ) : (
                 <img
                   src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
@@ -88,58 +74,76 @@ const ProductDetails = () => {
               )}
             </div>
             <div className="md:p-8 flex flex-col w-full p-5 text-left">
-              <div className="block mb-5">
+              {/* Product Details */}
+              <div className="mb-5">
                 <h2 className="text-heading md:text-xl lg:text-2xl dark:text-gray-400 font-serif text-lg font-semibold">
-                  {showingTranslateValue(productData.name)}
+                  {(data.name) || t("Bean bag")}
                 </h2>
                 <p className="dark:text-gray-400 font-serif text-sm font-medium text-gray-500 uppercase">
                   {t("Sku")}:{" "}
                   <span className="dark:text-gray-500 font-bold text-gray-500">
-                    {productData.uuid}
+                    {data.sku || t("N/A")}
                   </span>
                 </p>
               </div>
               <div className="product-price dark:text-gray-400 font-serif font-bold">
                 <span className="inline-block text-2xl">
-                  {currency}
-                  {getNumberTwo(productData.price)}
+                  NGN
+                  {getNumberTwo(data.price) || "0.00"}
                 </span>
               </div>
               <div className="mb-3">
                 {productData.stockLevel <= 0 ? (
                   <Badge type="danger">
-                    <span className="font-bold">{t("StockOut")}</span>{" "}
+                    <span className="font-bold uppercase">{t("unavailable")}</span>
                   </Badge>
                 ) : (
                   <Badge type="success">
-                    {" "}
-                    <span className="font-bold">{t("InStock")}</span>
+                    <span className="font-bold uppercase">{t("available")}</span>
                   </Badge>
                 )}
                 <span className="dark:text-gray-400 pl-4 text-sm font-medium text-gray-500">
-                  {t("Quantity")}: {productData.stockLevel}
+                  {t("Quantity")}: {data.stockLevel ?? t("Unknown")}
                 </span>
               </div>
               <p className="dark:text-gray-400 md:leading-7 text-sm leading-6 text-gray-500">
-                {showingTranslateValue(productData.description)}
+                {(data.description) || t("NoDescriptionAvailable")}
               </p>
-              <div className="flex flex-col mt-4">
-                <p className="py-1 font-serif text-sm font-semibold text-gray-500">
-                  <span className="dark:text-gray-400 text-gray-700">
-                    {t("Color")}:{" "}
-                  </span>{" "}
-                  {data.color && data.color.length > 0 ? (
-                    data.color.map((color, index) => (
-                      <span key={index} className="mr-2">
-                        <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: color.hex }} />
+              {data.color && data.color.length > 0 && (
+                <div className="flex flex-col mt-4">
+                  <p className="py-1 font-serif text-sm font-semibold text-gray-500">
+                    <span className="dark:text-gray-400 text-gray-700">
+                      {t("Color")}:{" "}
+                    </span>
+                    {data.color.map((color, index) => (
+                      <span key={index} className="flex items-center mr-2">
+                        <span className="inline-block w-4 h-4 mr-1 rounded-full" style={{ backgroundColor: color.hex }} />
                         {color.name}
                       </span>
-                    ))
-                  ) : (
-                    <span className="text-gray-400">No colors available</span>
-                  )}
-                </p>
-              </div>
+                    ))}
+                  </p>
+                </div>
+              )}
+              {/* Size Information */}
+              {data.size && data.size.length > 0 && (
+                <div className="flex flex-col mt-4">
+                  <p className="py-1 font-serif text-sm font-semibold text-gray-500">
+                    <span className="dark:text-gray-400 text-gray-700">
+                      {t("Size")}:{" "}
+                    </span>
+                    {data.size.join(", ")}
+                  </p>
+                </div>
+              )}
+              {/* Extra Images */}
+              {data.extraImages && data.extraImages.length > 0 && (
+                <div className="flex flex-wrap mt-4 space-x-4">
+                  {data.extraImages.map((url, index) => (
+                    <img key={index} src={url} alt={`extra-image-${index}`} className="w-20 h-20 rounded-md" />
+                  ))}
+                </div>
+              )}
+              {/* Edit Button */}
               <div className="mt-6">
                 <button
                   onClick={() => handleUpdate(id)}
@@ -152,7 +156,8 @@ const ProductDetails = () => {
           </div>
         </div>
       )}
-      {data.isAvailable && variantTitle.length > 0 && !loading && (
+      {/* Variant List Table */}
+      {/* {data.isAvailable > 0 && !loading && (
         <>
           <PageTitle>{t("ProductVariantList")}</PageTitle>
           <TableContainer className="mb-8 rounded-b-lg">
@@ -186,7 +191,7 @@ const ProductDetails = () => {
             </TableFooter>
           </TableContainer>
         </>
-      )}
+      )} */}
     </>
   );
 };

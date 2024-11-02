@@ -397,13 +397,7 @@ import {
   Pagination,
 } from "@windmill/react-ui";
 import { useTranslation } from "react-i18next";
-import { FiPlus } from "react-icons/fi";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
-import axios from "axios";
-
-//internal import
-
-import useAsync from "@/hooks/useAsync";
+import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
 import useToggleDrawer from "@/hooks/useToggleDrawer";
 import UploadMany from "@/components/common/UploadMany";
 import NotFound from "@/components/table/NotFound";
@@ -431,39 +425,18 @@ const Products = () => {
     lang,
     currentPage,
     handleChangePage,
-    // searchText,
     category,
     setCategory,
     searchRef,
     handleSubmitForAll,
-    // sortedField,
-    // setSortedField,
+    handleClick,
     limitData,
   } = useContext(SidebarContext);
 
-  // const { data, l} = useAsync(() =>
-  //   ProductServices.getAllProducts({
-  //     page: currentPage,
-  //     limit: limitData,
-  //     category: category,
-  //     title: searchText,
-  //     price: sortedField,
-  //   })
-  // );
-
-  // console.log("product page", data);
-
-  // react hooks
-  
-  // const [data, setData] = useState({
-  //   products: [],
-  //   totalDoc: 0,
-  // });
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const [allProducts, setAllProducts] = useState([]);
   const [fetchedProduct, setFetchedProduct] = useState(null);
   const [data, setData] = useState({ products: [], totalDoc: 0 });
   const [minPrice, setMinPrice] = useState("");
@@ -478,7 +451,7 @@ const Products = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "https://suft-90bec7a20f24.herokuapp.com/product/",
+          `${import.meta.env.VITE_APP_API_BASE_URL}/product`,
           {
             params: {
               page: currentPage,
@@ -486,13 +459,14 @@ const Products = () => {
               category: category,
               title: searchText,
               price: sortedField,
+              currency: "NGN",
             },
           }
         );
         console.log("API Response:", response.data);
         setData({
           products: response.data.data,
-          totalDoc: response.data.totalDocs, // Ensure you're getting the total number of documents here.
+          totalDoc: response.data.totalDocs,
         });
         setLoading(false);
       } catch (err) {
@@ -502,10 +476,11 @@ const Products = () => {
     };
     fetchProducts();
   }, [currentPage, limitData, category, searchText, sortedField]);
+
   const fetchProduct = async (uuid) => {
     try {
       const response = await fetch(
-        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/single/${uuid}`
       );
       const data = await response.json();
       console.log(data);
@@ -518,21 +493,24 @@ const Products = () => {
       console.error("Error fetching product:", error);
     }
   };
-  // Select all and handle selections
-  
+
   const ProductSearch = async () => {
     try {
-      const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/product/filter?", {
-        params: {
-          page: currentPage,
-          min: minPrice,
-          max: maxPrice,
-          color: color,
-          size: size,
-          search: searchText,
-          sortBy: sortedField,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/filter`,
+        {
+          params: {
+            page: currentPage,
+            min: minPrice,
+            max: maxPrice,
+            color: color,
+            size: size,
+            search: searchText,
+            sortBy: sortedField,
+            currency: "NGN",
+          },
+        }
+      );
       setData({
         products: response.data.data,
         totalDoc: response.data.totalDocs,
@@ -546,13 +524,11 @@ const Products = () => {
     ProductSearch();
   }, [currentPage, minPrice, maxPrice, color, size, searchText, sortedField]);
 
-  // Handle search form submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    ProductSearch(); // Trigger fetch with updated parameters
+    ProductSearch();
   };
 
-  // Reset the filters
   const ResetField = () => {
     setMinPrice("");
     setMaxPrice("");
@@ -607,16 +583,16 @@ const Products = () => {
       <DeleteModal ids={allId} setIsCheck={setIsCheck} title={title} />
       <BulkActionDrawer ids={allId} title="Products" />
       <MainDrawer>
-        <ProductDrawer id={serviceId} />
+        <ProductDrawer id={serviceId} product={fetchedProduct} />
       </MainDrawer>
       <AnimatedContent>
-        <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
+        <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
           <CardBody className="">
             <form
               onSubmit={handleSubmitForAll}
-              className="py-3 md:pb-0 grid gap-4 lg:gap-6 xl:gap-6 xl:flex"
+              className="md:pb-0 lg:gap-6 xl:gap-6 xl:flex grid gap-4 py-3"
             >
-              <div className="flex-grow-0 sm:flex-grow md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="sm:flex-grow md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <UploadMany
                   title="Products"
                   filename={filename}
@@ -627,12 +603,12 @@ const Products = () => {
                   handleRemoveSelectFile={handleRemoveSelectFile}
                 />
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="sm:flex-row flex flex-col gap-4">
+                <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                   <Button
                     disabled={isCheck.length < 1}
                     onClick={() => handleUpdateMany(isCheck)}
-                    className="w-full rounded-md h-12 btn-gray text-gray-600"
+                    className="btn-gray w-full h-12 text-gray-600 rounded-md"
                   >
                     <span className="mr-2">
                       <FiEdit />
@@ -640,11 +616,11 @@ const Products = () => {
                     {t("BulkAction")}
                   </Button>
                 </div>
-                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+                <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                   <Button
                     disabled={isCheck?.length < 1}
                     onClick={() => handleDeleteMany(isCheck, data.products)}
-                    className="w-full rounded-md h-12 bg-red-300 disabled btn-red"
+                    className="disabled btn-red w-full h-12 bg-red-300 rounded-md"
                   >
                     <span className="mr-2">
                       <FiTrash2 />
@@ -653,10 +629,10 @@ const Products = () => {
                     {t("Delete")}
                   </Button>
                 </div>
-                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+                <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                   <Button
                     onClick={toggleDrawer}
-                    className="w-full rounded-md h-12"
+                    className="w-full h-12 rounded-md"
                   >
                     <span className="mr-2">
                       <FiPlus />
@@ -669,13 +645,13 @@ const Products = () => {
           </CardBody>
         </Card>
 
-        <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 rounded-t-lg rounded-0 mb-4">
+        <Card className="dark:bg-gray-800 rounded-0 min-w-0 mb-4 overflow-hidden bg-white rounded-t-lg shadow-xs">
           <CardBody>
             <form
               onSubmit={handleSearchSubmit}
-              className="py-3 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex"
+              className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
             >
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
                   ref={searchRef}
                   type="search"
@@ -686,15 +662,11 @@ const Products = () => {
                 />
                 <button
                   type="submit"
-                  className="absolute right-0 top-0 mt-5 mr-1"
+                  className="absolute top-0 right-0 mt-5 mr-1"
                 ></button>
               </div>
 
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                <SelectCategory setCategory={setCategory} lang={lang} />
-              </div>
-
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Select onChange={(e) => setSortedField(e.target.value)}>
                   <option value="All" defaultValue hidden>
                     {t("Price")}
@@ -717,9 +689,9 @@ const Products = () => {
                   </option>
                 </Select>
               </div>
-              <div className="flex items-center gap-2 flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
+              <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
                 <div className="w-full mx-1">
-                  <Button type="submit" className="h-12 w-full bg-emerald-700">
+                  <Button type="submit" className="bg-emerald-700 w-full h-12">
                     Filter
                   </Button>
                 </div>
@@ -729,67 +701,69 @@ const Products = () => {
                     layout="outline"
                     onClick={ResetField}
                     type="reset"
-                    className="px-4 md:py-1 py-2 h-12 text-sm dark:bg-gray-700"
+                    className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >
-                    <span className="text-black dark:text-gray-200">Reset</span>
+                    <span className="dark:text-gray-200 text-black">Reset</span>
                   </Button>
                 </div>
               </div>
             </form>
           </CardBody>
         </Card>
-      </AnimatedContent>
 
-      {loading ? (
-        <TableLoading row={12} col={7} width={160} height={20} />
-      ) : error ? (
-        <span className="text-center mx-auto text-red-500">{error}</span>
-      ) : serviceData?.length !== 0 ? (
-        <TableContainer className="mb-8 rounded-b-lg">
-          <Table>
-            <TableHeader>
-              <tr>
-                <TableCell>
-                  <CheckBox
-                    type="checkbox"
-                    name="selectAll"
-                    id="selectAll"
-                    isChecked={isCheckAll}
-                    handleClick={handleSelectAll}
-                  />
-                </TableCell>
-                <TableCell>{t("ProductNameTbl")}</TableCell>
-                <TableCell>{t("CategoryTbl")}</TableCell>
-                <TableCell>{t("PriceTbl")}</TableCell>
-                <TableCell>Sale Price</TableCell>
-                <TableCell>{t("StockTbl")}</TableCell>
-                <TableCell>{t("StatusTbl")}</TableCell>
-                <TableCell className="text-center">{t("DetailsTbl")}</TableCell>
-                <TableCell className="text-center">
-                  {t("PublishedTbl")}
-                </TableCell>
-                <TableCell className="text-right">{t("ActionsTbl")}</TableCell>
-              </tr>
-            </TableHeader>
-            <ProductTable
-              lang={lang}
-              isCheck={isCheck}
-              products={data?.products}
-              setIsCheck={setIsCheck}
-            />
-          </Table>
-          <TableFooter>
-            <Pagination
-              totalResults={data?.totalDoc}
-              resultsPerPage={limitData}
-              onChange={handleChangePage}
-              label="Product Page Navigation"
-            />
-          </TableFooter>
-        </TableContainer>
-      ) : (
-        <NotFound title="Product" />
-      )}
+        <div className="rounded-0 min-w-0 overflow-hidden bg-white rounded-t-lg shadow-xs">
+          <TableContainer className="mb-8">
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>
+                    <CheckBox
+                      type="checkbox"
+                      name="selectAll"
+                      handleClick={handleSelectAll}
+                      isChecked={isCheckAll}
+                    />
+                  </TableCell>
+                  <TableCell>{t("ProductNameTbl")}</TableCell>
+                  <TableCell>{t("PriceTbl")}</TableCell>
+                  <TableCell>{t("StockTbl")}</TableCell>
+                  <TableCell>{t("StatusTbl")}</TableCell>
+                  <TableCell className="text-center">
+                    {t("DetailsTbl")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {t("ActionsTbl")}
+                  </TableCell>
+                </tr>
+              </TableHeader>
+
+              {loading ? (
+                <TableLoading row={10} />
+              ) : data.products?.length ? (
+                <ProductTable
+                  fetchProduct={fetchProduct}
+                  isCheck={isCheck}
+                  handleClick={handleClick}
+                  isCheckAll={isCheckAll}
+                  products={data.products}
+                  loading={loading}
+                />
+              ) : (
+                <NotFound message="No Product found" />
+              )}
+            </Table>
+
+            <TableFooter>
+              <Pagination
+                totalResults={data.totalDoc}
+                resultsPerPage={limitData}
+                onChange={handleChangePage}
+                label="Product Page Navigation"
+              />
+            </TableFooter>
+          </TableContainer>
+        </div>
+      </AnimatedContent>
     </>
   );
 };

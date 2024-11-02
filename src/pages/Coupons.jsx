@@ -1,4 +1,3 @@
-
 import {
   Button,
   Card,
@@ -12,11 +11,13 @@ import {
   TableHeader,
 } from "@windmill/react-ui";
 import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { FiEdit, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
+import axios from "axios";
 
-//internal import
+// Internal imports
 import { SidebarContext } from "@/context/SidebarContext";
 import CouponServices from "@/services/CouponServices";
 import useAsync from "@/hooks/useAsync";
@@ -52,17 +53,41 @@ const Coupons = () => {
     filename,
     isDisabled,
     couponRef,
-    dataTable,
     serviceData,
     totalResults,
     limitData,
     handleChangePage,
     handleSelectFile,
-    setSearchCoupon,
     handleSubmitCoupon,
     handleUploadMultiple,
     handleRemoveSelectFile,
   } = useFilter(data);
+
+  useEffect(() => {
+    if (data) {
+      setFilteredCoupons(data);
+    }
+  }, [data]);
+
+  const handleSearchCoupons = async (e) => {
+    e.preventDefault();
+    if (!searchQuery) {
+      setFilteredCoupons(data);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_APP_API_BASE_URL
+        }/coupon/admin-filter/coupon?search=${searchQuery}`
+      );
+      setFilteredCoupons(response.data);
+    } catch (err) {
+      console.error("Search error:", err);
+      setFilteredCoupons([]);
+    }
+  };
 
   const handleSelectAll = () => {
     setIsCheckAll(!isCheckAll);
@@ -124,7 +149,6 @@ const Coupons = () => {
         title="Selected Coupon"
       />
       <BulkActionDrawer ids={allId} title="Coupons" />
-
       <MainDrawer>
         <CouponDrawer id={serviceId} />
       </MainDrawer>
@@ -171,7 +195,6 @@ const Coupons = () => {
                     <span className="mr-2">
                       <FiTrash2 />
                     </span>
-
                     {t("Delete")}
                   </Button>
                 </div>
@@ -206,6 +229,8 @@ const Coupons = () => {
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   placeholder={t("SearchCoupon")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
@@ -220,6 +245,10 @@ const Coupons = () => {
                     layout="outline"
                     onClick={ResetField}
                     type="reset"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setFilteredCoupons(data);
+                    }}
                     className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >
                     <span className="dark:text-gray-200 text-black">Reset</span>
@@ -232,11 +261,10 @@ const Coupons = () => {
       </AnimatedContent>
 
       {loading ? (
-        // <Loading loading={loading} />
         <TableLoading row={12} col={8} width={140} height={20} />
       ) : error ? (
         <span className="mx-auto text-center text-red-500">{error}</span>
-      ) : serviceData?.length !== 0 ? (
+      ) : filteredCoupons?.length !== 0 ? (
         <TableContainer className="mb-8">
           <Table>
             <TableHeader>
@@ -253,12 +281,10 @@ const Coupons = () => {
                 <TableCell>{t("CoupTblCampaignsName")}</TableCell>
                 <TableCell>{t("CoupTblCode")}</TableCell>
                 <TableCell>{t("Discount")}</TableCell>
-
                 <TableCell className="text-center">
                   {t("catPublishedTbl")}
                 </TableCell>
                 <TableCell>{t("CoupTblEndDate")}</TableCell>
-                {/* <TableCell>{t("CoupTblExpiryDate")}</TableCell> */}
                 <TableCell>{t("CoupTblStatus")}</TableCell>
                 <TableCell className="text-right">
                   {t("CoupTblActions")}
@@ -268,7 +294,7 @@ const Coupons = () => {
             <CouponTable
               lang={lang}
               isCheck={isCheck}
-              coupons={dataTable}
+              coupons={filteredCoupons}
               setIsCheck={setIsCheck}
             />
           </Table>
@@ -282,7 +308,7 @@ const Coupons = () => {
           </TableFooter>
         </TableContainer>
       ) : (
-        <NotFound title="Sorry, There are no coupons right now." />
+        <NotFound title="No coupon found" />
       )}
     </>
   );

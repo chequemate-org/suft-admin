@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Avatar,
@@ -10,8 +10,6 @@ import {
 import { t } from "i18next";
 import { FiZoomIn } from "react-icons/fi";
 import { Link } from "react-router-dom";
-
-// internal imports
 import MainDrawer from "@/components/drawer/MainDrawer";
 import ProductDrawer from "@/components/drawer/ProductDrawer";
 import CheckBox from "@/components/form/others/CheckBox";
@@ -25,18 +23,15 @@ import useUtilsFunction from "@/hooks/useUtilsFunction";
 const ProductTable = ({ products, isCheck, setIsCheck }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const { currency, getNumberTwo } = useUtilsFunction();
-
-  // State to store the fetched single product data
   const [fetchedProducts, setFetchedProducts] = useState(null);
 
-  // Function to fetch product by UUID
   const fetchProductByUUID = async (uuid) => {
     try {
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/single/${uuid}`
       );
       if (response.data) {
-        setFetchedProducts(response.data); // Set coupon to state for drawer
+        setFetchedProducts(response.data);
         console.log("Fetched Product for editing by UUID:", response.data);
       }
     } catch (error) {
@@ -44,18 +39,15 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
     }
   };
 
-  // Handle the edit button click
   const handleEdit = async (uuid) => {
     await fetchProductByUUID(uuid);
-    handleUpdate(uuid); // Open the drawer for editing
+    handleUpdate(uuid);
   };
 
   const handleClick = (e) => {
     const { id, checked } = e.target;
-    setIsCheck(prev => 
-      checked 
-        ? [...prev, id]
-        : prev.filter(item => item !== id)
+    setIsCheck((prev) =>
+      checked ? [...prev, id] : prev.filter((item) => item !== id)
     );
   };
 
@@ -65,7 +57,11 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
       {isCheck?.length < 2 && (
         <MainDrawer>
-          <ProductDrawer currency={currency} id={serviceId} product={fetchedProducts}  />
+          <ProductDrawer
+            currency={currency}
+            id={serviceId}
+            product={fetchedProducts}
+          />
         </MainDrawer>
       )}
 
@@ -75,7 +71,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
             <TableCell>
               <CheckBox
                 type="checkbox"
-                name={product?.name}
+                name={product?.name || "Bean Bag"}
                 id={product.id}
                 handleClick={handleClick}
                 isChecked={isCheck?.includes(product.id)}
@@ -92,7 +88,9 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                   />
                 ) : (
                   <Avatar
-                    src={'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg'}
+                    src={
+                      "https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg"
+                    }
                     alt="product"
                   />
                 )}
@@ -102,35 +100,26 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                       product?.name?.length > 30 ? "wrap-long-title" : ""
                     }`}
                   >
-                    {product?.name?.substring(0, 28)}
+                    {product?.name || "Bean Bag"}
                   </h2>
+                  <span className="text-xs text-gray-500">
+                    SKU: {product?.sku || "N/A"}
+                  </span>
                 </div>
               </div>
             </TableCell>
 
             <TableCell>
-              <span className="text-sm">
-                {product?.categories?.join(', ') || 'N/A'}
-              </span>
-            </TableCell>
-
-            <TableCell>
               <span className="text-sm font-semibold">
-                {currency}
-                {getNumberTwo(product?.price)}
+                NGN
+                {getNumberTwo(product?.price) || "0.00"}
               </span>
             </TableCell>
 
             <TableCell>
-              <span className="text-sm font-semibold">
-                {currency}
-                {getNumberTwo(product?.salePrice || product?.price)}
-              </span>
+              <span className="text-sm">{product.stockLevel || "Unknown"}</span>
             </TableCell>
 
-            <TableCell>
-              <span className="text-sm">{product.stockLevel}</span>
-            </TableCell>
             <TableCell>
               {product.isAvailable ? (
                 <Badge type="success">{t("Selling")}</Badge>
@@ -138,6 +127,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 <Badge type="danger">{t("SoldOut")}</Badge>
               )}
             </TableCell>
+
             <TableCell>
               <Link
                 to={`/product/${product.uuid}`}
@@ -151,31 +141,35 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
                 />
               </Link>
             </TableCell>
-            <TableCell className="text-center">
-              <ShowHideButton id={product.id} status={product.isAvailable} />
-            </TableCell>
+
             <TableCell>
               <EditDeleteButton
                 id={product.uuid}
                 product={product}
                 isCheck={isCheck}
-                handleUpdate={() => handleEdit(product.uuid)} 
+                handleUpdate={() => handleEdit(product.uuid)}
                 handleModalOpen={handleModalOpen}
-                title={product?.name}
+                title={product?.name || "Bean Bag"}
               />
             </TableCell>
           </TableRow>
         ))}
 
-        {/* Display fetched product details if available */}
         {fetchedProducts && (
           <TableRow>
             <TableCell colSpan="10">
               <div className="p-4">
-                <h2 className="text-lg font-bold">{fetchedProducts.name}</h2>
-                <p>{fetchedProducts.description}</p>
-                <p className="font-semibold">{currency}{fetchedProducts.price}</p>
-                {/* Add any additional product details you want to display here */}
+                <h2 className="text-lg font-bold">
+                  {fetchedProducts.name || "Bean Bag"}
+                </h2>
+                <p>{fetchedProducts.description || "NoDescriptionAvailable"}</p>
+                <p className="font-semibold">
+                  {currency}
+                  {fetchedProducts.price || "0.00"}
+                </p>
+                <p className="text-sm">
+                  Quantity: {fetchedProducts.stockLevel || "Unknown"}
+                </p>
               </div>
             </TableCell>
           </TableRow>

@@ -61,16 +61,26 @@ const Orders = () => {
   const [loadingExport, setLoadingExport] = useState(false);
   const [error, setError] = useState("");
   const [totalOrders, setTotalOrders] = useState(0);
-  const { currency, getNumber, getNumberTwo } = useUtilsFunction();
+  const { formatCurrency, getNumberTwo } = useUtilsFunction();
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (filters = {}) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/admin/get-orders?page=${currentPage}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/order-filtering`,
+        {
+          params: {
+            page: currentPage,
+            customerName: filters.customerName || "",
+            startDate: filters.startDate || "",
+            endDate: filters.endDate || "",
+            status: filters.status || "",
+            orderLimit: filters.orderLimit || "",
+          },
+        }
       );
       setOrders(response.data.orders);
-      setTotalOrders(response.data.totalOrders);
+      setTotalOrders(response.data.meta.totalItems);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -81,6 +91,18 @@ const Orders = () => {
   useEffect(() => {
     fetchOrders();
   }, [currentPage]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const params = {
+      customerName: searchText,
+      startDate,
+      endDate,
+      time,
+      status,
+    };
+    fetchOrders(params);
+  };
 
   const handleDownloadOrders = async () => {
     try {
@@ -124,15 +146,13 @@ const Orders = () => {
   };
 
   const handleResetField = () => {
-    setTime("");
-    setMethod("");
-    setStatus("");
-    setEndDate("");
+    setCustomerName("");
     setStartDate("");
-    setSearchText("");
-    searchRef.current.value = "";
+    setEndDate("");
+    setOrderLimit("");
+    setStatus("");
+    setSearchText(""), fetchOrders(), (searchRef.current.value = "");
   };
-
   return (
     <>
       <PageTitle>{t("Orders")}</PageTitle>
@@ -140,19 +160,20 @@ const Orders = () => {
       <AnimatedContent>
         <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
           <CardBody>
-            <form onSubmit={handleSubmitForAll}>
-              <div className="grid gap-4 lg:gap-4 xl:gap-6 md:gap-2 md:grid-cols-5 py-2">
+            <form onSubmit={handleSearchSubmit}>
+              <div className="grid gap-4 lg:gap-4 xl:gap-6 md:gap-2 md:grid-cols-4 py-2">
                 <div>
                   <Input
                     ref={searchRef}
                     type="search"
                     name="search"
                     placeholder="Search by Customer Name"
+                    onChange={(e) => setSearchText(e.target.value)}
                   />
                 </div>
                 <div>
                   <Select onChange={(e) => setStatus(e.target.value)}>
-                    <option value="Status" defaultValue hidden>
+                    <option value="" defaultValue hidden>
                       {t("Status")}
                     </option>
                     <option value="Delivered">{t("PageOrderDelivered")}</option>
@@ -165,23 +186,13 @@ const Orders = () => {
                 </div>
                 <div>
                   <Select onChange={(e) => setTime(e.target.value)}>
-                    <option value="Order limits" defaultValue hidden>
+                    <option value="" defaultValue hidden>
                       {t("Orderlimits")}
                     </option>
                     <option value="5">{t("DaysOrders5")}</option>
                     <option value="7">{t("DaysOrders7")}</option>
                     <option value="15">{t("DaysOrders15")}</option>
                     <option value="30">{t("DaysOrders30")}</option>
-                  </Select>
-                </div>
-                <div>
-                  <Select onChange={(e) => setMethod(e.target.value)}>
-                    <option value="Method" defaultValue hidden>
-                      {t("Method")}
-                    </option>
-                    <option value="Cash">{t("Cash")}</option>
-                    <option value="Card">{t("Card")}</option>
-                    <option value="Credit">{t("Credit")}</option>
                   </Select>
                 </div>
                 <div>
@@ -233,7 +244,7 @@ const Orders = () => {
                   <Label>End Date</Label>
                   <Input
                     type="date"
-                    name="startDate"
+                    name="endDate"
                     onChange={(e) => setEndDate(e.target.value)}
                   />
                 </div>
@@ -306,7 +317,9 @@ const Orders = () => {
                     <span className="text-sm">{order.method}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm">{order.amount}</span>
+                    <span className="text-sm">
+                      {formatCurrency(order.amount)}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <Status status={order?.status} />

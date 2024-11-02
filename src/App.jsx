@@ -7,8 +7,6 @@ import {
   Redirect,
 } from "react-router-dom";
 import AccessibleNavigationAnnouncer from "@/components/AccessibleNavigationAnnouncer";
-import PrivateRoute from "@/components/login/PrivateRoute";
-import Dashboard from "./pages/Dashboard";
 const Layout = lazy(() => import("@/layout/Layout"));
 const Login = lazy(() => import("@/pages/Login"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
@@ -28,12 +26,6 @@ const App = () => {
           <Route path="/forgot-password" component={ForgetPassword} />
           <Route path="/reset-password/:token" component={ResetPassword} />
           <Route path="/dashboard" component={Layout} />
-          {/* <Route path="/product/details/:id" element={<ProductDetails />}/> */}
-          {/* <Route path="/product/:id" element={<ProductDetails />} /> */}
-
-          {/* <PrivateRoute>
-            <Route path="/dashboard" component={Layout} />
-          </PrivateRoute> */}
           <Layout>
             <Route path="/" component={Layout} />
           </Layout>

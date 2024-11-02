@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import SettingServices from "@/services/SettingServices";
 import { useDispatch, useSelector } from "react-redux";
-import { addSetting, removeSetting } from "@/reduxStore/slice/settingSlice";
-import { useContext, useEffect, useState } from "react";
+import { addSetting } from "@/reduxStore/slice/settingSlice";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { SidebarContext } from "@/context/SidebarContext";
 
 const useUtilsFunction = () => {
@@ -17,8 +17,7 @@ const useUtilsFunction = () => {
     (value) => value.name === "globalSetting"
   );
 
-  // console.log("globalSetting", globalSetting);
-  //for date and time format
+  // Original functions remain the same
   const showTimeFormat = (data, timeFormat) => {
     return dayjs(data).format(timeFormat);
   };
@@ -31,39 +30,60 @@ const useUtilsFunction = () => {
     return dayjs(data).format(`${globalSetting?.default_date_format}  h:mm A`);
   };
 
-  //for formatting number
-
   const getNumber = (value = 0) => {
     return Number(parseFloat(value || 0).toFixed(2));
   };
 
   const getNumberTwo = (value = 0) => {
-    return parseFloat(value || 0).toFixed(globalSetting?.floating_number || 2);
+    try {
+      const numValue =
+        typeof value === "string" ? parseFloat(value) : Number(value);
+
+      const decimalPlaces = globalSetting?.floating_number || 2;
+
+      return new Intl.NumberFormat("en-NG", {
+        minimumFractionDigits: decimalPlaces,
+        maximumFractionDigits: decimalPlaces,
+        useGrouping: true,
+      }).format(numValue || 0);
+    } catch (error) {
+      console.error("Error formatting number:", error);
+      return "0.00";
+    }
   };
 
-  //for translation
+  const formatCurrency = (amount) => {
+    if (!amount) return "NGN 0.00";
+
+    const numericValue = parseFloat(amount.replace(/[^\d.-]/g, ""));
+    if (isNaN(numericValue)) return "NGN 0.00";
+
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(numericValue);
+
+    return `NGN ${formattedAmount}`;
+  };
+
   const showingTranslateValue = (data) => {
-    return data !== undefined && Object?.keys(data).includes(lang)
-      ? data[lang]
-      : data?.en;
+    return data?.[lang] || data?.en || "";
   };
 
-  const showingImage = (data) => {
-    return data !== undefined && data;
-  };
+  const showingImage = (data) => data || "";
 
-  const showingUrl = (data) => {
-    return data !== undefined ? data : "!#";
-  };
+  const showingUrl = (data) => data || "!#";
 
-  const currency = globalSetting?.default_currency || "$";
+  const currency = useMemo(
+    () => globalSetting?.default_currency || "NGN",
+    [globalSetting]
+  );
 
   useEffect(() => {
-    // console.log("globalSetting", globalSetting);
     const fetchGlobalSetting = async () => {
       try {
         setLoading(true);
-        console.log("globalSetting setting not available");
+        console.log("Fetching global setting");
         const res = await SettingServices.getGlobalSetting();
         const globalSettingData = {
           ...res,
@@ -71,11 +91,10 @@ const useUtilsFunction = () => {
         };
 
         dispatch(addSetting(globalSettingData));
-
         setLoading(false);
       } catch (err) {
         setError(err.message);
-        console.log("Error on getting storeCustomizationSetting setting", err);
+        console.log("Error fetching global settings", err);
       }
     };
 
@@ -90,6 +109,7 @@ const useUtilsFunction = () => {
     currency,
     getNumber,
     getNumberTwo,
+    formatCurrency,
     showTimeFormat,
     showDateFormat,
     showingImage,

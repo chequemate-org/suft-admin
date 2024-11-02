@@ -39,7 +39,7 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
     const newErrors = {};
     if (!name) newErrors.name = "Coupon name is required.";
     if (!code) newErrors.code = "Coupon code is required.";
-    
+
     if (!discount || isNaN(discount) || discount > 100)
       newErrors.discount = "Discount must be between 1 and 100.";
     if (!expiryDate) newErrors.expiryDate = "Expiry date is required.";
@@ -63,9 +63,10 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
         let response;
 
         if (id) {
-          // PUT request to update the coupon by ID
           response = await fetch(
-            `https://suft-90bec7a20f24.herokuapp.com/coupon/admin-update/coupon/${id}`,
+            `${
+              import.meta.env.VITE_APP_API_BASE_URL
+            }/coupon/admin-update/coupon/${id}`,
             {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
@@ -73,9 +74,9 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
             }
           );
         } else {
-          // POST request to create a new coupon
           response = await fetch(
-            "https://suft-90bec7a20f24.herokuapp.com/coupon/admin-create",
+            `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-create`,
+
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -95,7 +96,7 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
         toast.success(
           id ? "Coupon updated successfully!" : "Coupon created successfully!"
         );
-        fetchCoupons(); // Refetch coupons after submission
+        fetchCoupons();
       } catch (error) {
         console.error("Error submitting coupon:", error.message);
         setErrors({ api: error.message });
@@ -148,7 +149,9 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
                   className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
                 />
                 {errors.name && (
-                  <span className="mt-2 text-sm text-red-400">Name is required.</span>
+                  <span className="mt-2 text-sm text-red-400">
+                    Name is required.
+                  </span>
                 )}
               </div>
             </div>
@@ -165,11 +168,11 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
                 className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
               />
               {errors.code && (
-                <span className="mt-2 text-sm text-red-400">Coupon code is required.</span>
+                <span className="mt-2 text-sm text-red-400">
+                  Coupon code is required.
+                </span>
               )}
             </div>
-
-            
           </div>
 
           <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
@@ -189,10 +192,11 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
               />
               <div className="left-2 absolute inset-y-0 flex items-center h-12 border-l border-gray-300 pointer-events-none"></div>
               {errors.discount && (
-                <span className="mt-2 text-sm text-red-400">Discount is required.</span>
+                <span className="mt-2 text-sm text-red-400">
+                  Discount is required.
+                </span>
               )}
             </div>
-            
           </div>
 
           <div className="grid grid-cols-6 gap-3 mb-6">
@@ -205,11 +209,11 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
                 className="focus:bg-white w-full h-12 p-2 mt-1 bg-gray-100 border rounded outline-none"
               />
               {errors.expiryDate && (
-                <span className="mt-2 text-sm text-red-400">Discount is required.</span>
+                <span className="mt-2 text-sm text-red-400">
+                  Expiry Date is required.
+                </span>
               )}
             </div>
-
-          
           </div>
 
           <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-[10rem]">
@@ -222,7 +226,7 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
             </div>
           </div>
 
-          <DrawerButton id={id} title="Coupon" isSubmitting={loading}/>
+          <DrawerButton id={id} title="Coupon" isSubmitting={loading} />
         </form>
       </>
     </div>
