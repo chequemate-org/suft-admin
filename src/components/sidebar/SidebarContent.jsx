@@ -21,7 +21,7 @@ const SidebarContent = () => {
   const handleLogOut = () => {
     dispatch({ type: "USER_LOGOUT" });
     Cookies.remove("adminInfo");
-    window.location.replace(`https://suft-admin.onrender.com/login`);
+    window.location.replace(`https://getsuft.com/admin/login`);
   };
 
   return (

@@ -9,6 +9,7 @@ import path from "path";
 dns.setDefaultResultOrder("verbatim");
 
 export default defineConfig({
+  base: "/admin/",
   build: {
     assetsDir: "@/assets",
     chunkSizeWarningLimit: 10 * 1024,
