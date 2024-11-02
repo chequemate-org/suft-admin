@@ -54,7 +54,7 @@ const Header = () => {
     const redirectURL =
       window.location.hostname === "localhost"
         ? "http://localhost:4100/login"
-        : "https://suft-admin.onrender.com/login";
+        : "https://getsuft.com/admin/login";
 
     window.location.replace(redirectURL);
   };
