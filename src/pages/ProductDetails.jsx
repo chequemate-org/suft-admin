@@ -10,6 +10,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
+import axios from "axios";
 
 // Internal imports
 import useAsync from "@/hooks/useAsync";
@@ -32,9 +33,10 @@ const ProductDetails = () => {
   const { attribue } = useProductSubmit(id);
   const [variantTitle, setVariantTitle] = useState([]);
   const { lang } = useContext(SidebarContext);
+  const [productData, setProductData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const { data = {}, loading } = useAsync(() => ProductServices.getProductById(id));
-
+  const { data = {} } = useAsync(() => ProductServices.getProductById(id));
   const { currency, showingTranslateValue, getNumberTwo } = useUtilsFunction();
 
   // Handle cases where data might not have variants
@@ -48,6 +50,21 @@ const ProductDetails = () => {
     }
   }, [attribue, data.color, loading, lang]);
 
+  useEffect(() => {
+    const fetchProductData = async () => {
+      try {
+        const response = await axios.get(`https://suft-90bec7a20f24.herokuapp.com/product/single/${id}`);
+        setProductData(response.data);
+      } catch (error) {
+        console.error("Error fetching product data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchProductData();
+  }, [id]);
+
   return (
     <>
       <MainDrawer product>
@@ -58,11 +75,11 @@ const ProductDetails = () => {
       {loading ? (
         <Loading loading={loading} />
       ) : (
-        <div className="inline-block overflow-y-auto h-full align-middle transition-all transform">
-          <div className="flex flex-col lg:flex-row md:flex-row w-full overflow-hidden">
-            <div className="flex-shrink-0 flex items-center justify-center h-auto">
-              {data.imageUrl && data.imageUrl.length > 0 ? (
-                <img src={data.imageUrl[0]} alt="product" className="h-64 w-64" />
+        <div className="inline-block h-full overflow-y-auto align-middle transition-all transform">
+          <div className="lg:flex-row md:flex-row flex flex-col w-full overflow-hidden">
+            <div className="flex items-center justify-center flex-shrink-0 h-auto">
+              {productData.imageUrl && productData.imageUrl.length > 0 ? (
+                <img src={data.imageUrl[0]} alt="product" className="w-64 h-64" />
               ) : (
                 <img
                   src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
@@ -70,26 +87,26 @@ const ProductDetails = () => {
                 />
               )}
             </div>
-            <div className="w-full flex flex-col p-5 md:p-8 text-left">
-              <div className="mb-5 block ">
-                <h2 className="text-heading text-lg md:text-xl lg:text-2xl font-semibold font-serif dark:text-gray-400">
-                  {showingTranslateValue(data.name)}
+            <div className="md:p-8 flex flex-col w-full p-5 text-left">
+              <div className="block mb-5">
+                <h2 className="text-heading md:text-xl lg:text-2xl dark:text-gray-400 font-serif text-lg font-semibold">
+                  {showingTranslateValue(productData.name)}
                 </h2>
-                <p className="uppercase font-serif font-medium text-gray-500 dark:text-gray-400 text-sm">
+                <p className="dark:text-gray-400 font-serif text-sm font-medium text-gray-500 uppercase">
                   {t("Sku")}:{" "}
-                  <span className="font-bold text-gray-500 dark:text-gray-500">
-                    {data.uuid}
+                  <span className="dark:text-gray-500 font-bold text-gray-500">
+                    {productData.uuid}
                   </span>
                 </p>
               </div>
-              <div className="font-serif product-price font-bold dark:text-gray-400">
+              <div className="product-price dark:text-gray-400 font-serif font-bold">
                 <span className="inline-block text-2xl">
                   {currency}
-                  {getNumberTwo(data.price)}
+                  {getNumberTwo(productData.price)}
                 </span>
               </div>
               <div className="mb-3">
-                {data.stockLevel <= 0 ? (
+                {productData.stockLevel <= 0 ? (
                   <Badge type="danger">
                     <span className="font-bold">{t("StockOut")}</span>{" "}
                   </Badge>
@@ -99,30 +116,34 @@ const ProductDetails = () => {
                     <span className="font-bold">{t("InStock")}</span>
                   </Badge>
                 )}
-                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium pl-4">
-                  {t("Quantity")}: {data.stockLevel}
+                <span className="dark:text-gray-400 pl-4 text-sm font-medium text-gray-500">
+                  {t("Quantity")}: {productData.stockLevel}
                 </span>
               </div>
-              <p className="text-sm leading-6 text-gray-500 dark:text-gray-400 md:leading-7">
-                {showingTranslateValue(data.description)}
+              <p className="dark:text-gray-400 md:leading-7 text-sm leading-6 text-gray-500">
+                {showingTranslateValue(productData.description)}
               </p>
               <div className="flex flex-col mt-4">
-                <p className="font-serif font-semibold py-1 text-gray-500 text-sm">
-                  <span className="text-gray-700 dark:text-gray-400">
+                <p className="py-1 font-serif text-sm font-semibold text-gray-500">
+                  <span className="dark:text-gray-400 text-gray-700">
                     {t("Color")}:{" "}
                   </span>{" "}
-                  {data.color.map((color, index) => (
-                    <span key={index} className="mr-2">
-                      <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: color.hex }} />
-                      {color.name}
-                    </span>
-                  ))}
+                  {data.color && data.color.length > 0 ? (
+                    data.color.map((color, index) => (
+                      <span key={index} className="mr-2">
+                        <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: color.hex }} />
+                        {color.name}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400">No colors available</span>
+                  )}
                 </p>
               </div>
               <div className="mt-6">
                 <button
                   onClick={() => handleUpdate(id)}
-                  className="cursor-pointer leading-5 transition-colors duration-150 font-medium text-sm focus:outline-none px-5 py-2 rounded-md text-white bg-emerald-500 border border-transparent active:bg-emerald-600 hover:bg-emerald-600 "
+                  className="focus:outline-none bg-emerald-500 active:bg-emerald-600 hover:bg-emerald-600 px-5 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-transparent rounded-md cursor-pointer"
                 >
                   {t("EditProduct")}
                 </button>

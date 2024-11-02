@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Scrollbars } from "react-custom-scrollbars-2";
 import { Card, CardBody, Input } from "@windmill/react-ui";
@@ -184,7 +185,7 @@ const StaffDrawer = ({ id, staff, uuid }) => {
                       value={phoneNumber} // Bind the state value
                       onChange={(e) => setPhoneNumber(e.target.value)} // Update state on input change
                     />
-                    <Error errorName={errors.phone} />
+                    <Error errorName={errors.phoneNumber} />
                   </div>
                 </div>
                 <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">

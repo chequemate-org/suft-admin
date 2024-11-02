@@ -24,11 +24,11 @@ const AdminServices = {
   addStaff: async (body) => {
     return requests.post("/admin/create-user", body);
   },
-  getAllStaff: async (param) => {
-    return requests.get("/admin/all-staff", param);
+  getAllStaff: async (body) => {
+    return requests.get("/admin/all-staff", body);
   },
-  getStaffById: async (uuid, body) => {
-    // return requests.get(`/admin/staff/${uuid}`, body);
+  getStaffById: async (id, body) => {
+    return requests.get(`/admin/staff/${id}`, body);
   },
 
   updateStaff: async (uuid, body) => {

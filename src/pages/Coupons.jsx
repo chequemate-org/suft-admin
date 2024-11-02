@@ -11,9 +11,10 @@ import {
   TableFooter,
   TableHeader,
 } from "@windmill/react-ui";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { FiEdit, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 //internal import
 import { SidebarContext } from "@/context/SidebarContext";
@@ -36,12 +37,14 @@ import AnimatedContent from "@/components/common/AnimatedContent";
 const Coupons = () => {
   const { t } = useTranslation();
   const { toggleDrawer, lang } = useContext(SidebarContext);
-  const { data, loading, error } = useAsync(CouponServices.getAllCoupons);
+  const { loading, error } = useAsync(CouponServices.getAllCoupons);
   const [searchQuery, setSearchQuery] = useState("");
-  // console.log('data',data)
   const [isCheckAll, setIsCheckAll] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const [isCheck, setIsCheck] = useState([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const resultsPerPage = 10;
+  const [data, setData] = useState({ products: [], totalDoc: 0 });
   const { allId, serviceId, handleDeleteMany, handleUpdateMany } =
     useToggleDrawer();
 
@@ -52,7 +55,7 @@ const Coupons = () => {
     dataTable,
     serviceData,
     totalResults,
-    resultsPerPage,
+    limitData,
     handleChangePage,
     handleSelectFile,
     setSearchCoupon,
@@ -69,31 +72,48 @@ const Coupons = () => {
     }
   };
 
-  // handle reset field function
-  // const handleResetField = () => {
-  //   setSearchCoupon("");
-  //   couponRef.current.value = "";
-  // };
   
-  const handleResetField = () => {
-    setSearchTerm("");
-    setSearchCoupon("");
-    couponRef.current.value = "";
-    refetch(); // Refetch all coupons when resetting
-  };
-  const handleSearchCoupons = async (e) => {
-    e.preventDefault();
-    if (searchTerm.trim() === "") {
-      refetch(); // If search term is empty, fetch all coupons
-      return;
-    }
+  const ProductSearch = async () => {
     try {
-      const result = await CouponServices.searchCoupons(searchTerm);
-      setFilteredCoupons(result);
-    } catch (err) {
-      console.error(err);
+      const response = await axios.post(
+        "https://suft-90bec7a20f24.herokuapp.com/coupon/admin-filter/coupon?",
+        {
+          search: searchText, // Send search text in request body
+        }
+      );
+      console.log("API Response:", response.data);
+
+      if (response.data && response.data.data && response.data.totalDocs !== undefined) {
+        setFilteredData({
+          products: response.data.data,
+          totalDoc: response.data.totalDocs,
+        });
+      } else {
+        console.error("Unexpected API response structure:", response.data);
+        setFilteredData({ products: [], totalDoc: 0 }); 
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
     }
   };
+
+  useEffect(() => {
+    ProductSearch();
+  }, [searchText]);
+
+  // Handle search form submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setCurrentPage(1); 
+    ProductSearch();
+  };
+
+  // Reset the filters
+  const ResetField = () => {
+    setSearchText("");
+    ProductSearch();
+  };
+
 
   return (
     <>
@@ -175,14 +195,16 @@ const Coupons = () => {
         <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
           <CardBody>
             <form
-            onSubmit={handleSearchCoupons}
+            onSubmit={handleSearchSubmit}
               // onSubmit={handleSubmitCoupon}
               className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
             >
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
-                  ref={couponRef}
+                  // ref={couponRef}
                   type="search"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
                   placeholder={t("SearchCoupon")}
                 />
               </div>
@@ -196,7 +218,7 @@ const Coupons = () => {
                 <div className="w-full mx-1">
                   <Button
                     layout="outline"
-                    onClick={handleResetField}
+                    onClick={ResetField}
                     type="reset"
                     className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >
@@ -252,8 +274,8 @@ const Coupons = () => {
           </Table>
           <TableFooter>
             <Pagination
-              totalResults={totalResults}
-              resultsPerPage={resultsPerPage}
+              totalResults={data?.totalDoc}
+              resultsPerPage={limitData}
               onChange={handleChangePage}
               label="Table navigation"
             />

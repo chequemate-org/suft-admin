@@ -28,8 +28,11 @@ const Customers = () => {
   const [error, setError] = useState(null);
   const userRef = useRef(null);
   const [totalResults, setTotalResults] = useState(0);
-  const [resultsPerPage] = useState(10); // Set the number of results per page
+  const [resultsPerPage] = useState(10); 
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [email, setEmail] = useState("");
+  const [data, setData] = useState({ products: [], totalDoc: 0 });
 
   // Fetch customer data from the API
   useEffect(() => {
@@ -77,6 +80,49 @@ const Customers = () => {
     // Implement pagination logic if needed
   };
 
+  const ProductSearch = async () => {
+    try {
+      const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/admin/search-users?searchType=user&email", {
+        params: {
+          searchType: search,
+          email: email,
+          
+        },
+      });
+      setData({
+        products: response.data.data,
+        totalDoc: response.data.totalDocs,
+      });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  useEffect(() => {
+    ProductSearch();
+  }, [search, email]);
+
+  // Handle search form submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    ProductSearch(); // Trigger fetch with updated parameters
+  };
+
+  // Reset the filters
+  const ResetField = () => {
+    setSearch("");
+    setEmail("");
+    ProductSearch();
+  };
+  const handleSelectAll = () => {
+    setIsCheckAll(!isCheckAll);
+    setIsCheck(data.products.map((li) => li.id));
+    if (isCheckAll) {
+      setIsCheck([]);
+    }
+  };
+
+
   return (
     <>
       <PageTitle>{t("CustomersPage")}</PageTitle>
@@ -92,6 +138,8 @@ const Customers = () => {
                 <Input
                   ref={userRef}
                   type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   name="search"
                   placeholder={t("CustomersPageSearchPlaceholder")}
                 />
@@ -104,7 +152,7 @@ const Customers = () => {
 
                 <Button
                   layout="outline"
-                  onClick={handleResetField}
+                  onClick={ResetField}
                   type="reset"
                   className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                 >

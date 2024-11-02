@@ -25,8 +25,8 @@ const CouponTable = ({ isCheck, setIsCheck }) => {
   const [selectedCoupon, setSelectedCoupon] = useState(null); // For editing
   const [selectedCouponForDelete, setSelectedCouponForDelete] = useState(null);
 
-  const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
-  const { currency, showDateFormat, globalSetting, showingTranslateValue } =
+  const { serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
+  const { globalSetting, showingTranslateValue } =
     useUtilsFunction();
 
   // Fetch all coupons

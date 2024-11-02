@@ -2,7 +2,6 @@ import ReactTagInput from "@pathofdev/react-tag-input";
 import { Button, Input, Select } from "@windmill/react-ui";
 import Multiselect from "multiselect-react-dropdown";
 import Drawer from "rc-drawer";
-import Tree from "rc-tree";
 import React, { useContext } from "react";
 import { Scrollbars } from "react-custom-scrollbars-2";
 import { FiX } from "react-icons/fi";
@@ -13,7 +12,6 @@ import { notifyError } from "@/utils/toast";
 import Title from "@/components/form/others/Title";
 import LabelArea from "@/components/form/selectOption/LabelArea";
 import SwitchToggle from "@/components/form/switch/SwitchToggle";
-import TextAreaCom from "@/components/form/input/TextAreaCom";
 import { SidebarContext } from "@/context/SidebarContext";
 import useBulkActionSubmit from "@/hooks/useBulkActionSubmit";
 import ParentCategory from "@/components/category/ParentCategory";
@@ -25,7 +23,6 @@ const BulkActionDrawer = ({
   lang,
   data,
   childId,
-  attributes,
   isCheck,
 }) => {
   const { toggleBulkDrawer, isBulkDrawerOpen, closeBulkDrawer } = useContext(SidebarContext);
@@ -38,7 +35,6 @@ const BulkActionDrawer = ({
     register,
     onSubmit,
     errors,
-    checked,
     setChecked,
     resetRefTwo,
     handleSubmit,
@@ -47,20 +43,19 @@ const BulkActionDrawer = ({
     setSelectedCategory,
     defaultCategory,
     setDefaultCategory,
-    selectCategoryName,
     setSelectCategoryName,
   } = useBulkActionSubmit(ids, lang, childId);
 
-  const motion = {
-    motionName: "node-motion",
-    motionAppear: false,
-    onAppearStart: (node) => {
-      return { height: 0 };
-    },
-    onAppearActive: (node) => ({ height: node.scrollHeight }),
-    onLeaveStart: (node) => ({ height: node.offsetHeight }),
-    onLeaveActive: () => ({ height: 0 }),
-  };
+  // const motion = {
+  //   motionName: "node-motion",
+  //   motionAppear: false,
+  //   onAppearStart: (node) => {
+  //     return { height: 0 };
+  //   },
+  //   onAppearActive: (node) => ({ height: node.scrollHeight }),
+  //   onLeaveStart: (node) => ({ height: node.offsetHeight }),
+  //   onLeaveActive: () => ({ height: 0 }),
+  // };
 
   const renderCategories = (categories) => {
     let myCategories = [];
@@ -83,34 +78,34 @@ const BulkActionDrawer = ({
         );
   };
 
-  const handleSelect = (key) => {
-    const checkId = isCheck?.find((data) => data === key);
+//   const handleSelect = (key) => {
+//     const checkId = isCheck?.find((data) => data === key);
 
-    if (isCheck?.length === data[0]?.children?.length) {
-      return notifyError("This can't be selected as a parent category!");
-    } else if (checkId !== undefined) {
-      return notifyError("This can't be selected as a parent category!");
-    } else if (key === childId) {
-      return notifyError("This can't be selected as a parent category!");
-    } else {
-      if (key === undefined) return;
-      setChecked(key);
+//     if (isCheck?.length === data[0]?.children?.length) {
+//       return notifyError("This can't be selected as a parent category!");
+//     } else if (checkId !== undefined) {
+//       return notifyError("This can't be selected as a parent category!");
+//     } else if (key === childId) {
+//       return notifyError("This can't be selected as a parent category!");
+//     } else {
+//       if (key === undefined) return;
+//       setChecked(key);
 
-      const obj = data[0];
-      const result = findObject(obj, key);
-      setSelectCategoryName(showingTranslateValue(result?.name));
-    }
-  };
+//       const obj = data[0];
+//       const result = findObject(obj, key);
+//       setSelectCategoryName(showingTranslateValue(result?.name));
+//     }
+//   };
 
-  const STYLE = `
-  .rc-tree-child-tree {
-    display: hidden;
-  }
-  .node-motion {
-    transition: all .3s;
-    overflow-y: hidden;
-  }
-`;
+//   const STYLE = `
+//   .rc-tree-child-tree {
+//     display: hidden;
+//   }
+//   .node-motion {
+//     transition: all .3s;
+//     overflow-y: hidden;
+//   }
+// `;
 
   return (
     <>

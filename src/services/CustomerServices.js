@@ -17,12 +17,12 @@ const CustomerServices = {
     return requests.post(`/customer/filter/${email}`);
   },
 
-  getCustomerById: async (uuid) => {
-    return requests.get(`/admin/users/${uuid}`);
+  getCustomerById: async (id) => {
+    return requests.get(`/admin/users/${id}`);
   },
 
-  updateCustomer: async (uuid, body) => {
-    return requests.put(`/admin/users-update/${uuid}`, body);
+  updateCustomer: async (id, body) => {
+    return requests.put(`/admin/users-update/${id}`, body);
   },
 
   deleteCustomer: async (uuid) => {

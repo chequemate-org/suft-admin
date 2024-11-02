@@ -14,6 +14,7 @@ const Login = lazy(() => import("@/pages/Login"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const ForgetPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+import ProductDetails from "./pages/ProductDetails";
 
 const App = () => {
   return (
@@ -27,6 +28,8 @@ const App = () => {
           <Route path="/forgot-password" component={ForgetPassword} />
           <Route path="/reset-password/:token" component={ResetPassword} />
           <Route path="/dashboard" component={Layout} />
+          {/* <Route path="/product/details/:id" element={<ProductDetails />}/> */}
+          {/* <Route path="/product/:id" element={<ProductDetails />} /> */}
 
           {/* <PrivateRoute>
             <Route path="/dashboard" component={Layout} />

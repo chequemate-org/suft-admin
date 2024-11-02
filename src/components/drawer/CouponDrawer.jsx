@@ -7,9 +7,8 @@ import DrawerButton from "@/components/form/button/DrawerButton";
 import SwitchToggle from "@/components/form/switch/SwitchToggle";
 import Title from "@/components/form/others/Title";
 import { useTranslation } from "react-i18next";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import InputValue from "@/components/form/input/InputValue";
 
 const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
   const { t } = useTranslation();
