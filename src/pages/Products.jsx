@@ -310,7 +310,7 @@ const Products = () => {
           </CardBody>
         </Card>
 
-        <div className="rounded-0 min-w-0 overflow-hidden bg-white rounded-t-lg shadow-xs">
+        <div className="rounded-0 bg- min-w-0 overflow-hidden">
           <TableContainer className="mb-8">
             <Table>
               <TableHeader>
@@ -368,3 +368,6 @@ const Products = () => {
 };
 
 export default Products;
+
+
+

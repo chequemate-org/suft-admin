@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@windmill/react-ui";
 import LabelArea from "@/components/form/selectOption/LabelArea";
 import useCouponSubmit from "@/hooks/useCouponSubmit";
-import Error from "@/components/form/others/Error";
+import ErrorComponent from "@/components/form/others/Error";
 import DrawerButton from "@/components/form/button/DrawerButton";
 import SwitchToggle from "@/components/form/switch/SwitchToggle";
 import Title from "@/components/form/others/Title";

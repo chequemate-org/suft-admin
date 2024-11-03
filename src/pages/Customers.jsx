@@ -10,7 +10,7 @@ import {
   TableFooter,
   TableHeader,
 } from "@windmill/react-ui";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 
@@ -26,46 +26,67 @@ const Customers = () => {
   const [customerData, setCustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const userRef = useRef(null);
   const [totalResults, setTotalResults] = useState(0);
   const [resultsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  const [isSearching, setIsSearching] = useState(false); // Flag to differentiate between search and regular fetch
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`
-        );
+  // Fetch customers based on the current mode (search or regular)
+  const fetchCustomers = async (page, query = "") => {
+    setLoading(true);
 
-        console.log("API Response:", response);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users${query ? '/search' : ''}`,
+        {
+          params: query
+            ? { searchType: "email", email: query }
+            : { page, limit: resultsPerPage },
+        }
+      );
 
-        const customerArray = response.data?.data?.data || [];
-        setCustomerData(customerArray);
-        setTotalResults(customerArray.length);
-      } catch (err) {
-        console.error("Error fetching customers:", err);
-        setError("Failed to load customer data");
-      } finally {
-        setLoading(false);
-      }
-    };
+      const customerArray = response.data?.data?.data || [];
+      setCustomerData(customerArray);
+      setTotalResults(response.data?.data?.total || customerArray.length);
+    } catch (err) {
+      console.error("Error fetching customers:", err);
+      setError("Failed to load customer data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchCustomers();
-  }, [currentPage]);
-
+  // Handle form submission for search
   const handleSubmitUser = (event) => {
     event.preventDefault();
+    setCurrentPage(1); // Reset pagination to the first page on a new search
+    setIsSearching(Boolean(searchQuery.trim()));
+    fetchCustomers(1, searchQuery.trim());
   };
 
-  const handleResetField = () => {
-    if (userRef.current) userRef.current.value = "";
-  };
-
+  // Handle pagination change
   const handleChangePage = (page) => {
     setCurrentPage(page);
+    if (isSearching) {
+      fetchCustomers(page, searchQuery); // Maintain search results across pages if in search mode
+    } else {
+      fetchCustomers(page);
+    }
   };
+
+  // Reset search
+  const handleResetField = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+    setIsSearching(false);
+    fetchCustomers(1); // Fetch all customers without search filters
+  };
+
+  // Initial fetch on component mount or when `currentPage` changes
+  useEffect(() => {
+    if (!isSearching) fetchCustomers(currentPage);
+  }, [currentPage, isSearching]); // Only refetch when page or mode changes
 
   return (
     <>
@@ -80,10 +101,11 @@ const Customers = () => {
             >
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
-                  ref={userRef}
                   type="search"
                   name="search"
                   placeholder={t("CustomersPageSearchPlaceholder")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 

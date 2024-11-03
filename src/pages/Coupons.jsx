@@ -1,4 +1,3 @@
-
 import {
   Button,
   Card,
@@ -16,7 +15,6 @@ import { FiEdit, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 
-// Internal imports
 import { SidebarContext } from "@/context/SidebarContext";
 import CouponServices from "@/services/CouponServices";
 import useAsync from "@/hooks/useAsync";
@@ -43,8 +41,7 @@ const Coupons = () => {
   const [isCheck, setIsCheck] = useState([]);
   const [filteredCoupons, setFilteredCoupons] = useState(data || []);
 
-  const { allId, serviceId, handleDeleteMany, handleUpdateMany } =
-    useToggleDrawer();
+  const { allId, serviceId, handleDeleteMany, handleUpdateMany } = useToggleDrawer();
 
   const {
     filename,
@@ -60,26 +57,38 @@ const Coupons = () => {
     handleRemoveSelectFile,
   } = useFilter(data);
 
-  useEffect(() => {
-    if (data) {
-      setFilteredCoupons(data);
+  // Fetch all coupons without filters
+  const fetchAllCoupons = async () => {
+    setSearchQuery(""); // Clear the search query to show all coupons
+    try {
+      const response = await axios.get(
+        `https://suft-90bec7a20f24.herokuapp.com/admin/users`
+      );
+      setFilteredCoupons(response.data.data || response.data);
+      console.log(response);
+    } catch (err) {
+      console.error("Error fetching all coupons:", err);
+      setFilteredCoupons([]);
     }
-  }, [data]);
+  };
+
+  useEffect(() => {
+    fetchAllCoupons(); // Initial fetch of all coupons
+  }, []);
 
   const handleSearchCoupons = async (e) => {
     e.preventDefault();
     if (!searchQuery) {
-      setFilteredCoupons(data);
+      fetchAllCoupons(); 
       return;
     }
 
     try {
       const response = await axios.post(
-        `${
-          import.meta.env.VITE_APP_API_BASE_URL
-        }/coupon/admin-filter/coupon?search=${searchQuery}`
+       `https://suft-90bec7a20f24.herokuapp.com/coupon/admin-filter/coupon?search=${searchQuery}`
       );
-      setFilteredCoupons(response.data);
+      console.log("API Response Data:", response.data); 
+      setFilteredCoupons(response.data.data || response.data); 
     } catch (err) {
       console.error("Search error:", err);
       setFilteredCoupons([]);
@@ -171,10 +180,7 @@ const Coupons = () => {
 
         <Card className="dark:bg-gray-800 min-w-0 mb-5 overflow-hidden bg-white shadow-xs">
           <CardBody>
-            <form
-              onSubmit={handleSearchCoupons}
-              className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3"
-            >
+            <form onSubmit={handleSearchCoupons} className="lg:gap-6 xl:gap-6 md:flex xl:flex grid gap-4 py-3">
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
                 <Input
                   ref={couponRef}
@@ -195,10 +201,7 @@ const Coupons = () => {
                   <Button
                     layout="outline"
                     type="reset"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setFilteredCoupons(data);
-                    }}
+                    onClick={() => fetchAllCoupons()}
                     className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >
                     <span className="dark:text-gray-200 text-black">Reset</span>
@@ -244,7 +247,8 @@ const Coupons = () => {
             <CouponTable
               lang={lang}
               isCheck={isCheck}
-              coupons={filteredCoupons}
+              fetchAllCoupons={fetchAllCoupons}
+              coupons={filteredCoupons} 
               setIsCheck={setIsCheck}
             />
           </Table>
