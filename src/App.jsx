@@ -16,21 +16,23 @@ const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const App = () => {
   return (
     <>
-      <ToastContainer />
-      <Router basename="/admin">
-        <AccessibleNavigationAnnouncer />
-        <Switch>
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={SignUp} />
-          <Route path="/forgot-password" component={ForgetPassword} />
-          <Route path="/reset-password/:token" component={ResetPassword} />
-          <Route path="/dashboard" component={Layout} />
-          <Layout>
-            <Route path="/" component={Layout} />
-          </Layout>
-          <Redirect exact from="/" to="/login" />
-        </Switch>
-      </Router>
+      <div className="">
+        <ToastContainer />
+        <Router basename="/admin">
+          <AccessibleNavigationAnnouncer />
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={SignUp} />
+            <Route path="/forgot-password" component={ForgetPassword} />
+            <Route path="/reset-password/:token" component={ResetPassword} />
+            <Route path="/dashboard" component={Layout} />
+            <Layout>
+              <Route path="/" component={Layout} />
+            </Layout>
+            <Redirect exact from="/" to="/login" />
+          </Switch>
+        </Router>
+      </div>
     </>
   );
 };

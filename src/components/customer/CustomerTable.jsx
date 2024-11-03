@@ -14,8 +14,18 @@ import CustomerDrawer from "@/components/drawer/CustomerDrawer";
 import EditDeleteButton from "@/components/table/EditDeleteButton";
 
 // Component
-const CustomerTable = ({ customers }) => {
+const CustomerTable = ({ customers, fetchCustomers }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
+
+  if (!customers || customers.length === 0) {
+    return (
+      <tr>
+        <td colSpan="6" className="text-center py-4">
+          No customers available.
+        </td>
+      </tr>
+    );
+  }
 
   return (
     <>
@@ -25,32 +35,32 @@ const CustomerTable = ({ customers }) => {
       </MainDrawer>
 
       <TableBody>
-        {customers?.map((user) => (
-          <TableRow key={user.uuid}>
+        {customers?.map((customer) => (
+          <TableRow key={customer.uuid}>
             <TableCell>
               <span className="text-xs font-semibold uppercase">
-                {user.uuid?.substring(0, 4) || "N/A"}
+                {customer.uuid?.substring(0, 4) || "N/A"}
               </span>
             </TableCell>
             <TableCell>
               <span className="text-sm">
-                {dayjs(user.createdAt).format("MMM D, YYYY") || "Unknown"}
+                {dayjs(customer.createdAt).format("MMM D, YYYY") || "Unknown"}
               </span>
             </TableCell>
             <TableCell>
-              <span className="text-sm">{user.name || "No Name"}</span>
+              <span className="text-sm">{customer.name || "No Name"}</span>
             </TableCell>
             <TableCell>
-              <span className="text-sm">{user.email || "No Email"}</span>
+              <span className="text-sm">{customer.email || "No Email"}</span>
             </TableCell>
             <TableCell>
-              <span className="text-sm font-medium">{user.phone || "No Phone"}</span>
+              <span className="text-sm font-medium">{customer.phone || "No Phone"}</span>
             </TableCell>
 
             <TableCell>
               <div className="flex justify-end text-right">
                 <div className="hover:text-emerald-600 p-2 text-gray-400 cursor-pointer">
-                  <Link to={`/customer-order/${user.uuid}`}>
+                  <Link to={`/customer-order/${customer.uuid}`}>
                     <Tooltip
                       id="view"
                       Icon={FiZoomIn}
@@ -61,8 +71,8 @@ const CustomerTable = ({ customers }) => {
                 </div>
 
                 <EditDeleteButton
-                  title={user.name}
-                  id={user.uuid}
+                  title={customer.name}
+                  id={customer.uuid}
                   handleUpdate={handleUpdate}
                   handleModalOpen={handleModalOpen}
                 />

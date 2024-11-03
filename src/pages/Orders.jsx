@@ -43,14 +43,12 @@ const Orders = () => {
     setStatus,
     setEndDate,
     startDate,
-    currentPage,
     searchText,
     searchRef,
     method,
     setMethod,
     setStartDate,
     setSearchText,
-    handleChangePage,
     handleSubmitForAll,
     resultsPerPage,
   } = useContext(SidebarContext);
@@ -62,6 +60,7 @@ const Orders = () => {
   const [error, setError] = useState("");
   const [totalOrders, setTotalOrders] = useState(0);
   const { formatCurrency, getNumberTwo } = useUtilsFunction();
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchOrders = async (filters = {}) => {
     setLoading(true);
@@ -81,16 +80,21 @@ const Orders = () => {
       );
       setOrders(response.data.orders);
       setTotalOrders(response.data.meta.totalItems);
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       setError(error?.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Fetch orders on component mount and when currentPage changes
   useEffect(() => {
     fetchOrders();
   }, [currentPage]);
+
+  const handleChangePage = (page) => {
+    setCurrentPage(page); // Update the current page
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -138,21 +142,22 @@ const Orders = () => {
         fileName: "orders",
         exportType: exportFromJSON.types.csv,
       });
-      setLoadingExport(false);
     } catch (err) {
-      setLoadingExport(false);
       notifyError(err?.response?.data?.message || err?.message);
+    } finally {
+      setLoadingExport(false);
     }
   };
 
   const handleResetField = () => {
-    setCustomerName("");
+    setSearchText("");
     setStartDate("");
     setEndDate("");
-    setOrderLimit("");
     setStatus("");
-    setSearchText(""), fetchOrders(), (searchRef.current.value = "");
+    fetchOrders();
+    searchRef.current.value = "";
   };
+
   return (
     <>
       <PageTitle>{t("Orders")}</PageTitle>
@@ -279,29 +284,29 @@ const Orders = () => {
         </Card>
       </AnimatedContent>
 
-      {loading ? (
-        <span>Loading...</span>
-      ) : error ? (
-        <span className="text-center mx-auto text-red-500">{error}</span>
-      ) : orders.length !== 0 ? (
-        <TableContainer className="mb-8 dark:bg-gray-900">
-          <Table>
-            <TableHeader>
-              <tr>
-                <TableCell>{t("InvoiceNo")}</TableCell>
-                <TableCell>{t("TimeTbl")}</TableCell>
-                <TableCell>{t("CustomerName")}</TableCell>
-                <TableCell>{t("MethodTbl")}</TableCell>
-                <TableCell>{t("AmountTbl")}</TableCell>
-                <TableCell>{t("OderStatusTbl")}</TableCell>
-                <TableCell>{t("ActionTbl")}</TableCell>
-                <TableCell className="text-right">{t("InvoiceTbl")}</TableCell>
-              </tr>
-            </TableHeader>
+      <TableContainer className="mb-8 dark:bg-gray-900">
+        <Table>
+          <TableHeader>
+            <tr>
+              <TableCell>{t("InvoiceNo")}</TableCell>
+              <TableCell>{t("TimeTbl")}</TableCell>
+              <TableCell>{t("CustomerName")}</TableCell>
+              <TableCell>{t("MethodTbl")}</TableCell>
+              <TableCell>{t("AmountTbl")}</TableCell>
+              <TableCell>{t("OderStatusTbl")}</TableCell>
+              <TableCell>{t("ActionTbl")}</TableCell>
+              <TableCell className="text-right">{t("InvoiceTbl")}</TableCell>
+            </tr>
+          </TableHeader>
 
-            <TableBody className="dark:bg-gray-900">
-              {orders.map((order, i) => (
-                <TableRow key={i}>
+          <TableBody className="dark:bg-gray-900">
+            {loading ? (
+              <span>Loading...</span>
+            ) : error ? (
+              <span className="text-center mx-auto text-red-500">{error}</span>
+            ) : orders.length > 0 ? (
+              orders.map((order) => (
+                <TableRow key={order.id}>
                   <TableCell>
                     <span className="font-semibold uppercase text-xs">
                       {order.invoiceNo}
@@ -317,9 +322,7 @@ const Orders = () => {
                     <span className="text-sm">{order.method}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm">
-                      {formatCurrency(order.amount)}
-                    </span>
+                    <span className="text-sm">{order.amount}</span>
                   </TableCell>
                   <TableCell>
                     <Status status={order?.status} />
@@ -347,21 +350,21 @@ const Orders = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TableFooter>
-            <Pagination
-              totalResults={totalOrders}
-              resultsPerPage={resultsPerPage}
-              onChange={handleChangePage}
-              label="Order navigation"
-            />
-          </TableFooter>
-        </TableContainer>
-      ) : (
-        <NotFound message="No Orders Found" />
-      )}
+              ))
+            ) : (
+              <NotFound message="No Orders Found" />
+            )}
+          </TableBody>
+        </Table>
+        <TableFooter>
+          <Pagination
+            totalResults={totalOrders}
+            resultsPerPage={10}
+            onChange={handleChangePage}
+            label="Order navigation"
+          />
+        </TableFooter>
+      </TableContainer>
     </>
   );
 };
