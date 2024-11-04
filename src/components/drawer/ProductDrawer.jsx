@@ -18,7 +18,7 @@ import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleFor
 import ActiveButton from "@/components/form/button/ActiveButton";
 import ReactTagInput from "@pathofdev/react-tag-input";
 
-const ProductDrawer = ({ id, product, title, uuid }) => {
+const ProductDrawer = ({ id, product, title, uuid, productData  }) => {
   const { t } = useTranslation();
   const {
     tag,
@@ -171,22 +171,36 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
     </div>
   ));
 
+  // useEffect(() => {
+  //   if (id && product) {
+  //     setName(product.data.name);
+  //     setDescription(product.data.description);
+  //     setPrice(product.data.price);
+  //     setSize(product.data.size);
+  //     setColor(product.data.color);
+  //     setDetails(product.data.details);
+  //     setImageUrl(product.data.imageUrl);
+  //     setExtraImages(product.data.extraImages);
+  //     setStockLevel(product.data.stockLevel);
+  //     setIsAvailable(product.data.isAvailable);
+  //   } else {
+  //     resetForm();
+  //   }
+  // }, [id, product]);
   useEffect(() => {
-    if (id && product) {
-      setName(product.data.name);
-      setDescription(product.data.description);
-      setPrice(product.data.price);
-      setSize(product.data.size);
-      setColor(product.data.color);
-      setDetails(product.data.details);
-      setImageUrl(product.data.imageUrl);
-      setExtraImages(product.data.extraImages);
-      setStockLevel(product.data.stockLevel);
-      setIsAvailable(product.data.isAvailable);
-    } else {
-      resetForm();
+    if (productData) {
+      setName(productData.name || "");
+      setDescription(productData.description || "");
+      setPrice(productData.price || "");
+      setSize(productData.size || []);
+      setColor(productData.color || []);
+      setStockLevel(productData.stockLevel || "");
+      setDetails(productData.details || "");
+      setImageUrl(productData.imageUrl || []);
+      setExtraImages(productData.extraImages || []);
+      setProcessOption(productData.published || false);
     }
-  }, [id, product]);
+  }, [productData]);
 
   const validateForm = () => {
     const newErrors = {};

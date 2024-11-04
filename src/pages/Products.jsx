@@ -557,9 +557,10 @@ const Products = () => {
 
   // Effect to trigger product fetch on dependency changes
   useEffect(() => {
+    // Trigger product search only on relevant dependencies
     debouncedProductSearch();
     return debouncedProductSearch.cancel; // Clean up debounce on unmount
-  }, [currentPage, minPrice, maxPrice, color, size, searchText, sortedField]);
+  }, [currentPage, minPrice, maxPrice, color, size, sortedField]);
 
   // Reset the filters
   const ResetField = () => {
