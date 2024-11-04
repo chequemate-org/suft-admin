@@ -25,7 +25,7 @@ import Loading from "@/components/preloader/Loading";
 import PageTitle from "@/components/Typography/PageTitle";
 import { SidebarContext } from "@/context/SidebarContext";
 
-const ProductDetails = () => {
+const ProductDetails = ({}) => {
   const { id } = useParams();
   const { t } = useTranslation();
   const { handleUpdate } = useToggleDrawer();

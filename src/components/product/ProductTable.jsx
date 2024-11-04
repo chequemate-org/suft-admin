@@ -216,7 +216,7 @@ import Tooltip from "@/components/tooltip/Tooltip";
 import useToggleDrawer from "@/hooks/useToggleDrawer";
 import useUtilsFunction from "@/hooks/useUtilsFunction";
 
-const ProductTable = ({ products, isCheck, setIsCheck }) => {
+const ProductTable = ({ productData, isCheck, setIsCheck,id, products }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const { currency, getNumberTwo } = useUtilsFunction();
 
@@ -225,16 +225,21 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
 
   // Function to fetch product by UUID
   const fetchProductByUUID = async (uuid) => {
+    console.log("Fetching product with UUID:", uuid); // Log UUID for debugging
     try {
       const response = await axios.get(
         `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
       );
       if (response.data) {
-        setFetchedProducts(response.data); // Set coupon to state for drawer
+        setFetchedProducts(response.data); // Set product data in state
         console.log("Fetched Product for editing by UUID:", response.data);
       }
     } catch (error) {
-      console.error("Error fetching product by UUID:", error);
+      if (error.response && error.response.status === 404) {
+        console.error("Product not found with UUID:", uuid);
+      } else {
+        console.error("Error fetching product by UUID:", error.response || error.message);
+      }
     }
   };
 
@@ -260,7 +265,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
           <ProductDrawer
             currency={currency}
             id={serviceId}
-            product={fetchedProducts}
+            productData={fetchedProducts || productData}
           />
         </MainDrawer>
       )}

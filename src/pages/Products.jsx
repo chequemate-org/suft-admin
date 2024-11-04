@@ -406,7 +406,7 @@ import { useTranslation } from "react-i18next";
 import { FiPlus } from "react-icons/fi";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import axios from "axios";
-import debounce from "lodash.debounce";
+
 
 //internal import
 
@@ -426,7 +426,7 @@ import SelectCategory from "@/components/form/selectOption/SelectCategory";
 import AnimatedContent from "@/components/common/AnimatedContent";
 import useProductFilter from "@/hooks/useProductFilter";
 
-const Products = () => {
+const Products = ({productData, id, fetchedProducts}) => {
   const { title, allId, serviceId, handleDeleteMany, handleUpdateMany } =
     useToggleDrawer();
 
@@ -553,15 +553,7 @@ const Products = () => {
     ProductSearch();// Trigger fetch with updated parameters
   };
 
-  const debouncedProductSearch = debounce(ProductSearch, 300);
-
-  // Effect to trigger product fetch on dependency changes
-  useEffect(() => {
-    // Trigger product search only on relevant dependencies
-    debouncedProductSearch();
-    return debouncedProductSearch.cancel; // Clean up debounce on unmount
-  }, [currentPage, minPrice, maxPrice, color, size, sortedField]);
-
+  
   // Reset the filters
   const ResetField = () => {
     setMinPrice("");
@@ -603,7 +595,7 @@ const Products = () => {
       <DeleteModal ids={allId} setIsCheck={setIsCheck} title={title} />
       <BulkActionDrawer ids={allId} title="Products" />
       <MainDrawer>
-        <ProductDrawer id={serviceId} product={fetchedProduct} />
+        <ProductDrawer id={id} productData={productData} />
       </MainDrawer>
       <AnimatedContent>
         <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
@@ -753,7 +745,8 @@ const Products = () => {
               </tr>
             </TableHeader>
             <ProductTable
-              fetchProduct={fetchProduct}
+              // fetchProduct={fetchProduct}
+              productData={fetchedProducts || productData}
               isCheck={isCheck}
               handleClick={handleClick}
               isCheckAll={isCheckAll}

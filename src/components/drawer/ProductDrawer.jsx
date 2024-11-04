@@ -187,20 +187,24 @@ const ProductDrawer = ({ id, product, title, uuid, productData  }) => {
   //     resetForm();
   //   }
   // }, [id, product]);
+   
   useEffect(() => {
-    if (productData) {
-      setName(productData.name || "");
-      setDescription(productData.description || "");
-      setPrice(productData.price || "");
-      setSize(productData.size || []);
-      setColor(productData.color || []);
-      setStockLevel(productData.stockLevel || "");
-      setDetails(productData.details || "");
-      setImageUrl(productData.imageUrl || []);
-      setExtraImages(productData.extraImages || []);
-      setProcessOption(productData.published || false);
+    if (id && productData && productData.data) {
+      setName(productData.data.name || "");
+      setDescription(productData.data.description || "");
+      setPrice(productData.data.price || "");
+      setSize(productData.data.size || []);
+      setColor(productData.data.color || []);
+      setStockLevel(productData.data.stockLevel || "");
+      setDetails(productData.data.details || "");
+      setImageUrl(productData.data.imageUrl || []);
+      setExtraImages(productData.data.extraImages || []);
+      setProcessOption(productData.data.isAvailable || false);
+    }else {
+      resetForm();
     }
-  }, [productData]);
+    
+  }, [id, productData]);
 
   const validateForm = () => {
     const newErrors = {};
