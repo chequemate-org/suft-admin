@@ -31,14 +31,12 @@ const ProductDetails = () => {
   const { handleUpdate } = useToggleDrawer();
   const { attribue } = useProductSubmit(id);
   const [variantTitle, setVariantTitle] = useState([]);
+  const [productData, setProductData] = useState(null); // State to hold fetched product data
   const { lang } = useContext(SidebarContext);
 
   const { data = {}, loading } = useAsync(() => ProductServices.getProductById(id, "NGN"));
+  const { currency, getNumberTwo } = useUtilsFunction();
 
-
-  const { currency, showingTranslateValue, getNumberTwo } = useUtilsFunction();
-
-  // Handle cases where data might not have variants
   const { handleChangePage, totalResults, resultsPerPage, dataTable } = useFilter(data.variants || []);
 
   useEffect(() => {
@@ -49,10 +47,20 @@ const ProductDetails = () => {
     }
   }, [attribue, data.color, loading, lang]);
 
+  const handleEditClick = async () => {
+    try {
+      const fetchedProductData = await ProductServices.getProductById(id); // Fetch product details
+      setProductData(fetchedProductData); // Set the fetched data to state
+      handleUpdate(); // Open the drawer
+    } catch (error) {
+      console.error("Error fetching product details for editing:", error);
+    }
+  };
+
   return (
     <>
       <MainDrawer product>
-        <ProductDrawer id={id} />
+        <ProductDrawer id={id} productData={productData} /> {/* Pass the product data to the drawer */}
       </MainDrawer>
 
       <PageTitle>{t("ProductDetails")}</PageTitle>
@@ -75,8 +83,8 @@ const ProductDetails = () => {
             <div className="md:p-8 flex flex-col w-full p-5 text-left">
               {/* Product Details */}
               <div className="mb-5">
-                <h2 className="text-heading md:text-xl lg:text-2xl dark:text-gray-400 font-serif text-lg font-semibold">
-                  {(data.name) || t("Bean bag")}
+                <h2 className="text-heading text-lg md:text-xl lg:text-2xl font-semibold font-serif dark:text-gray-400">
+                  {data.name || t("Bean bag")}
                 </h2>
                 <p className="dark:text-gray-400 font-serif text-sm font-medium text-gray-500 uppercase">
                   {t("Sku")}:{" "}
@@ -105,8 +113,8 @@ const ProductDetails = () => {
                   {t("Quantity")}: {data.stockLevel ?? t("Unknown")}
                 </span>
               </div>
-              <p className="dark:text-gray-400 md:leading-7 text-sm leading-6 text-gray-500">
-                {(data.description) || t("NoDescriptionAvailable")}
+              <p className="text-sm leading-6 text-gray-500 dark:text-gray-400 md:leading-7">
+                {data.description || t("NoDescriptionAvailable")}
               </p>
               {data.color && data.color.length > 0 && (
                 <div className="flex flex-col mt-4">
@@ -145,8 +153,8 @@ const ProductDetails = () => {
               {/* Edit Button */}
               <div className="mt-6">
                 <button
-                  onClick={() => handleUpdate(id)}
-                  className="focus:outline-none bg-emerald-500 active:bg-emerald-600 hover:bg-emerald-600  px-5 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-transparent rounded-md cursor-pointer"
+                  onClick={handleEditClick} // Call the new function on click
+                  className="cursor-pointer leading-5 transition-colors duration-150 font-medium text-sm focus:outline-none px-5 py-2 rounded-md text-white bg-emerald-500 border border-transparent active:bg-emerald-600 hover:bg-emerald-600 "
                 >
                   {t("EditProduct")}
                 </button>
@@ -157,39 +165,37 @@ const ProductDetails = () => {
       )}
       {/* Variant List Table */}
       {/* {data.isAvailable > 0 && !loading && (
-        <>
-          <PageTitle>{t("ProductVariantList")}</PageTitle>
-          <TableContainer className="mb-8 rounded-b-lg">
-            <Table>
-              <TableHeader>
-                <tr>
-                  <TableCell>{t("SR")}</TableCell>
-                  <TableCell>{t("Image")}</TableCell>
-                  <TableCell>{t("Combination")}</TableCell>
-                  <TableCell>{t("Sku")}</TableCell>
-                  <TableCell>{t("Barcode")}</TableCell>
-                  <TableCell>{t("OriginalPrice")}</TableCell>
-                  <TableCell>{t("SalePrice")}</TableCell>
-                  <TableCell>{t("Quantity")}</TableCell>
-                </tr>
-              </TableHeader>
-              <AttributeList
-                lang={lang}
-                variants={dataTable}
-                currency={currency}
-                variantTitle={variantTitle}
-              />
-            </Table>
-            <TableFooter>
-              <Pagination
-                totalResults={totalResults}
-                resultsPerPage={resultsPerPage}
-                onChange={handleChangePage}
-                label="Product Page Navigation"
-              />
-            </TableFooter>
-          </TableContainer>
-        </>
+        <PageTitle>{t("ProductVariantList")}</PageTitle>
+        <TableContainer className="mb-8 rounded-b-lg">
+          <Table>
+            <TableHeader>
+              <tr>
+                <TableCell>{t("SR")}</TableCell>
+                <TableCell>{t("Image")}</TableCell>
+                <TableCell>{t("Combination")}</TableCell>
+                <TableCell>{t("Sku")}</TableCell>
+                <TableCell>{t("Barcode")}</TableCell>
+                <TableCell>{t("OriginalPrice")}</TableCell>
+                <TableCell>{t("SalePrice")}</TableCell>
+                <TableCell>{t("Quantity")}</TableCell>
+              </tr>
+            </TableHeader>
+            <AttributeList
+              lang={lang}
+              variants={dataTable}
+              currency={currency}
+              variantTitle={variantTitle}
+            />
+          </Table>
+          <TableFooter>
+            <Pagination
+              totalResults={totalResults}
+              resultsPerPage={resultsPerPage}
+              onChange={handleChangePage}
+              label="Product Page Navigation"
+            />
+          </TableFooter>
+        </TableContainer>
       )} */}
     </>
   );
