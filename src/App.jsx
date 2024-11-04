@@ -19,7 +19,7 @@ const App = () => {
     <>
       <div className="">
         <ToastContainer />
-        <Router basename="/admin">
+        <Router>
           <AccessibleNavigationAnnouncer />
           <Switch>
             <Route path="/login" component={Login} />
