@@ -29,7 +29,7 @@ const CardItemTwo = ({
           {title === "Today Order" || title === "Yesterday Order" ? (
             <Card className={`flex justify-center h-full`}>
               <CardBody
-                className={`border border-gray-200 justify-between dark:border-gray-800 w-full p-6 rounded-lg ${className}`}
+                className={`border border-gray-200 justify-between dark:border-gray-800 w-full p-2 2xl:p-6 rounded-lg ${className}`}
               >
                 <div className="text-center xl:mb-0 mb-3">
                   <div
@@ -45,7 +45,7 @@ const CardItemTwo = ({
                         <Skeleton count={1} height={20} />
                       )}
                     </p>
-                    <p className="text-2xl font-bold leading-none text-gray-50 dark:text-gray-50">
+                    <p className="text-xl 2xl:text-2xl font-bold leading-none text-gray-50 dark:text-gray-50">
                       NGN
                       {getNumberTwo(price)}
                     </p>
@@ -56,7 +56,7 @@ const CardItemTwo = ({
           ) : (
             <Card className="flex justify-center text-center h-full">
               <CardBody
-                className={`border border-gray-200 dark:border-gray-800 w-full p-6 rounded-lg ${className}`}
+                className={`border border-gray-200 dark:border-gray-800 w-full p-2 2xl:p-6 rounded-lg ${className}`}
               >
                 <div
                   className={`text-center inline-block text-3xl ${className}`}
@@ -67,7 +67,7 @@ const CardItemTwo = ({
                   <p className="mb-3 text-base font-medium text-gray-50 dark:text-gray-100">
                     {t(`${title2}`)}
                   </p>
-                  <p className="text-2xl font-bold leading-none text-gray-50 dark:text-gray-50">
+                  <p className="text-xl 2xl:text-2xl font-bold leading-none text-gray-50 dark:text-gray-50">
                     NGN
                     {getNumberTwo(price)}
                   </p>

@@ -2,6 +2,11 @@ Toggle switch styling
  body{
   overflow-x: auto;
  }
+/* Toggle switch styling */
+body{
+  background-color: #ffffff; 
+  color: #000000; 
+}
 .toggle-switch {
   position: relative;
   display: inline-block;
