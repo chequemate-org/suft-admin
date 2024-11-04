@@ -9,7 +9,6 @@ import axios from "axios";
 import useCategorySubmit from "@/hooks/useCategorySubmit";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import TextAreaCom from "@/components/form/input/TextAreaCom";
 import LabelArea from "@/components/form/selectOption/LabelArea";
 
 const CategoryDrawer = ({ id }) => {

@@ -207,6 +207,7 @@ import { Link } from "react-router-dom";
 
 // internal imports
 import MainDrawer from "@/components/drawer/MainDrawer";
+import ProductServices from "@/services/ProductServices";
 import ProductDrawer from "@/components/drawer/ProductDrawer";
 import CheckBox from "@/components/form/others/CheckBox";
 import DeleteModal from "@/components/modal/DeleteModal";
@@ -225,24 +226,13 @@ const ProductTable = ({ productData, isCheck, setIsCheck,id, products }) => {
 
   // Function to fetch product by UUID
   const fetchProductByUUID = async (uuid) => {
-    console.log("Fetching product with UUID:", uuid); // Log UUID for debugging
     try {
-      const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
-      );
-      if (response.data) {
-        setFetchedProducts(response.data); // Set product data in state
-        console.log("Fetched Product for editing by UUID:", response.data);
-      }
+      const data = await ProductServices.getProductById(uuid);
+      setFetchedProducts(data);
     } catch (error) {
-      if (error.response && error.response.status === 404) {
-        console.error("Product not found with UUID:", uuid);
-      } else {
-        console.error("Error fetching product by UUID:", error.response || error.message);
-      }
+      console.error("Error fetching product data:", error);
     }
   };
-
   // Handle the edit button click
   const handleEdit = async (uuid) => {
     await fetchProductByUUID(uuid);
@@ -265,7 +255,7 @@ const ProductTable = ({ productData, isCheck, setIsCheck,id, products }) => {
           <ProductDrawer
             currency={currency}
             id={serviceId}
-            productData={fetchedProducts || productData}
+            productData={productData}
           />
         </MainDrawer>
       )}

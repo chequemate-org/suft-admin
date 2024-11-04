@@ -60,7 +60,7 @@ const ProductDetails = ({}) => {
   return (
     <>
       <MainDrawer product>
-        <ProductDrawer id={id} productData={productData} /> {/* Pass the product data to the drawer */}
+        <ProductDrawer id={id} productData={productData} /> 
       </MainDrawer>
 
       <PageTitle>{t("ProductDetails")}</PageTitle>
@@ -70,9 +70,9 @@ const ProductDetails = ({}) => {
         <div className="inline-block overflow-y-auto h-full align-middle transition-all transform">
           <div className="flex flex-col lg:flex-row md:flex-row gap-10 w-full overflow-hidden">
             {/* Product Image Section */}
-            <div className="flex-shrink-0 flex items-center justify-center w-1/2 h-auto">
+            <div className="flex-shrink-0 flex items-center justify-center md:w-1/2 h-auto sm:w-full">
               {data.imageUrl && data.imageUrl.length > 0 ? (
-                <img src={data.imageUrl[0]} alt="product" className="h-full w-full" />
+                <img src={data.imageUrl[0]} alt="product" className="h-[400px] w-full" />
               ) : (
                 <img
                   src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
@@ -96,7 +96,7 @@ const ProductDetails = ({}) => {
               <div className="font-serif product-price font-bold dark:text-gray-400">
                 <span className="inline-block text-2xl">
                   NGN
-                  {getNumberTwo(data.price) || "0.00"}
+                  {(data.price) || "0.00"}
                 </span>
               </div>
               <div className="mb-3">

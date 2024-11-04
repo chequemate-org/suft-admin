@@ -12,6 +12,7 @@ const Login = lazy(() => import("@/pages/Login"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const ForgetPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+import ProductDetails from "./pages/ProductDetails";
 
 const App = () => {
   return (

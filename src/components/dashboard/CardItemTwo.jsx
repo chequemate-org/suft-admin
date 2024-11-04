@@ -9,9 +9,6 @@ const CardItemTwo = ({
   Icon,
   className,
   price,
-  cash,
-  card,
-  credit,
   loading,
   title2,
 }) => {

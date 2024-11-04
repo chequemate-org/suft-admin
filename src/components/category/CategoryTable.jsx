@@ -12,7 +12,6 @@ import MainDrawer from "@/components/drawer/MainDrawer";
 import CategoryDrawer from "@/components/drawer/CategoryDrawer";
 import ShowHideButton from "@/components/table/ShowHideButton";
 import EditDeleteButton from "@/components/table/EditDeleteButton";
-import useUtilsFunction from "@/hooks/useUtilsFunction";
 
 const CategoryTable = ({
   data,
@@ -22,7 +21,7 @@ const CategoryTable = ({
   useParamId,
   showChild,
 }) => {
-  const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
+  const { serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -15,7 +15,6 @@
 // import { Select } from "@windmill/react-ui";
 // import { useTranslation } from "react-i18next";
 // import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
-// import debounce from "lodash.debounce";
 
 // // Internal imports
 // import useToggleDrawer from "@/hooks/useToggleDrawer";
@@ -102,7 +101,6 @@
 //     };
 //     fetchProducts();
 //   }, [currentPage, limitData, category, searchText, sortedField]);
-  
 //   const fetchProduct = async (uuid) => {
 //     try {
 //       const response = await fetch(
@@ -147,20 +145,10 @@
 //     ProductSearch();
 //   }, [currentPage, minPrice, maxPrice, color, size, searchText, sortedField]);
 
-
-//   const debouncedProductSearch = debounce(ProductSearch, 300);
-
-//   // Effect to trigger product fetch on dependency changes
-//   useEffect(() => {
-//     debouncedProductSearch();
-//     return debouncedProductSearch.cancel; // Clean up debounce on unmount
-//   }, [currentPage, minPrice, maxPrice, color, size, searchText, sortedField]);
-
-  
 //   // Handle search form submission
 //   const handleSearchSubmit = (e) => {
 //     e.preventDefault();
-//     ProductSearch();// Trigger fetch with updated parameters
+//     ProductSearch(); // Trigger fetch with updated parameters
 //   };
 
 //   // Reset the filters
@@ -182,11 +170,11 @@
 //     }
 //   };
 
-//   const handleResetField = () => {
-//     setCategory("");
-//     setSortedField("");
-//     searchRef.current.value = "";
-//   };
+//   // const handleResetField = () => {
+//   //   setCategory("");
+//   //   setSortedField("");
+//   //   searchRef.current.value = "";
+//   // };
 
 //   const {
 //     serviceData,
@@ -286,6 +274,10 @@
 //               </div>
 
 //               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
+//                 <SelectCategory setCategory={setCategory} lang={lang} />
+//               </div>
+
+//               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
 //                 <Select onChange={(e) => setSortedField(e.target.value)}>
 //                   <option value="All" defaultValue hidden>
 //                     {t("Price")}
@@ -344,11 +336,15 @@
 //                     />
 //                   </TableCell>
 //                   <TableCell>{t("ProductNameTbl")}</TableCell>
+//                   <TableCell>{t("CategoryTbl")}</TableCell>
 //                   <TableCell>{t("PriceTbl")}</TableCell>
 //                   <TableCell>Sale Price</TableCell>
 //                   <TableCell>{t("StockTbl")}</TableCell>
 //                   <TableCell>{t("StatusTbl")}</TableCell>
 //                   <TableCell className="text-center">{t("DetailsTbl")}</TableCell>
+//                   <TableCell className="text-center">
+//                     {t("PublishedTbl")}
+//                   </TableCell>
 //                   <TableCell className="text-right">{t("ActionsTbl")}</TableCell>
 //                 </tr>
 //               </TableHeader>
@@ -386,8 +382,6 @@
 // };
 
 // export default Products;
-
-
 import React, { useContext, useState, useEffect } from "react";
 import {
   Table,
@@ -406,7 +400,7 @@ import { useTranslation } from "react-i18next";
 import { FiPlus } from "react-icons/fi";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import axios from "axios";
-
+import debounce from "lodash.debounce";
 
 //internal import
 
@@ -425,8 +419,9 @@ import TableLoading from "@/components/preloader/TableLoading";
 import SelectCategory from "@/components/form/selectOption/SelectCategory";
 import AnimatedContent from "@/components/common/AnimatedContent";
 import useProductFilter from "@/hooks/useProductFilter";
+import productData from "@/utils/products";
 
-const Products = ({productData, id, fetchedProducts}) => {
+const Products = ({productData}) => {
   const { title, allId, serviceId, handleDeleteMany, handleUpdateMany } =
     useToggleDrawer();
 
@@ -553,7 +548,15 @@ const Products = ({productData, id, fetchedProducts}) => {
     ProductSearch();// Trigger fetch with updated parameters
   };
 
-  
+  const debouncedProductSearch = debounce(ProductSearch, 300);
+
+  // Effect to trigger product fetch on dependency changes
+  useEffect(() => {
+    // Trigger product search only on relevant dependencies
+    debouncedProductSearch();
+    return debouncedProductSearch.cancel; // Clean up debounce on unmount
+  }, [currentPage, minPrice, maxPrice, color, size, sortedField]);
+
   // Reset the filters
   const ResetField = () => {
     setMinPrice("");
@@ -595,7 +598,7 @@ const Products = ({productData, id, fetchedProducts}) => {
       <DeleteModal ids={allId} setIsCheck={setIsCheck} title={title} />
       <BulkActionDrawer ids={allId} title="Products" />
       <MainDrawer>
-        <ProductDrawer id={id} productData={productData} />
+        <ProductDrawer id={serviceId} productData={productData} />
       </MainDrawer>
       <AnimatedContent>
         <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
@@ -745,8 +748,7 @@ const Products = ({productData, id, fetchedProducts}) => {
               </tr>
             </TableHeader>
             <ProductTable
-              // fetchProduct={fetchProduct}
-              productData={fetchedProducts || productData}
+              fetchProduct={fetchProduct}
               isCheck={isCheck}
               handleClick={handleClick}
               isCheckAll={isCheckAll}

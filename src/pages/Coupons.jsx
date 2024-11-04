@@ -220,7 +220,7 @@ const Coupons = () => {
                 <TableCell>{t("CoupTblCampaignsName")}</TableCell>
                 <TableCell>{t("CoupTblCode")}</TableCell>
                 <TableCell>{t("Discount")}</TableCell>
-                {/* <TableCell className="text-center">{t("catPublishedTbl")}</TableCell> */}
+                <TableCell className="text-center">{t("catPublishedTbl")}</TableCell>
                 <TableCell>{t("CoupTblEndDate")}</TableCell>
                 <TableCell>{t("CoupTblStatus")}</TableCell>
                 <TableCell className="text-right">{t("CoupTblActions")}</TableCell>
