@@ -12,12 +12,13 @@ import { FiX } from "react-icons/fi";
 import UploaderThree from "@/components/image-uploader/UploaderThree";
 import Switch from "react-switch";
 import axios from "axios";
+import ProductServices from "@/services/ProductServices";
 import useProductSubmit from "@/hooks/useProductSubmit";
 import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleForCombination";
 import ActiveButton from "@/components/form/button/ActiveButton";
 import ReactTagInput from "@pathofdev/react-tag-input";
 
-const ProductDrawer = ({ id, product, title, uuid, productData  }) => {
+const ProductDrawer = ({ id, product, title, uuid }) => {
   const { t } = useTranslation();
   const {
     register,
@@ -45,6 +46,7 @@ const ProductDrawer = ({ id, product, title, uuid, productData  }) => {
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [processOption, setProcessOption] = useState(false);
+  const [productData, setProductData] = useState(null);
 
   const handleProcess = (checked) => {
     setProcessOption(checked);
@@ -140,22 +142,24 @@ const ProductDrawer = ({ id, product, title, uuid, productData  }) => {
     </div>
   ));
 
-  // useEffect(() => {
-  //   if (id && product) {
-  //     setName(product.data.name);
-  //     setDescription(product.data.description);
-  //     setPrice(product.data.price);
-  //     setSize(product.data.size);
-  //     setColor(product.data.color);
-  //     setDetails(product.data.details);
-  //     setImageUrl(product.data.imageUrl);
-  //     setExtraImages(product.data.extraImages);
-  //     setStockLevel(product.data.stockLevel);
-  //     setIsAvailable(product.data.isAvailable);
-  //   } else {
-  //     resetForm();
-  //   }
-  // }, [id, product]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const data = await ProductServices.getProductById(id);
+          setProductData(data); // Ensure you are setting productData correctly
+          console.log("Fetched product data:", data); // Debugging
+        } catch (error) {
+          console.error("Failed to fetch product:", error);
+          setProductData(null); // Handle the error appropriately
+        }
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
   useEffect(() => {
     if (productData) {
       setName(productData.name || "");
@@ -167,9 +171,10 @@ const ProductDrawer = ({ id, product, title, uuid, productData  }) => {
       setDetails(productData.details || "");
       setImageUrl(productData.imageUrl || []);
       setExtraImages(productData.extraImages || []);
-      setProcessOption(productData.published || false);
+      setProcessOption(productData.isAvailable || false);
     }
   }, [productData]);
+
 
   const validateForm = () => {
     const newErrors = {};

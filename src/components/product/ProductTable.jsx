@@ -207,6 +207,7 @@ import { Link } from "react-router-dom";
 
 // internal imports
 import MainDrawer from "@/components/drawer/MainDrawer";
+import ProductServices from "@/services/ProductServices";
 import ProductDrawer from "@/components/drawer/ProductDrawer";
 import CheckBox from "@/components/form/others/CheckBox";
 import DeleteModal from "@/components/modal/DeleteModal";
@@ -216,7 +217,7 @@ import Tooltip from "@/components/tooltip/Tooltip";
 import useToggleDrawer from "@/hooks/useToggleDrawer";
 import useUtilsFunction from "@/hooks/useUtilsFunction";
 
-const ProductTable = ({ products, isCheck, setIsCheck }) => {
+const ProductTable = ({ productData, isCheck, setIsCheck,id, products }) => {
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const { currency, getNumberTwo } = useUtilsFunction();
 
@@ -226,18 +227,12 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
   // Function to fetch product by UUID
   const fetchProductByUUID = async (uuid) => {
     try {
-      const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
-      );
-      if (response.data) {
-        setFetchedProducts(response.data); // Set coupon to state for drawer
-        console.log("Fetched Product for editing by UUID:", response.data);
-      }
+      const data = await ProductServices.getProductById(uuid);
+      setFetchedProducts(data);
     } catch (error) {
-      console.error("Error fetching product by UUID:", error);
+      console.error("Error fetching product data:", error);
     }
   };
-
   // Handle the edit button click
   const handleEdit = async (uuid) => {
     await fetchProductByUUID(uuid);
@@ -260,7 +255,7 @@ const ProductTable = ({ products, isCheck, setIsCheck }) => {
           <ProductDrawer
             currency={currency}
             id={serviceId}
-            product={fetchedProducts}
+            productData={productData}
           />
         </MainDrawer>
       )}

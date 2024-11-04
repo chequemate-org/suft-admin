@@ -327,9 +327,9 @@ const CouponTable = ({
                 </span>
               </TableCell>
 
-              <TableCell className="text-center">
+              {/* <TableCell className="text-center">
                 <ShowHideButton id={coupon.id} status={coupon.status} />
-              </TableCell>
+              </TableCell> */}
 
               <TableCell>
                 <span className="text-sm">{coupon.expiryDate}</span>

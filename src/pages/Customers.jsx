@@ -413,6 +413,7 @@ const handleSearch = async () => {
 
     const filteredData = response.data?.data?.data || [];
     setCustomerData(filteredData);
+    console.log(customerData);
     setTotalResults(filteredData.length);
   } catch (err) {
     console.error("Search error:", err);

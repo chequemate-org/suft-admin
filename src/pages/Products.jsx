@@ -419,8 +419,9 @@ import TableLoading from "@/components/preloader/TableLoading";
 import SelectCategory from "@/components/form/selectOption/SelectCategory";
 import AnimatedContent from "@/components/common/AnimatedContent";
 import useProductFilter from "@/hooks/useProductFilter";
+import productData from "@/utils/products";
 
-const Products = () => {
+const Products = ({productData}) => {
   const { title, allId, serviceId, handleDeleteMany, handleUpdateMany } =
     useToggleDrawer();
 
@@ -597,7 +598,7 @@ const Products = () => {
       <DeleteModal ids={allId} setIsCheck={setIsCheck} title={title} />
       <BulkActionDrawer ids={allId} title="Products" />
       <MainDrawer>
-        <ProductDrawer id={serviceId} product={fetchedProduct} />
+        <ProductDrawer id={serviceId} productData={productData} />
       </MainDrawer>
       <AnimatedContent>
         <Card className="min-w-0 shadow-xs overflow-hidden bg-white dark:bg-gray-800 mb-5">
