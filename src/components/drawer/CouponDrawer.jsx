@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
+const CouponDrawer = ({ id, coupon, fetchAllCoupons }) => {
   const { t } = useTranslation();
   const { register, handleSelectLanguage } = useCouponSubmit(id);
 
@@ -34,7 +34,26 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
       resetForm();
     }
   }, [id, coupon]);
-
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       if (id) {
+  //         const fetchedCoupon = await fetchCouponByUuid(id);
+  //         setName(fetchedCoupon.data.name || "");
+  //         setCode(fetchedCoupon.data.code || "");
+  //         setDiscount(fetchedCoupon.data.discount || "");
+  //         setExpiryDate(fetchedCoupon.data.expiryDate || "");
+  //         setIsPublished(fetchedCoupon.data.isPublished || false);
+  //       } else {
+  //         resetForm();
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching coupon:", error);
+  //       toast.error("Failed to load coupon details.");
+  //     }
+  //   };
+  //   fetchData();
+  // }, [id]);
   const validateForm = () => {
     const newErrors = {};
     if (!name) newErrors.name = "Coupon name is required.";
@@ -96,7 +115,7 @@ const CouponDrawer = ({ id, coupon, fetchCoupons }) => {
         toast.success(
           id ? "Coupon updated successfully!" : "Coupon created successfully!"
         );
-        fetchCoupons();
+        fetchAllCoupons();
       } catch (error) {
         console.error("Error submitting coupon:", error.message);
         setErrors({ api: error.message });

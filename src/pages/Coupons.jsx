@@ -39,10 +39,9 @@ const Coupons = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
-  const [filteredCoupons, setFilteredCoupons] = useState(data || []);
+  const [filteredCoupons, setFilteredCoupons] = useState([]);
 
   const { allId, serviceId, handleDeleteMany, handleUpdateMany } = useToggleDrawer();
-
   const {
     filename,
     isDisabled,
@@ -57,15 +56,18 @@ const Coupons = () => {
     handleRemoveSelectFile,
   } = useFilter(data);
 
-  // Fetch all coupons without filters
+  
+
   const fetchAllCoupons = async () => {
-    setSearchQuery(""); // Clear the search query to show all coupons
+    setSearchQuery(""); 
     try {
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/admin/users`
+        `${
+          import.meta.env.VITE_APP_API_BASE_URL
+        }/coupon/admin-all-coupons`
       );
       setFilteredCoupons(response.data.data || response.data);
-      console.log(response);
+      console.log("Fetched Coupons:", response.data.data || response.data);
     } catch (err) {
       console.error("Error fetching all coupons:", err);
       setFilteredCoupons([]);
@@ -73,7 +75,7 @@ const Coupons = () => {
   };
 
   useEffect(() => {
-    fetchAllCoupons(); // Initial fetch of all coupons
+    fetchAllCoupons(); 
   }, []);
 
   const handleSearchCoupons = async (e) => {
@@ -82,13 +84,13 @@ const Coupons = () => {
       fetchAllCoupons(); 
       return;
     }
-
     try {
       const response = await axios.post(
-       `https://suft-90bec7a20f24.herokuapp.com/coupon/admin-filter/coupon?search=${searchQuery}`
+        `${
+          import.meta.env.VITE_APP_API_BASE_URL
+        }/coupon/admin-filter/coupon?search=${searchQuery}`
       );
-      console.log("API Response Data:", response.data); 
-      setFilteredCoupons(response.data.data || response.data); 
+      setFilteredCoupons(response.data.data || response.data);
     } catch (err) {
       console.error("Search error:", err);
       setFilteredCoupons([]);
@@ -106,11 +108,7 @@ const Coupons = () => {
   return (
     <>
       <PageTitle>{t("CouponspageTitle")}</PageTitle>
-      <DeleteModal
-        ids={allId}
-        setIsCheck={setIsCheck}
-        title="Selected Coupon"
-      />
+      <DeleteModal ids={allId} setIsCheck={setIsCheck} title="Selected Coupon" />
       <BulkActionDrawer ids={allId} title="Coupons" />
       <MainDrawer>
         <CouponDrawer id={serviceId} />
@@ -142,9 +140,7 @@ const Coupons = () => {
                     onClick={() => handleUpdateMany(isCheck)}
                     className="btn-gray w-full h-12 text-gray-600 rounded-md"
                   >
-                    <span className="mr-2">
-                      <FiEdit />
-                    </span>
+                    <span className="mr-2"><FiEdit /></span>
                     {t("BulkAction")}
                   </Button>
                 </div>
@@ -155,21 +151,14 @@ const Coupons = () => {
                     onClick={() => handleDeleteMany(isCheck)}
                     className="btn-red w-full h-12 bg-red-500 rounded-md"
                   >
-                    <span className="mr-2">
-                      <FiTrash2 />
-                    </span>
+                    <span className="mr-2"><FiTrash2 /></span>
                     {t("Delete")}
                   </Button>
                 </div>
 
                 <div className="md:w-48 lg:w-48 xl:w-48 w-full">
-                  <Button
-                    onClick={toggleDrawer}
-                    className="w-full h-12 rounded-md"
-                  >
-                    <span className="mr-2">
-                      <FiPlus />
-                    </span>
+                  <Button onClick={toggleDrawer} className="w-full h-12 rounded-md">
+                    <span className="mr-2"><FiPlus /></span>
                     {t("AddCouponsBtn")}
                   </Button>
                 </div>
@@ -192,16 +181,13 @@ const Coupons = () => {
               </div>
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex items-center flex-grow-0 gap-2">
                 <div className="w-full mx-1">
-                  <Button type="submit" className="bg-emerald-700 w-full h-12">
-                    Filter
-                  </Button>
+                  <Button type="submit" className="bg-emerald-700 w-full h-12">Filter</Button>
                 </div>
-
                 <div className="w-full mx-1">
                   <Button
                     layout="outline"
                     type="reset"
-                    onClick={() => fetchAllCoupons()}
+                    onClick={fetchAllCoupons}
                     className="md:py-1 dark:bg-gray-700 h-12 px-4 py-2 text-sm"
                   >
                     <span className="dark:text-gray-200 text-black">Reset</span>
@@ -217,7 +203,7 @@ const Coupons = () => {
         <TableLoading row={12} col={8} width={140} height={20} />
       ) : error ? (
         <span className="mx-auto text-center text-red-500">{error}</span>
-      ) : filteredCoupons?.length !== 0 ? (
+      ) : filteredCoupons?.length ? (
         <TableContainer className="mb-8">
           <Table>
             <TableHeader>
@@ -234,14 +220,10 @@ const Coupons = () => {
                 <TableCell>{t("CoupTblCampaignsName")}</TableCell>
                 <TableCell>{t("CoupTblCode")}</TableCell>
                 <TableCell>{t("Discount")}</TableCell>
-                <TableCell className="text-center">
-                  {t("catPublishedTbl")}
-                </TableCell>
+                <TableCell className="text-center">{t("catPublishedTbl")}</TableCell>
                 <TableCell>{t("CoupTblEndDate")}</TableCell>
                 <TableCell>{t("CoupTblStatus")}</TableCell>
-                <TableCell className="text-right">
-                  {t("CoupTblActions")}
-                </TableCell>
+                <TableCell className="text-right">{t("CoupTblActions")}</TableCell>
               </tr>
             </TableHeader>
             <CouponTable
@@ -262,7 +244,7 @@ const Coupons = () => {
           </TableFooter>
         </TableContainer>
       ) : (
-        <NotFound title="No coupon found" />
+        <NotFound title="Coupon" />
       )}
     </>
   );
