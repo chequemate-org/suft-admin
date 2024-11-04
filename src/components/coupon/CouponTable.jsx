@@ -203,43 +203,23 @@ const CouponTable = ({
   const [selectedCoupon, setSelectedCoupon] = useState(null); // For editing
   const [selectedCouponForDelete, setSelectedCouponForDelete] = useState(null);
 
-  const { serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
-  const { globalSetting, showingTranslateValue } =
-    useUtilsFunction();
-
-  // Fetch all coupons
-  const fetchCoupons = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-all-coupons`
-      );
-      console.log("Fetched coupons:", response.data);
-
-      if (Array.isArray(response.data.data)) {
-        setCoupons(response.data.data);
-      } else {
-        console.error("Coupons data is not an array:", response.data);
-        setCoupons([]);
-      }
-    } catch (error) {
-      console.error("Error fetching coupons:", error);
-      setCoupons([]);
-    }
-  };
-
-  const fetchCouponByUUID = async (uuid) => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-coupon/${uuid}`
-      );
-      if (response.data) {
-        setSelectedCoupon(response.data);
-        console.log("Fetched coupon for editing by UUID:", response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching coupon by UUID:", error);
-    }
-  };
+  const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
+  const { globalSetting, showingTranslateValue } = useUtilsFunction();
+  
+  // Handle the edit button click
+  useEffect(() => {
+    const couponArray = Array.isArray(coupons) ? coupons : [];
+    const result = couponArray.map((coupon) => {
+      const updatedDate = new Date(coupon?.updatedAt).toLocaleString("en-US", {
+        timeZone: globalSetting?.default_time_zone,
+      });
+      return {
+        ...coupon,
+        updatedDate,
+      };
+    });
+    setUpdatedCoupons(result);
+  }, [coupons, globalSetting?.default_time_zone]); // Ensure to react to coupons prop changes
 
   const handleEdit = async (uuid) => {
     await fetchCouponByUUID(uuid);
