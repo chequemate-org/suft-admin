@@ -31,14 +31,12 @@ const ProductDetails = ({}) => {
   const { handleUpdate } = useToggleDrawer();
   const { attribue } = useProductSubmit(id);
   const [variantTitle, setVariantTitle] = useState([]);
+  const [productData, setProductData] = useState(null); // State to hold fetched product data
   const { lang } = useContext(SidebarContext);
 
   const { data = {}, loading } = useAsync(() => ProductServices.getProductById(id, "NGN"));
+  const { currency, getNumberTwo } = useUtilsFunction();
 
-
-  const { currency, showingTranslateValue, getNumberTwo } = useUtilsFunction();
-
-  // Handle cases where data might not have variants
   const { handleChangePage, totalResults, resultsPerPage, dataTable } = useFilter(data.variants || []);
 
   useEffect(() => {
@@ -49,10 +47,20 @@ const ProductDetails = ({}) => {
     }
   }, [attribue, data.color, loading, lang]);
 
+  const handleEditClick = async () => {
+    try {
+      const fetchedProductData = await ProductServices.getProductById(id); // Fetch product details
+      setProductData(fetchedProductData); // Set the fetched data to state
+      handleUpdate(); // Open the drawer
+    } catch (error) {
+      console.error("Error fetching product details for editing:", error);
+    }
+  };
+
   return (
     <>
       <MainDrawer product>
-        <ProductDrawer id={id} />
+        <ProductDrawer id={id} productData={productData} /> 
       </MainDrawer>
 
       <PageTitle>{t("ProductDetails")}</PageTitle>
@@ -62,9 +70,9 @@ const ProductDetails = ({}) => {
         <div className="inline-block overflow-y-auto h-full align-middle transition-all transform">
           <div className="flex flex-col lg:flex-row md:flex-row gap-10 w-full overflow-hidden">
             {/* Product Image Section */}
-            <div className="flex-shrink-0 flex items-center justify-center w-1/2 h-auto">
+            <div className="flex-shrink-0 flex items-center justify-center md:w-1/2 h-auto sm:w-full">
               {data.imageUrl && data.imageUrl.length > 0 ? (
-                <img src={data.imageUrl[0]} alt="product" className="h-full w-full" />
+                <img src={data.imageUrl[0]} alt="product" className="h-[400px] w-full" />
               ) : (
                 <img
                   src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
@@ -76,19 +84,19 @@ const ProductDetails = ({}) => {
               {/* Product Details */}
               <div className="mb-5">
                 <h2 className="text-heading text-lg md:text-xl lg:text-2xl font-semibold font-serif dark:text-gray-400">
-                  {(data.name) || t("Bean bag")}
+                  {data.name || t("Bean bag")}
                 </h2>
-                <p className="dark:text-gray-400 font-serif text-sm font-medium text-gray-500 uppercase">
+                <p className="uppercase font-serif font-medium text-gray-500 dark:text-gray-400 text-sm">
                   {t("Sku")}:{" "}
                   <span className="font-bold text-gray-500 dark:text-gray-500">
                     {data.sku || t("N/A")}
                   </span>
                 </p>
               </div>
-              <div className="product-price dark:text-gray-400 font-serif font-bold">
+              <div className="font-serif product-price font-bold dark:text-gray-400">
                 <span className="inline-block text-2xl">
                   NGN
-                  {getNumberTwo(data.price) || "0.00"}
+                  {(data.price) || "0.00"}
                 </span>
               </div>
               <div className="mb-3">
@@ -106,7 +114,7 @@ const ProductDetails = ({}) => {
                 </span>
               </div>
               <p className="text-sm leading-6 text-gray-500 dark:text-gray-400 md:leading-7">
-                {(data.description) || t("NoDescriptionAvailable")}
+                {data.description || t("NoDescriptionAvailable")}
               </p>
               {data.color && data.color.length > 0 && (
                 <div className="flex flex-col mt-4">
@@ -145,7 +153,7 @@ const ProductDetails = ({}) => {
               {/* Edit Button */}
               <div className="mt-6">
                 <button
-                  onClick={() => handleUpdate(id)}
+                  onClick={handleEditClick} // Call the new function on click
                   className="cursor-pointer leading-5 transition-colors duration-150 font-medium text-sm focus:outline-none px-5 py-2 rounded-md text-white bg-emerald-500 border border-transparent active:bg-emerald-600 hover:bg-emerald-600 "
                 >
                   {t("EditProduct")}
@@ -157,39 +165,37 @@ const ProductDetails = ({}) => {
       )}
       {/* Variant List Table */}
       {/* {data.isAvailable > 0 && !loading && (
-        <>
-          <PageTitle>{t("ProductVariantList")}</PageTitle>
-          <TableContainer className="mb-8 rounded-b-lg">
-            <Table>
-              <TableHeader>
-                <tr>
-                  <TableCell>{t("SR")}</TableCell>
-                  <TableCell>{t("Image")}</TableCell>
-                  <TableCell>{t("Combination")}</TableCell>
-                  <TableCell>{t("Sku")}</TableCell>
-                  <TableCell>{t("Barcode")}</TableCell>
-                  <TableCell>{t("OriginalPrice")}</TableCell>
-                  <TableCell>{t("SalePrice")}</TableCell>
-                  <TableCell>{t("Quantity")}</TableCell>
-                </tr>
-              </TableHeader>
-              <AttributeList
-                lang={lang}
-                variants={dataTable}
-                currency={currency}
-                variantTitle={variantTitle}
-              />
-            </Table>
-            <TableFooter>
-              <Pagination
-                totalResults={totalResults}
-                resultsPerPage={resultsPerPage}
-                onChange={handleChangePage}
-                label="Product Page Navigation"
-              />
-            </TableFooter>
-          </TableContainer>
-        </>
+        <PageTitle>{t("ProductVariantList")}</PageTitle>
+        <TableContainer className="mb-8 rounded-b-lg">
+          <Table>
+            <TableHeader>
+              <tr>
+                <TableCell>{t("SR")}</TableCell>
+                <TableCell>{t("Image")}</TableCell>
+                <TableCell>{t("Combination")}</TableCell>
+                <TableCell>{t("Sku")}</TableCell>
+                <TableCell>{t("Barcode")}</TableCell>
+                <TableCell>{t("OriginalPrice")}</TableCell>
+                <TableCell>{t("SalePrice")}</TableCell>
+                <TableCell>{t("Quantity")}</TableCell>
+              </tr>
+            </TableHeader>
+            <AttributeList
+              lang={lang}
+              variants={dataTable}
+              currency={currency}
+              variantTitle={variantTitle}
+            />
+          </Table>
+          <TableFooter>
+            <Pagination
+              totalResults={totalResults}
+              resultsPerPage={resultsPerPage}
+              onChange={handleChangePage}
+              label="Product Page Navigation"
+            />
+          </TableFooter>
+        </TableContainer>
       )} */}
     </>
   );
