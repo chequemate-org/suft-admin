@@ -464,28 +464,31 @@ const ProductDrawer = ({ id, product, title, uuid }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-6 gap-3 mb-6">
-          <LabelArea label="Product Price" />
-          <div className="sm:col-span-4 col-span-8 relative">
-            <div className="absolute left-0 flex items-center py-3 pl-3 pointer-events-none">
-              <span className="text-gray-500 text-[15px]">#</span>
+        
+        <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6">
+            <LabelArea label="Discount" />
+            <div className="sm:col-span-4 relative col-span-8">
+              <div className="absolute left-0 flex items-center py-3 pl-3 pointer-events-none">
+                <span className="text-gray-500 text-[15px]">%</span>
+              </div>
+              <input
+                type="number"
+                value={discount}
+                onChange={(e) => setDiscount(Number(e.target.value))}
+                placeholder="Enter discount"
+                className="focus:bg-white block w-full h-12 px-10 py-2 bg-gray-100 border border-gray-200 rounded-md outline-none"
+                min="1"
+                max="100"
+              />
+              <div className="left-2 absolute inset-y-0 flex items-center h-12 border-l border-gray-300 pointer-events-none"></div>
+              {errors.discount && (
+                <span className="mt-2 text-sm text-red-400">
+                  Discount is required.
+                </span>
+              )}
             </div>
-
-            <input
-              type="number"
-              value={price}
-              placeholder="Enter the price"
-              onChange={(e) => setPrice(e.target.value)}
-              className="focus:bg-white w-full h-12 pl-8 p-2 mt-1 bg-gray-100 border rounded-md outline-none"
-            />
-
-            {errors.price && (
-              <span className="mt-2 text-sm text-red-400">
-                Price is required.
-              </span>
-            )}
           </div>
-        </div>
+
 
         <div className="grid grid-cols-6 gap-3 mb-6">
           <LabelArea label="Product Size" />

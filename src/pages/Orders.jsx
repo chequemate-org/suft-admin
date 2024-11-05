@@ -334,7 +334,7 @@ const Orders = () => {
                       actions={order.actions}
                     />
                   </TableCell>
-                  <TableCell className="text-right flex justify-end">
+                  <TableCell className="text-right flex justify-center">
                     <div className="flex justify-between items-center">
                       <PrintReceipt orderId={order.uuid} />
                       <span className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600">
