@@ -193,19 +193,14 @@ import CouponDrawer from "@/components/drawer/CouponDrawer";
 import ShowHideButton from "@/components/table/ShowHideButton";
 import EditDeleteButton from "@/components/table/EditDeleteButton";
 
-const CouponTable = ({
-  coupons, 
-  isCheck,
-  setIsCheck,
-  fetchCoupons,
-}) => {
+const CouponTable = ({ coupons, isCheck, setIsCheck, fetchCoupons }) => {
   const [updatedCoupons, setUpdatedCoupons] = useState([]); // For date conversion
   const [selectedCoupon, setSelectedCoupon] = useState(null); // For editing
   const [selectedCouponForDelete, setSelectedCouponForDelete] = useState(null);
 
   const { title, serviceId, handleModalOpen, handleUpdate } = useToggleDrawer();
   const { globalSetting, showingTranslateValue } = useUtilsFunction();
-  
+
   // Handle the edit button click
   useEffect(() => {
     const couponArray = Array.isArray(coupons) ? coupons : [];
@@ -244,7 +239,7 @@ const CouponTable = ({
   const fetchCouponByUUID = async (uuid) => {
     try {
       const response = await axios.get(
-        `https://suft-90bec7a20f24.herokuapp.com/coupon/admin-coupon/${uuid}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-coupon/${uuid}`,
       );
       if (response.data) {
         setSelectedCoupon(response.data); // Set coupon to state for drawer
@@ -257,7 +252,9 @@ const CouponTable = ({
   // Handle deletion of coupon
   const handleDelete = async (uuid) => {
     try {
-      await axios.delete(`https://suft-90bec7a20f24.herokuapp.com/coupon/admin-delete/coupon/${uuid}`);
+      await axios.delete(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-delete/coupon/${uuid}`,
+      );
       fetchCoupons(); // Refresh the coupons after deletion
     } catch (error) {
       console.error("Error deleting coupon:", error);
@@ -280,7 +277,7 @@ const CouponTable = ({
           fetchCoupons={fetchCoupons}
         />
       </MainDrawer>
-
+      
       <TableBody>
         {updatedCoupons?.length > 0 ? (
           updatedCoupons.map((coupon) => (
@@ -310,9 +307,7 @@ const CouponTable = ({
                     />
                   )}
                   <div>
-                    <span className="text-sm">
-                      {coupon.name}
-                    </span>
+                    <span className="text-sm">{coupon.name}</span>
                   </div>
                 </div>
               </TableCell>
@@ -322,9 +317,7 @@ const CouponTable = ({
               </TableCell>
 
               <TableCell>
-                <span className="text-sm font-semibold">
-                  {coupon.discount}
-                </span>
+                <span className="text-sm font-semibold">{coupon.discount}</span>
               </TableCell>
 
               {/* <TableCell className="text-center">

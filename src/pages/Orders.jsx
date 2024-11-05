@@ -189,17 +189,7 @@ const Orders = () => {
                     <option value="Cancel">{t("OrderCancel")}</option>
                   </Select>
                 </div>
-                <div>
-                  <Select onChange={(e) => setTime(e.target.value)}>
-                    <option value="" defaultValue hidden>
-                      {t("Orderlimits")}
-                    </option>
-                    <option value="5">{t("DaysOrders5")}</option>
-                    <option value="7">{t("DaysOrders7")}</option>
-                    <option value="15">{t("DaysOrders15")}</option>
-                    <option value="30">{t("DaysOrders30")}</option>
-                  </Select>
-                </div>
+                
                 <div>
                   {loadingExport ? (
                     <Button

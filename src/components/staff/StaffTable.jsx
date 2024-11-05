@@ -136,7 +136,7 @@ const StaffTable = ({ lang }) => {
             </TableCell>
             <TableCell>
               <span className="text-sm">
-                {staff?.joiningDate ? showDateFormat(staff.joiningDate) : "N/A"}
+                {showDateFormat(staff.joiningDate)}
               </span>
             </TableCell>
             <TableCell>

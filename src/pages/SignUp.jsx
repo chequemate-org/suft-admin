@@ -11,8 +11,12 @@ import { FiUploadCloud, FiXCircle } from "react-icons/fi";
 import { notifyError, notifySuccess } from "@/utils/toast";
 import ImageLight from "@/assets/img/create-account-office.jpeg";
 import ImageDark from "@/assets/img/create-account-office-dark.jpeg";
+import { toast } from "react-toastify";
+import CMButton from "@/components/form/button/CMButton";
 
 const SignUp = () => {
+  // const { onSubmit, register, is } =
+  //   useLoginSubmit();
   const { t } = useTranslation();
   const history = useHistory();
   const [name, setName] = useState("");
@@ -24,6 +28,7 @@ const SignUp = () => {
   const [checkbox, setCheckbox] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isUploadingMainImage, setUploadingMainImage] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -116,27 +121,46 @@ const SignUp = () => {
     setCheckbox(false);
   };
 
-  const handleImageUpload = (acceptedFiles) => {
+  const handleImageUpload = (acceptedFiles, setImages, setUploadingStatus) => {
     const oversizedFiles = acceptedFiles.filter((file) => file.size > 5000000);
     if (oversizedFiles.length > 0) {
-      notifyError("Some files are larger than 5MB and cannot be uploaded.");
+      toast.error("Some files are larger than 5MB and cannot be uploaded.");
       return;
     }
 
-    setStaffImage((prevFiles) => [
-      ...prevFiles,
-      ...acceptedFiles.map((file) =>
-        Object.assign(file, { preview: URL.createObjectURL(file) })
-      ),
-    ]);
-    notifySuccess("Images uploaded successfully!");
+    setUploadingStatus(true);
+
+    setImages((prevImages) => {
+      // Ensure prevImages is an array
+      const validPrevImages = Array.isArray(prevImages) ? prevImages : [];
+
+      return [
+        ...validPrevImages,
+        ...acceptedFiles.map((file) =>
+          Object.assign(file, { preview: URL.createObjectURL(file) })
+        ),
+      ];
+    });
+    setTimeout(() => {
+      setUploadingStatus(false);
+      toast.success("Image uploaded successfully!");
+    }, 5000);
   };
 
-  const handleRemoveImage = (fileToRemove) => {
-    setStaffImage((prevFiles) =>
-      prevFiles.filter((img) => img !== fileToRemove)
-    );
-    notifySuccess("Image removed successfully!");
+  const { getRootProps: getRootPropsMain, getInputProps: getInputPropsMain } =
+    useDropzone({
+      accept: {
+        "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+      },
+      multiple: true,
+      maxSize: 5000000,
+      onDrop: (files) =>
+        handleImageUpload(files, setStaffImage, setUploadingMainImage),
+    });
+
+  const handleRemoveImage = (file, setImages) => {
+    setImages((prevImages) => prevImages.filter((image) => image !== file));
+    toast.success("Image removed successfully!");
   };
 
   const mainImageThumbs = staffImage.map((file, index) => (
@@ -145,20 +169,12 @@ const SignUp = () => {
       <button
         type="button"
         className="absolute top-0 right-0 text-red-500"
-        onClick={() => handleRemoveImage(file)}
+        onClick={() => handleRemoveImage(file, setStaffImage)}
       >
         <FiXCircle />
       </button>
     </div>
   ));
-
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: { "image/*": [".jpeg", ".jpg", ".png", ".webp"] },
-    multiple: true,
-    maxSize: 5000000,
-    onDrop: handleImageUpload,
-  });
-
   return (
     <div className="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
       <div className="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -275,28 +291,35 @@ const SignUp = () => {
                     {errors.role}
                   </span>
                 )}
-
-                <LabelArea label="Profile Image" />
-                <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-2 w-full">
+                <LabelArea label={"Product Image"} />
+                <div className="md:gap-5 xl:gap-6 lg:gap-6 grid grid-cols-6 gap-3 mb-6 w-full">
                   <div className="col-span-6">
                     <div
-                      {...getRootProps()}
-                      className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer w-full"
+                      {...getRootPropsMain()}
+                      className="p-6 text-center border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
                     >
-                      <input {...getInputProps()} />
+                      <input {...getInputPropsMain()} />
                       <span className="flex justify-center mx-auto">
                         <FiUploadCloud className="text-emerald-500 text-3xl" />
                       </span>
                       <p className="mt-2 text-sm">Drag your image here</p>
                       <em className="text-xs text-gray-400">
-                        (Only *.jpeg, *.png, and *.webp images accepted, Max:
-                        5MB)
+                        (Only *.jpeg,*.png, and *.webp images will be accepted
+                        (Max: 5MB))
                       </em>
                     </div>
-                    <div className="flex flex-wrap mt-4">{mainImageThumbs}</div>
+                    {isUploadingMainImage ? (
+                      <div className=" text-center text-[#10B981] text-[15px]">
+                        Uploading....
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap mt-4">
+                        {mainImageThumbs}
+                      </div>
+                    )}
                     {errors.staffImage && (
                       <span className="mt-2 text-sm text-red-400">
-                        {errors.staffImage}
+                        image is required.
                       </span>
                     )}
                   </div>
@@ -318,13 +341,21 @@ const SignUp = () => {
                   </span>
                 )}
 
-                <Button
-                  type="submit"
-                  className="mt-4 w-full"
-                  disabled={loading}
-                >
-                  {loading ? "Creating..." : "Create Account"}
-                </Button>
+                {loading ? (
+                  <CMButton
+                    disabled={loading}
+                    type="submit"
+                    className={`bg-emerald-600 rounded-md mt-4 h-12 w-full`}
+                  />
+                ) : (
+                  <Button
+                    disabled={loading}
+                    type="submit"
+                    className="mt-4 h-12 w-full"
+                  >
+                    {t("CreateAccountTitle")}
+                  </Button>
+                )}
               </form>
               <p className="mt-4 text-sm">
                 {t("Already have an account?")}{" "}

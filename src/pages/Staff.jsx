@@ -39,6 +39,7 @@ const Staff = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [role, setRole] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { t } = useTranslation();
 
@@ -52,25 +53,64 @@ const Staff = () => {
     resultsPerPage,
     dataTable,
     serviceData,
-    handleChangePage,
   } = useFilter(data);
 
  
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_APP_API_BASE_URL}/admin/search-users?`
+  //     );
+  //     const staffData = response.data?.result || [];
+      
+  //     // Filter based on search term and role
+  //     const filteredData = staffData.filter(staff => {
+  //       const matchesEmail = searchTerm ? staff.email.includes(searchTerm) : true;
+  //       const matchesRole = role ? staff.role === role : true;
+  //       return matchesEmail && matchesRole;
+  //     });
+
+  //     setFilteredStaffs(filteredData);
+  //   } catch (error) {
+  //     console.error("Error fetching staff:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [searchTerm, role]); // Re-run when searchTerm or role changes
+
+
+  // const handleSubmitUser = (e) => {
+  //   e.preventDefault();
+  //   setSearchTerm(inputValue); // Update searchTerm state to trigger useEffect
+  // };
+
+  // const handleResetField = () => {
+  //   setRole("");
+  //   setInputValue("");
+  //   setSearchTerm("");
+  // };
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/search-users?`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/admin/search-users?`,
+        {
+          params: {
+            email: adminInfo.email,
+            search: searchTerm,
+            role,
+            page: currentPage,
+            limit: resultsPerPage,
+          },
+        }
       );
       const staffData = response.data?.result || [];
-      
-      // Filter based on search term and role
-      const filteredData = staffData.filter(staff => {
-        const matchesEmail = searchTerm ? staff.email.includes(searchTerm) : true;
-        const matchesRole = role ? staff.role === role : true;
-        return matchesEmail && matchesRole;
+      setData({
+        products: staffData,
+        totalDoc: response.data?.totalDoc || 0,
       });
-
-      setFilteredStaffs(filteredData);
     } catch (error) {
       console.error("Error fetching staff:", error);
     }
@@ -78,18 +118,24 @@ const Staff = () => {
 
   useEffect(() => {
     fetchData();
-  }, [searchTerm, role]); // Re-run when searchTerm or role changes
+  }, [searchTerm, role, currentPage]); // Re-run when searchTerm, role, or currentPage changes
 
+  // Handle page change
+  const handleChangePage = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   const handleSubmitUser = (e) => {
     e.preventDefault();
     setSearchTerm(inputValue); // Update searchTerm state to trigger useEffect
+    setCurrentPage(1); // Reset to the first page after search
   };
 
   const handleResetField = () => {
     setRole("");
     setInputValue("");
     setSearchTerm("");
+    setCurrentPage(1); // Reset to the first page after reset
   };
   return (
     <>
@@ -121,7 +167,7 @@ const Staff = () => {
               </div>
 
               <div className="md:flex-grow lg:flex-grow xl:flex-grow flex-grow-0">
-                <Select value={inputValue} onChange={(e) => setInputValue(e.target.value)}>
+                <Select value={role} onChange={(e) => setRole(e.target.value)}>
                   <option value="" defaultValue hidden>
                     {t("StaffRole")}
                   </option>
