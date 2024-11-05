@@ -1,4 +1,5 @@
 
+
 import { Avatar, TableBody, TableCell, TableRow } from "@windmill/react-ui";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -135,7 +136,7 @@ const StaffTable = ({ lang }) => {
             </TableCell>
             <TableCell>
               <span className="text-sm">
-                {staff?.joiningDate ? showDateFormat(staff.joiningDate) : "N/A"}
+                {showDateFormat(staff.joiningDate)}
               </span>
             </TableCell>
             <TableCell>

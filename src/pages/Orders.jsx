@@ -189,17 +189,7 @@ const Orders = () => {
                     <option value="Cancel">{t("OrderCancel")}</option>
                   </Select>
                 </div>
-                <div>
-                  <Select onChange={(e) => setTime(e.target.value)}>
-                    <option value="" defaultValue hidden>
-                      {t("Orderlimits")}
-                    </option>
-                    <option value="5">{t("DaysOrders5")}</option>
-                    <option value="7">{t("DaysOrders7")}</option>
-                    <option value="15">{t("DaysOrders15")}</option>
-                    <option value="30">{t("DaysOrders30")}</option>
-                  </Select>
-                </div>
+                
                 <div>
                   {loadingExport ? (
                     <Button
@@ -334,7 +324,7 @@ const Orders = () => {
                       actions={order.actions}
                     />
                   </TableCell>
-                  <TableCell className="text-right flex justify-end">
+                  <TableCell className="text-right flex justify-center">
                     <div className="flex justify-between items-center">
                       <PrintReceipt orderId={order.uuid} />
                       <span className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600">

@@ -58,7 +58,7 @@ const handleSearch = async () => {
   setLoading(true);
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_APP_API_BASE_URL}/admin/search-users`,
+      `${import.meta.env.VITE_APP_API_BASE_URL}/admin/search-users?`,
       {
         params: {
           query: searchQuery,
@@ -66,7 +66,7 @@ const handleSearch = async () => {
       }
     );
 
-    const filteredData = response.data?.data?.data || [];
+    const filteredData = response.data?.result || [];
     setCustomerData(filteredData);
     console.log(customerData);
     setTotalResults(filteredData.length);

@@ -6,6 +6,34 @@ const OrderServices = {
     const queryParams = new URLSearchParams({ page, limit, ...filters });
     return requests.get(`admin/get-orders?${queryParams}`);
   },
+  getOrders: async ({
+    body,
+    headers,
+    customerName,
+    status,
+    page = 1,
+    limit = 8,
+    day,
+    // source,
+    method,
+    startDate,
+    endDate,
+    // download = "",
+  }) => {
+    const searchName = customerName !== null ? customerName : "";
+    const searchStatus = status !== null ? status : "";
+    const searchDay = day !== null ? day : "";
+    // const searchSource = source !== null ? source : "";
+    const searchMethod = method !== null ? method : "";
+    const startD = startDate !== null ? startDate : "";
+    const endD = endDate !== null ? endDate : "";
+
+    return requests.get(
+      `/admin/order-filtering?customerName=${searchName}&status=${searchStatus}&page=${page}&limit=${limit}&startDate=${startD}&endDate=${endD}&method=${searchMethod}`,
+      body,
+      headers
+    );
+  },
 
   filterOrders: async (filters) => {
     const queryParams = new URLSearchParams();

@@ -316,6 +316,9 @@ const ProductTable = ({ productData, isCheck, setIsCheck,id, products }) => {
             </TableCell>
 
             <TableCell>
+              <span className="text-sm">{product.discount || "N/A"}</span>
+            </TableCell>
+            <TableCell>
               <span className="text-sm">{product.stockLevel}</span>
             </TableCell>
             <TableCell>

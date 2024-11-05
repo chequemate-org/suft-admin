@@ -467,7 +467,7 @@ const Products = ({productData}) => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "https://suft-90bec7a20f24.herokuapp.com/product/",
+          `${import.meta.env.VITE_APP_API_BASE_URL}/product`,
           {
             params: {
               page: currentPage,
@@ -495,7 +495,7 @@ const Products = ({productData}) => {
   const fetchProduct = async (uuid) => {
     try {
       const response = await fetch(
-        `https://suft-90bec7a20f24.herokuapp.com/product/single/${uuid}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/single/${uuid}`,
       );
       const data = await response.json();
       console.log(data);
@@ -512,7 +512,9 @@ const Products = ({productData}) => {
   
   const ProductSearch = async () => {
     try {
-      const response = await axios.get("https://suft-90bec7a20f24.herokuapp.com/product/filter?", {
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/product/filter?`,
+        {
         params: {
           page: currentPage,
           min: minPrice,
@@ -738,6 +740,7 @@ const Products = ({productData}) => {
                 <TableCell>{t("ProductNameTbl")}</TableCell>
                 <TableCell>{t("PriceTbl")}</TableCell>
                 <TableCell>Sale Price</TableCell>
+                <TableCell>Discount</TableCell>
                 <TableCell>{t("StockTbl")}</TableCell>
                 <TableCell>{t("StatusTbl")}</TableCell>
                 <TableCell className="text-center">{t("DetailsTbl")}</TableCell>

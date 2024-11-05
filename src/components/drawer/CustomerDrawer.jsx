@@ -7,14 +7,12 @@ import LabelArea from "@/components/form/selectOption/LabelArea";
 import DrawerButton from "@/components/form/button/DrawerButton";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 
 const CustomerDrawer = ({ id }) => {
   const {
     register,
     handleSubmit,
     setValue,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -49,14 +47,20 @@ const CustomerDrawer = ({ id }) => {
       if (id) {
         // Update customer data
         await axios.put(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users-update/${id}`,
+          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users/${id}`,
           data
         );
-        toast.success("Customer updated successfully");
+        console.log("Customer updated successfully");
+      } else {
+        // Create a new customer
+        await axios.post(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`,
+          data
+        );
+        console.log("Customer created successfully");
       }
-      reset();
     } catch (error) {
-      toast.error("Failed to submit customer data", error);
+      console.error("Failed to submit customer data", error);
     }
   };
 

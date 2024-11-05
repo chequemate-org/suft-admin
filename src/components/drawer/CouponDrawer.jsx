@@ -83,9 +83,7 @@ const CouponDrawer = ({ id, coupon, fetchAllCoupons }) => {
 
         if (id) {
           response = await fetch(
-            `${
-              import.meta.env.VITE_APP_API_BASE_URL
-            }/coupon/admin-update/coupon/${id}`,
+            `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-update/coupon/${id}`,
             {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
@@ -95,7 +93,6 @@ const CouponDrawer = ({ id, coupon, fetchAllCoupons }) => {
         } else {
           response = await fetch(
             `${import.meta.env.VITE_APP_API_BASE_URL}/coupon/admin-create`,
-
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -106,16 +103,16 @@ const CouponDrawer = ({ id, coupon, fetchAllCoupons }) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(
-            `Failed to submit coupon. Server responded with: ${errorText}`
-          );
+          throw new Error(`Failed to submit coupon. Server responded with: ${errorText}`);
         }
 
         resetForm();
-        toast.success(
-          id ? "Coupon updated successfully!" : "Coupon created successfully!"
-        );
-        fetchAllCoupons();
+        toast.success(id ? "Coupon updated successfully!" : "Coupon created successfully!");
+
+        // Call fetchAllCoupons if it is defined
+        if (fetchAllCoupons) {
+          fetchAllCoupons();
+        }
       } catch (error) {
         console.error("Error submitting coupon:", error.message);
         setErrors({ api: error.message });
@@ -125,7 +122,6 @@ const CouponDrawer = ({ id, coupon, fetchAllCoupons }) => {
       }
     }
   };
-
   const resetForm = () => {
     setName("");
     setCode("");
@@ -198,7 +194,7 @@ const CouponDrawer = ({ id, coupon, fetchAllCoupons }) => {
             <LabelArea label="Discount" />
             <div className="sm:col-span-4 relative col-span-8">
               <div className="absolute left-0 flex items-center py-3 pl-3 pointer-events-none">
-                <span className="text-gray-500 text-[15px]">%</span>
+                <span className="text-gray-500 text-[15px]">&#37;</span>
               </div>
               <input
                 type="number"
