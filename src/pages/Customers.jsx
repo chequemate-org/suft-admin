@@ -29,23 +29,27 @@ const [error, setError] = useState(null);
 const [searchQuery, setSearchQuery] = useState("");
 const userRef = useRef(null);
 const [totalResults, setTotalResults] = useState(0);
-const [resultsPerPage] = useState(10);
+const [resultsPerPage, setResultsPerPage] = useState(0);
 const [currentPage, setCurrentPage] = useState(1);
 
 useEffect(() => {
   fetchCustomers();
+  console.log("useEffect", currentPage)
 }, [currentPage]);
 
 const fetchCustomers = async () => {
   setLoading(true);
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_APP_API_BASE_URL}/admin/users`
+      `https://suft-90bec7a20f24.herokuapp.com/admin/users?page=${currentPage}`
     );
 
+    console.log(currentPage)
     const customerArray = response.data?.data?.data || [];
+    const meta = response.data?.data?.meta;
     setCustomerData(customerArray);
-    setTotalResults(customerArray.length);
+    setTotalResults(meta.totalItems);
+    setResultsPerPage(meta.pageSize);
   } catch (err) {
     console.error("Error fetching customers:", err);
     setError("Failed to load customer data");
